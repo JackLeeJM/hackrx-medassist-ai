@@ -1,1 +1,1 @@
-# hackrx-medassist-ai
+# HackRx Medical AI Assistant
