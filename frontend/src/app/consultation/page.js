@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 // Mock patients data
@@ -87,7 +87,7 @@ const mockPatients = [
     }
 ];
 
-export default function ConsultationPage() {
+function ConsultationPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [currentPatient, setCurrentPatient] = useState(null);
@@ -494,7 +494,7 @@ export default function ConsultationPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-lg font-semibold text-gray-800">Save Consultation</h3>
-                            <p className="text-gray-600 text-sm">This consultation will be added to the patient's medical record</p>
+                            <p className="text-gray-600 text-sm">This consultation will be added to the patient&apos;s medical record</p>
                         </div>
                         <div className="flex gap-3">
                             <button 
@@ -516,5 +516,13 @@ export default function ConsultationPage() {
                 </section>
             </main>
         </div>
+    );
+}
+
+export default function ConsultationPage() {
+    return (
+        <Suspense fallback={<div>Loading consultation...</div>}>
+            <ConsultationPageContent />
+        </Suspense>
     );
 }
