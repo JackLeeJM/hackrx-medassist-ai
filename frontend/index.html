@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAssist AI - Clinical Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1f2937',
+                        secondary: '#374151',
+                        accent: '#6b7280'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-900 text-white px-8 py-4 shadow-lg">
+            <div class="flex justify-between items-center">
+                <div class="flex flex-col">
+                    <h1 class="text-2xl font-semibold mb-1">
+                        <i class="fas fa-stethoscope text-gray-300 mr-2"></i>
+                        MedAssist AI
+                    </h1>
+                    <span class="text-white/90 text-sm">Dr. Sarah Johnson</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                        <i class="fas fa-clock"></i>
+                        <span class="font-medium">2h 15m saved today</span>
+                    </div>
+                    <button class="relative bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 bg-gray-600 text-xs px-2 py-1 rounded-full min-w-[18px] text-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="flex-1 p-8 max-w-7xl mx-auto w-full">
+            <!-- Patient Search Bar -->
+            <section class="mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1 relative">
+                            <input 
+                                type="text" 
+                                id="patientSearch" 
+                                placeholder="Search patients by name, room number, or patient ID..." 
+                                class="w-full px-4 py-3 pl-12 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none"
+                            >
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                            
+                            <!-- Search Dropdown -->
+                            <div id="searchDropdown" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden z-50 max-h-96 overflow-y-auto">
+                                <div class="p-2">
+                                    <div class="text-xs text-gray-500 px-3 py-2 font-medium">PATIENTS</div>
+                                    <!-- Patient results will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        <button class="bg-gray-800 text-white px-8 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium text-lg">
+                            <i class="fas fa-search mr-2"></i>
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Stats Row -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center text-white">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">24</h3>
+                            <p class="text-gray-600 text-sm">Total Patients</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-white">
+                            <i class="fas fa-user-plus text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">3</h3>
+                            <p class="text-gray-600 text-sm">New Admissions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center text-white">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">5</h3>
+                            <p class="text-gray-600 text-sm">Pending Discharge</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-500 rounded-lg flex items-center justify-center text-white">
+                            <i class="fas fa-robot text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">87%</h3>
+                            <p class="text-gray-600 text-sm">Tasks Automated</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Critical Patients Alert -->
+                <section class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-exclamation-triangle text-gray-700 mr-2"></i>
+                            Critical Patients
+                        </h2>
+                        <span class="text-gray-600 text-sm font-medium">2 require immediate attention</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="border border-gray-300 bg-gray-100 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800 mb-1">Maria Rodriguez</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Room 302 • Age 67</p>
+                                    <span class="bg-gray-800 text-white px-2 py-1 rounded text-xs">Post-op complications</span>
+                                </div>
+                                <div class="flex flex-col gap-1 mr-4">
+                                    <span class="bg-gray-700 text-white px-2 py-1 rounded text-xs">BP: 180/110</span>
+                                    <span class="bg-gray-700 text-white px-2 py-1 rounded text-xs">HR: 125</span>
+                                </div>
+                                <button class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors view-patient-btn">
+                                    View Patient
+                                </button>
+                            </div>
+                        </div>
+                        <div class="border border-gray-300 bg-gray-100 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800 mb-1">James Wilson</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Room 418 • Age 45</p>
+                                    <span class="bg-gray-800 text-white px-2 py-1 rounded text-xs">Chest pain, elevated troponin</span>
+                                </div>
+                                <div class="flex flex-col gap-1 mr-4">
+                                    <span class="bg-gray-700 text-white px-2 py-1 rounded text-xs">Troponin: 5.2</span>
+                                    <span class="bg-gray-500 text-white px-2 py-1 rounded text-xs">HR: 88</span>
+                                </div>
+                                <button class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors view-patient-btn">
+                                    View Patient
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Today's Schedule -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-calendar-alt text-gray-700 mr-2"></i>
+                            Today's Schedule
+                        </h2>
+                        <span class="text-gray-500 text-sm">Tuesday, March 14, 2024</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 border-l-4 border-gray-700 p-4 rounded-r-lg">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-800 mb-1">10:30 AM</div>
+                                    <h4 class="font-medium text-gray-800">Emma Thompson</h4>
+                                    <p class="text-gray-600 text-sm">Follow-up consultation</p>
+                                </div>
+                                <button class="bg-gray-800 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 transition-colors prep-btn">
+                                    AI Prep
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 border-l-4 border-gray-700 p-4 rounded-r-lg">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-800 mb-1">11:15 AM</div>
+                                    <h4 class="font-medium text-gray-800">Michael Chen</h4>
+                                    <p class="text-gray-600 text-sm">New patient consultation</p>
+                                </div>
+                                <button class="bg-gray-800 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 transition-colors prep-btn">
+                                    AI Prep
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 border-l-4 border-gray-400 p-4 rounded-r-lg opacity-70">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-800 mb-1">9:00 AM</div>
+                                    <h4 class="font-medium text-gray-800">Lisa Parker</h4>
+                                    <p class="text-gray-600 text-sm">Routine checkup</p>
+                                </div>
+                                <span class="text-gray-600 font-medium text-sm">✓ Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <!-- Recent Activity -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-history text-gray-700 mr-2"></i>
+                            Recent Activity
+                        </h2>
+                        <button class="text-gray-700 hover:text-gray-600 text-sm font-medium view-all-btn">
+                            View All
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center text-white">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-gray-800"><strong>Recording summary generated</strong> for Maria Rodriguez</p>
+                                <span class="text-gray-500 text-sm">15 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-white">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-gray-800"><strong>AI Chat query</strong> about James Wilson's lab results</p>
+                                <span class="text-gray-500 text-sm">32 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center text-white">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-gray-800"><strong>Patient data synthesized</strong> for Emma Thompson</p>
+                                <span class="text-gray-500 text-sm">1 hour ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Actions -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-bolt text-gray-700 mr-2"></i>
+                            Quick Actions
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="bg-gray-800 text-white p-4 rounded-lg hover:shadow-lg hover:bg-gray-700 transition-all transform hover:-translate-y-1 action-btn patient-search">
+                            <i class="fas fa-search text-xl mb-2"></i>
+                            <span class="block font-medium">Search Patients</span>
+                        </button>
+                        <button class="bg-gray-800 text-white p-4 rounded-lg hover:shadow-lg hover:bg-gray-700 transition-all transform hover:-translate-y-1 action-btn ai-chat">
+                            <i class="fas fa-robot text-xl mb-2"></i>
+                            <span class="block font-medium">AI Chat</span>
+                        </button>
+                        <button class="bg-gray-800 text-white p-4 rounded-lg hover:shadow-lg hover:bg-gray-700 transition-all transform hover:-translate-y-1 action-btn voice-record">
+                            <i class="fas fa-microphone text-xl mb-2"></i>
+                            <span class="block font-medium">Voice Recording</span>
+                        </button>
+                        <button class="bg-gray-800 text-white p-4 rounded-lg hover:shadow-lg hover:bg-gray-700 transition-all transform hover:-translate-y-1 action-btn system-status">
+                            <i class="fas fa-cogs text-xl mb-2"></i>
+                            <span class="block font-medium">System Status</span>
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
