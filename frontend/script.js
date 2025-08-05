@@ -143,14 +143,6 @@ class MedAssistDashboard {
             });
         });
 
-        // Quick action buttons
-        const actionBtns = document.querySelectorAll('.action-btn');
-        actionBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const action = e.currentTarget.classList[1]; // Get the second class name
-                this.handleQuickAction(action);
-            });
-        });
 
         // View all activity
         const viewAllBtn = document.querySelector('.view-all-btn');
@@ -198,19 +190,6 @@ class MedAssistDashboard {
         }, 1500);
     }
 
-    handleQuickAction(action) {
-        const actionMap = {
-            'patient-search': 'Opening Patient Search...',
-            'ai-chat': 'Launching AI Chat Interface...',
-            'voice-record': 'Starting Voice Recording...',
-            'system-status': 'Checking System Status...'
-        };
-        
-        const message = actionMap[action] || 'Action not recognized';
-        console.log(message);
-        alert(message);
-        // In a real app, these would navigate to respective pages
-    }
 
     showAllActivity() {
         console.log('Showing all recent activity');
