@@ -3,6 +3,16 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
+// Import new modular components
+import Header from '@/components/layout/Header';
+import PatientHeader from '@/components/patient/PatientHeader';
+import AIChat from '@/components/patient/AIChat';
+import PatientCondition from '@/components/patient/PatientCondition';
+import Timeline from '@/components/patient/Timeline';
+import VitalSigns from '@/components/patient/VitalSigns';
+import QuickActions from '@/components/patient/QuickActions';
+import PatientStatus from '@/components/patient/PatientStatus';
+
 // Mock patients data
 const mockPatients = [
     { 
@@ -165,7 +175,6 @@ function PatientDetailsPageContent() {
     const router = useRouter();
     const [currentPatient, setCurrentPatient] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
-    const [chatInput, setChatInput] = useState('');
 
     useEffect(() => {
         const patientId = searchParams.get('id');
@@ -183,7 +192,7 @@ function PatientDetailsPageContent() {
         }
 
         setCurrentPatient(patient);
-        
+
         // Initialize chat with AI greeting
         setChatMessages([{
             id: 1,
@@ -202,30 +211,47 @@ function PatientDetailsPageContent() {
         }
     };
 
-    const sendChatMessage = () => {
-        if (!chatInput.trim()) return;
+    const handleSendMessage = (message) => {
+        if (!message.trim()) return;
 
         const userMessage = {
             id: Date.now(),
             type: 'user',
-            message: chatInput,
+            message: message,
             timestamp: new Date()
         };
 
         setChatMessages(prev => [...prev, userMessage]);
-        
+
         // Generate AI response
         setTimeout(() => {
             const aiResponse = {
                 id: Date.now() + 1,
                 type: 'ai',
-                message: generateAIResponse(chatInput),
+                message: generateAIResponse(message),
                 timestamp: new Date()
             };
             setChatMessages(prev => [...prev, aiResponse]);
         }, 1000);
+    };
 
-        setChatInput('');
+    const handleQuickQuestion = (question) => {
+        handleSendMessage(question);
+    };
+
+    const handleGenerateSummary = () => {
+        console.log('Generating summary for', currentPatient?.name);
+        // Implementation for generating summary
+    };
+
+    const handleUpdateTreatment = () => {
+        console.log('Updating treatment for', currentPatient?.name);
+        // Implementation for updating treatment
+    };
+
+    const handleShareWithTeam = () => {
+        console.log('Sharing with team for', currentPatient?.name);
+        // Implementation for sharing with team
     };
 
     const generateAIResponse = (userMessage) => {
@@ -269,74 +295,9 @@ function PatientDetailsPageContent() {
         return `I understand you're asking about ${patient.name}. Based on their current status (${patient.status}) and condition (${patient.condition}), I can provide detailed insights. Could you be more specific about what aspect of their care you'd like to discuss?`;
     };
 
-    const handleQuickQuestion = (question) => {
-        setChatInput(question);
-        setTimeout(() => sendChatMessage(), 100);
-    };
 
-    const generateTimelineHTML = (timeline) => {
-        if (!timeline || timeline.length === 0) {
-            return (
-                <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-sm relative z-10">
-                        <i className="fas fa-info-circle text-xs"></i>
-                    </div>
-                    <div className="flex-1 pb-4">
-                        <p className="text-gray-500">No timeline data available</p>
-                    </div>
-                </div>
-            );
-        }
 
-        const statusColors = {
-            completed: 'bg-green-600',
-            ongoing: 'bg-blue-600',
-            active: 'bg-yellow-600',
-            pending: 'bg-gray-400',
-            scheduled: 'bg-purple-600'
-        };
 
-        const statusLabels = {
-            completed: 'Completed',
-            ongoing: 'Ongoing',
-            active: 'Active',
-            pending: 'Pending',
-            scheduled: 'Scheduled'
-        };
-
-        return timeline.map((item, index) => {
-            const iconColor = statusColors[item.status] || 'bg-gray-600';
-            const isLast = index === timeline.length - 1;
-
-            return (
-                <div key={index} className="relative">
-                    <div className="flex items-start gap-4">
-                        <div className={`w-8 h-8 ${iconColor} rounded-full flex items-center justify-center text-white text-sm relative z-10 shadow-sm`}>
-                            <i className={`${item.icon} text-xs`}></i>
-                        </div>
-                        <div className={`flex-1 ${isLast ? '' : 'pb-6'}`}>
-                            <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-gray-300 hover:border-gray-400 transition-colors">
-                                <div className="flex items-start justify-between mb-2">
-                                    <h4 className="text-gray-800 font-medium">{item.action}</h4>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-1 rounded-full ${iconColor} text-white`}>
-                                            {statusLabels[item.status]}
-                                        </span>
-                                    </div>
-                                </div>
-                                <p className="text-gray-600 text-sm mb-2">{item.details}</p>
-                                <div className="flex items-center gap-4 text-xs text-gray-500">
-                                    <span><i className="fas fa-calendar mr-1"></i>{item.date}</span>
-                                    <span><i className="fas fa-clock mr-1"></i>{item.time}</span>
-                                    <span className="capitalize"><i className="fas fa-tag mr-1"></i>{item.type}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        });
-    };
 
     if (!currentPatient) {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -345,308 +306,48 @@ function PatientDetailsPageContent() {
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
             {/* Header */}
-            <header className="bg-gray-900 text-white px-8 py-4 shadow-lg">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <button 
-                            onClick={() => router.back()} 
-                            className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors"
-                        >
-                            <i className="fas fa-arrow-left"></i>
-                        </button>
-                        <div className="flex flex-col">
-                            <h1 className="text-2xl font-semibold mb-1">
-                                <i className="fas fa-user-md text-gray-300 mr-2"></i>
-                                Patient Details
-                            </h1>
-                            <span className="text-white/90 text-sm">Dr. Sarah Johnson</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                            <i className="fas fa-clock"></i>
-                            <span className="font-medium">2h 15m saved today</span>
-                        </div>
-                        <button className="relative bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors">
-                            <i className="fas fa-bell"></i>
-                            <span className="absolute -top-1 -right-1 bg-gray-600 text-xs px-2 py-1 rounded-full min-w-[18px] text-center">3</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
+            <Header onBack={() => router.back()} />
 
             {/* Main Content */}
             <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
                 {/* Patient Header */}
-                <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6">
-                            <div className={`w-20 h-20 ${currentPatient.status === 'critical' ? 'bg-gray-800' : 'bg-gray-600'} rounded-xl flex items-center justify-center text-white text-2xl`}>
-                                <i className={currentPatient.status === 'critical' ? 'fas fa-exclamation-triangle' : 'fas fa-user'}></i>
-                            </div>
-                            <div>
-                                <h2 className="text-3xl font-bold text-gray-800 mb-2">{currentPatient.name}</h2>
-                                <div className="flex items-center gap-4 text-gray-600">
-                                    <span className="flex items-center gap-2">
-                                        <i className="fas fa-birthday-cake"></i>
-                                        <span>Age {currentPatient.age}</span>
-                                    </span>
-                                    <span className="flex items-center gap-2">
-                                        <i className="fas fa-bed"></i>
-                                        <span>Room {currentPatient.room}</span>
-                                    </span>
-                                    <span className="flex items-center gap-2">
-                                        <i className="fas fa-id-card"></i>
-                                        <span>ID: {currentPatient.id}</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex gap-3">
-                            <button 
-                                onClick={startNewConsultation}
-                                className="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium cursor-pointer"
-                            >
-                                <i className="fas fa-stethoscope mr-2"></i>
-                                New Consultation
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                <PatientHeader
+                    patient={currentPatient}
+                    onStartConsultation={startNewConsultation}
+                />
 
                 {/* AI Chat Interface */}
-                <section className="bg-white rounded-xl shadow-sm p-6 mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-800">
-                            <i className="fas fa-robot text-gray-700 mr-2"></i>
-                            AI Assistant
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    
-                    {/* Chat Messages */}
-                    <div className="bg-gray-50 rounded-lg p-4 mb-4 h-64 overflow-y-auto">
-                        {chatMessages.map((msg) => (
-                            <div key={msg.id} className={`flex items-start gap-3 mb-4 ${msg.type === 'user' ? 'justify-end' : ''}`}>
-                                {msg.type === 'ai' && (
-                                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm">
-                                        <i className="fas fa-robot"></i>
-                                    </div>
-                                )}
-                                <div className={`flex-1 ${msg.type === 'user' ? 'text-right' : ''}`}>
-                                    <div className={`rounded-lg p-3 shadow-sm ${msg.type === 'user' ? 'bg-gray-800 text-white inline-block' : 'bg-white'}`}>
-                                        <p className={msg.type === 'user' ? 'text-white' : 'text-gray-800'}>{msg.message}</p>
-                                    </div>
-                                    <span className="text-xs text-gray-500 mt-1 block">Just now</span>
-                                </div>
-                                {msg.type === 'user' && (
-                                    <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-sm">
-                                        <i className="fas fa-user"></i>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    
-                    {/* Chat Input */}
-                    <div className="flex gap-3">
-                        <div className="flex-1 relative">
-                            <input 
-                                type="text" 
-                                value={chatInput}
-                                onChange={(e) => setChatInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                                placeholder="Ask me anything about this patient's condition, history, or treatment..." 
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none pr-12"
-                            />
-                            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                <i className="fas fa-microphone"></i>
-                            </button>
-                        </div>
-                        <button 
-                            onClick={sendChatMessage}
-                            className="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
-                        >
-                            <i className="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    
-                    {/* Quick Questions */}
-                    <div className="mt-4">
-                        <p className="text-sm text-gray-600 mb-2">Quick questions:</p>
-                        <div className="flex flex-wrap gap-2">
-                            <button 
-                                onClick={() => handleQuickQuestion("What's the patient's current condition?")}
-                                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors"
-                            >
-                                Current condition
-                            </button>
-                            <button 
-                                onClick={() => handleQuickQuestion("What are the latest lab results?")}
-                                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors"
-                            >
-                                Lab results
-                            </button>
-                            <button 
-                                onClick={() => handleQuickQuestion("Any medication interactions?")}
-                                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors"
-                            >
-                                Drug interactions
-                            </button>
-                            <button 
-                                onClick={() => handleQuickQuestion("Recommend next steps?")}
-                                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors"
-                            >
-                                Next steps
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                <AIChat
+                    patient={currentPatient}
+                    chatMessages={chatMessages}
+                    onSendMessage={handleSendMessage}
+                    onQuickQuestion={handleQuickQuestion}
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Patient Overview */}
                     <section className="lg:col-span-2 space-y-8">
-                        {/* Current Condition */}
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                <i className="fas fa-stethoscope text-gray-700 mr-2"></i>
-                                Current Condition
-                            </h3>
-                            <div className="space-y-4">
-                                <div className={`border ${currentPatient.status === 'critical' ? 'border-gray-400 bg-gray-200' : 'border-gray-300 bg-gray-100'} rounded-lg p-4`}>
-                                    <h4 className="font-medium text-gray-800 mb-2">Primary Diagnosis</h4>
-                                    <p className="text-gray-600">{currentPatient.condition}</p>
-                                    <div className="mt-3 flex items-center gap-2">
-                                        <div className={`w-3 h-3 ${currentPatient.status === 'critical' ? 'bg-gray-700' : 'bg-gray-500'} rounded-full`}></div>
-                                        <span className="text-sm font-medium text-gray-700">{currentPatient.status.charAt(0).toUpperCase() + currentPatient.status.slice(1)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Synthesized Patient Data */}
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                <i className="fas fa-brain text-gray-700 mr-2"></i>
-                                AI Synthesized Data
-                            </h3>
-                            <div className="space-y-4">
-                                <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-800 mb-2">Medical History Summary</h4>
-                                    <p className="text-gray-600 mb-3">AI has synthesized data from multiple sources:</p>
-                                    <ul className="space-y-2 text-sm text-gray-600">
-                                        <li className="flex items-center gap-2">
-                                            <i className="fas fa-check-circle text-gray-500"></i>
-                                            EMR records processed
-                                        </li>
-                                        <li className="flex items-center gap-2">
-                                            <i className="fas fa-check-circle text-gray-500"></i>
-                                            Lab results integrated
-                                        </li>
-                                        <li className="flex items-center gap-2">
-                                            <i className="fas fa-check-circle text-gray-500"></i>
-                                            Vital signs monitored
-                                        </li>
-                                        <li className="flex items-center gap-2">
-                                            <i className="fas fa-check-circle text-gray-500"></i>
-                                            Handwritten notes digitized
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-800 mb-2">Key Insights</h4>
-                                    <div className="text-gray-600">
-                                        <p>{currentPatient.insights}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Current Condition and AI Data */}
+                        <PatientCondition patient={currentPatient} />
 
                         {/* Patient Timeline */}
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                <i className="fas fa-timeline text-gray-700 mr-2"></i>
-                                Medical Timeline
-                            </h3>
-                            <div className="relative">
-                                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-                                <div className="space-y-0">
-                                    {generateTimelineHTML(currentPatient.timeline)}
-                                </div>
-                            </div>
-                        </div>
+                        <Timeline timeline={currentPatient.timeline} />
                     </section>
 
                     {/* Sidebar */}
                     <section className="space-y-8">
                         {/* Vital Signs */}
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                <i className="fas fa-heartbeat text-gray-700 mr-2"></i>
-                                Current Vitals
-                            </h3>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-gray-600">Blood Pressure</span>
-                                    <span className="font-medium">{currentPatient.vitals.bp}</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-gray-600">Heart Rate</span>
-                                    <span className="font-medium">{currentPatient.vitals.hr} bpm</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-gray-600">Temperature</span>
-                                    <span className="font-medium">{currentPatient.vitals.temp} °F</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2">
-                                    <span className="text-gray-600">Oxygen Sat</span>
-                                    <span className="font-medium">{currentPatient.vitals.o2sat}%</span>
-                                </div>
-                            </div>
-                        </div>
+                        <VitalSigns vitals={currentPatient.vitals} />
 
                         {/* Quick Actions */}
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                <i className="fas fa-bolt text-gray-700 mr-2"></i>
-                                Quick Actions
-                            </h3>
-                            <div className="space-y-3">
-                                <button className="w-full bg-gray-800 text-white p-3 rounded-lg hover:bg-gray-700 transition-colors text-left">
-                                    <i className="fas fa-file-medical mr-2"></i>
-                                    Generate Summary
-                                </button>
-                                <button className="w-full bg-gray-800 text-white p-3 rounded-lg hover:bg-gray-700 transition-colors text-left">
-                                    <i className="fas fa-prescription mr-2"></i>
-                                    Update Treatment
-                                </button>
-                                <button className="w-full bg-gray-800 text-white p-3 rounded-lg hover:bg-gray-700 transition-colors text-left">
-                                    <i className="fas fa-share mr-2"></i>
-                                    Share with Team
-                                </button>
-                            </div>
-                        </div>
+                        <QuickActions
+                            onGenerateSummary={handleGenerateSummary}
+                            onUpdateTreatment={handleUpdateTreatment}
+                            onShareWithTeam={handleShareWithTeam}
+                        />
 
                         {/* Status */}
-                        <div className="bg-white rounded-xl shadow-sm p-6">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                <i className="fas fa-info-circle text-gray-700 mr-2"></i>
-                                Status
-                            </h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className={`w-3 h-3 ${currentPatient.status === 'critical' ? 'bg-gray-700' : 'bg-gray-500'} rounded-full`}></div>
-                                    <span className="text-gray-600">{currentPatient.status.charAt(0).toUpperCase() + currentPatient.status.slice(1)}</span>
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    Last updated: {new Date().toLocaleTimeString()}
-                                </div>
-                            </div>
-                        </div>
+                        <PatientStatus patient={currentPatient} />
                     </section>
                 </div>
             </main>
