@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 // Mock patients data
@@ -160,7 +160,7 @@ const mockPatients = [
     }
 ];
 
-export default function PatientDetailsPage() {
+function PatientDetailsPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [currentPatient, setCurrentPatient] = useState(null);
@@ -651,5 +651,13 @@ export default function PatientDetailsPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function PatientDetailsPage() {
+    return (
+        <Suspense fallback={<div>Loading patient details...</div>}>
+            <PatientDetailsPageContent />
+        </Suspense>
     );
 }
