@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAssist AI - New Consultation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1f2937',
+                        secondary: '#374151',
+                        accent: '#6b7280'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-900 text-white px-8 py-4 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="flex flex-col">
+                        <h1 class="text-2xl font-semibold mb-1">
+                            <i class="fas fa-stethoscope text-gray-300 mr-2"></i>
+                            New Consultation
+                        </h1>
+                        <span class="text-white/90 text-sm">Dr. Sarah Johnson</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                        <i class="fas fa-clock"></i>
+                        <span class="font-medium">2h 15m saved today</span>
+                    </div>
+                    <button class="relative bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 bg-gray-600 text-xs px-2 py-1 rounded-full min-w-[18px] text-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-7xl mx-auto w-full">
+            <!-- Patient Info Header -->
+            <section class="bg-white rounded-xl shadow-sm p-6 mb-8">
+                <div class="flex items-center gap-4">
+                    <div id="patientAvatar" class="w-16 h-16 bg-gray-800 rounded-xl flex items-center justify-center text-white text-xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h2 id="patientName" class="text-2xl font-bold text-gray-800 mb-1">Loading...</h2>
+                        <div class="flex items-center gap-4 text-gray-600 text-sm">
+                            <span id="patientInfo">Age -- • Room -- • ID: --</span>
+                            <span id="consultationDate" class="bg-gray-100 px-2 py-1 rounded">Today - ${new Date().toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Consultation Recording -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-microphone text-gray-700 mr-2"></i>
+                            Voice Recording
+                        </h3>
+                        <div id="recordingStatus" class="flex items-center gap-2 text-sm text-gray-500">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <span>Ready to record</span>
+                        </div>
+                    </div>
+
+                    <!-- Recording Controls -->
+                    <div class="text-center mb-6">
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <button id="recordBtn" class="w-16 h-16 bg-gray-800 hover:bg-gray-700 text-white rounded-full flex items-center justify-center text-xl transition-all duration-300 shadow-lg hover:shadow-xl">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="pauseBtn" class="w-16 h-16 bg-yellow-600 hover:bg-yellow-700 text-white rounded-full flex items-center justify-center text-xl transition-all duration-300 shadow-lg hover:shadow-xl hidden">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button id="stopBtn" class="w-16 h-16 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-xl transition-all duration-300 shadow-lg hover:shadow-xl hidden">
+                                <i class="fas fa-stop"></i>
+                            </button>
+                        </div>
+                        <p id="recordingInstructions" class="text-gray-600">Click to start recording consultation</p>
+                    </div>
+
+                    <!-- Recording Timer -->
+                    <div id="recordingTimer" class="text-center mb-6 hidden">
+                        <div class="text-3xl font-mono text-gray-800" id="timerDisplay">00:00</div>
+                        <p class="text-gray-600">Recording session <span id="currentRecordingNumber">1</span></p>
+                    </div>
+
+                    <!-- Multiple Recordings List -->
+                    <div id="recordingsList" class="space-y-3 mb-6">
+                        <!-- Individual recordings will be added here -->
+                    </div>
+
+                    <!-- Generate Summary Action -->
+                    <div id="summaryActions" class="hidden">
+                        <button id="generateSummaryBtn" class="w-full bg-gray-800 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors font-medium">
+                            <i class="fas fa-magic mr-2"></i>
+                            Generate Summary from All Recordings
+                        </button>
+                        <p class="text-sm text-gray-500 mt-2 text-center">
+                            AI will analyze all <span id="totalRecordingsCount">0</span> recording(s) to create a comprehensive summary
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Consultation Notes -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">
+                        <i class="fas fa-notes-medical text-gray-700 mr-2"></i>
+                        Consultation Notes
+                    </h3>
+
+                    <form id="consultationForm" class="space-y-6">
+                        <!-- Chief Complaint -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Chief Complaint</label>
+                            <textarea id="chiefComplaint" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none" placeholder="Patient's primary concern or reason for visit..."></textarea>
+                        </div>
+
+                        <!-- History of Present Illness -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">History of Present Illness</label>
+                            <textarea id="historyPresent" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none" placeholder="Detailed description of current symptoms and timeline..."></textarea>
+                        </div>
+
+                        <!-- Physical Examination -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Physical Examination</label>
+                            <textarea id="physicalExam" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none" placeholder="Physical examination findings..."></textarea>
+                        </div>
+
+                        <!-- Assessment -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Assessment</label>
+                            <textarea id="assessment" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none" placeholder="Clinical assessment and diagnosis..."></textarea>
+                        </div>
+
+                        <!-- Plan -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Plan</label>
+                            <textarea id="plan" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent outline-none" placeholder="Treatment plan and next steps..."></textarea>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <!-- AI Generated Summary -->
+            <section id="aiSummarySection" class="bg-white rounded-xl shadow-sm p-6 mt-8 hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800">
+                        <i class="fas fa-brain text-gray-700 mr-2"></i>
+                        AI Generated Summary
+                    </h3>
+                    <div class="flex items-center gap-2 text-sm text-green-600">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Generated from voice recording</span>
+                    </div>
+                </div>
+
+                <div id="aiSummaryContent" class="space-y-4">
+                    <!-- AI summary will be populated here -->
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button id="acceptSummaryBtn" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-check mr-2"></i>
+                        Accept & Save
+                    </button>
+                    <button id="editSummaryBtn" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit Summary
+                    </button>
+                    <button id="regenerateSummaryBtn" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-redo mr-2"></i>
+                        Regenerate
+                    </button>
+                </div>
+            </section>
+
+            <!-- Save Consultation -->
+            <section class="bg-white rounded-xl shadow-sm p-6 mt-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Save Consultation</h3>
+                        <p class="text-gray-600 text-sm">This consultation will be added to the patient's medical record</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="saveDraftBtn" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            Save as Draft
+                        </button>
+                        <button id="completeConsultationBtn" class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Complete Consultation
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="consultation.js"></script>
+</body>
+</html>
