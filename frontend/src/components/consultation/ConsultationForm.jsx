@@ -19,9 +19,15 @@ const ConsultationForm = ({ formData, onInputChange }) => {
       rows: 4
     },
     {
+      id: 'vitalSigns',
+      label: 'Vital Signs',
+      placeholder: 'Blood pressure, heart rate, temperature, respiratory rate, oxygen saturation, weight, height...',
+      rows: 2
+    },
+    {
       id: 'physicalExam',
       label: 'Objective (Examination & Findings)',
-      placeholder: 'Physical examination findings, vital signs, test results...',
+      placeholder: 'Physical examination findings, test results, observations...',
       rows: 3
     },
     {

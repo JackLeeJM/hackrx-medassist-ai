@@ -34,6 +34,7 @@ function ConsultationPageContent() {
     const [formData, setFormData] = useState({
         chiefComplaint: '',
         historyPresent: '',
+        vitalSigns: '',
         physicalExam: '',
         assessment: '',
         plan: ''
@@ -120,7 +121,8 @@ function ConsultationPageContent() {
             const summary = {
                 chiefComplaint: `${currentPatient.condition} - Based on comprehensive analysis of all consultation recordings, patient presents with primary concern requiring medical attention.`,
                 historyPresent: `Throughout the consultation sessions, patient ${currentPatient.name} described ${currentPatient.condition.toLowerCase()} with detailed symptom progression.`,
-                physicalExam: `Comprehensive examination documented across multiple recording sessions. ${currentPatient.status === 'critical' ? 'Patient shows signs of distress with concerning vital parameters.' : 'Patient appears comfortable with stable vital signs.'}`,
+                vitalSigns: `BP: ${currentPatient.vitals.bp}, HR: ${currentPatient.vitals.hr} bpm, Temp: ${currentPatient.vitals.temp}°F, O2Sat: ${currentPatient.vitals.o2sat}%. ${currentPatient.status === 'critical' ? 'Vitals indicate acute distress requiring immediate attention.' : 'Vital signs within acceptable ranges for current condition.'}`,
+                physicalExam: `Comprehensive examination documented across multiple recording sessions. ${currentPatient.status === 'critical' ? 'Patient shows signs of distress with concerning findings.' : 'Patient appears comfortable with stable examination findings.'}`,
                 assessment: `Comprehensive assessment based on ${recordings.length} consultation recordings: ${currentPatient.condition} in ${currentPatient.age}-year-old patient.`,
                 plan: `Based on comprehensive consultation analysis: ${currentPatient.status === 'critical' ? 'Immediate intervention required, continuous monitoring, specialized care consultation.' : 'Continue current management plan, scheduled follow-up care, patient education reinforcement.'}`,
                 timestamp: '2024-01-15T10:00:00Z',
@@ -144,6 +146,9 @@ function ConsultationPageContent() {
             historyPresent: prev.historyPresent ? 
                 `${prev.historyPresent}\n\n--- AI Generated Summary ---\n${summary.historyPresent}` : 
                 summary.historyPresent,
+            vitalSigns: prev.vitalSigns ? 
+                `${prev.vitalSigns}\n\n--- AI Generated Summary ---\n${summary.vitalSigns}` : 
+                summary.vitalSigns,
             physicalExam: prev.physicalExam ? 
                 `${prev.physicalExam}\n\n--- AI Generated Summary ---\n${summary.physicalExam}` : 
                 summary.physicalExam,
@@ -177,6 +182,8 @@ Chief Complaint: ${aiSummary.chiefComplaint}
 
 History of Present Illness: ${aiSummary.historyPresent}
 
+Vital Signs: ${aiSummary.vitalSigns}
+
 Physical Examination: ${aiSummary.physicalExam}
 
 Assessment: ${aiSummary.assessment}
@@ -191,7 +198,33 @@ Plan: ${aiSummary.plan}
     };
 
     const completeConsultation = () => {
-        alert(`Clinical note completed for ${currentPatient?.name} with ${recordings.length} recordings`);
+        // Parse and route data to appropriate tabs
+        const inputData = {
+            patientId: currentPatient?.id,
+            timestamp: new Date().toISOString(),
+            vitalSigns: formData.vitalSigns,
+            treatmentPlan: formData.plan,
+            clinicalNote: {
+                subjective: formData.chiefComplaint,
+                history: formData.historyPresent,
+                objective: formData.physicalExam,
+                assessment: formData.assessment
+            }
+        };
+
+        // Store the data in localStorage for the patient details page to pick up
+        const existingData = JSON.parse(localStorage.getItem('patientUpdates') || '{}');
+        if (!existingData[currentPatient?.id]) {
+            existingData[currentPatient?.id] = [];
+        }
+        existingData[currentPatient?.id].push(inputData);
+        localStorage.setItem('patientUpdates', JSON.stringify(existingData));
+
+        // Debug: Show what data is being saved
+        console.log('Saving input data:', inputData);
+        console.log('All patient updates:', existingData);
+
+        alert(`Clinical input completed for ${currentPatient?.name} - data routed to appropriate tabs`);
         setTimeout(() => {
             router.push(`/patient-details?id=${currentPatient?.id}`);
         }, 1000);
