@@ -47,13 +47,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold">
             MedAssist AI
           </CardTitle>
-          <p className="text-gray-600">Sign in to your account</p>
+          <p className="text-muted-foreground">Sign in to your account</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,7 +82,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center">
+              <div className="text-destructive text-sm text-center">
                 {error}
               </div>
             )}
@@ -97,8 +97,8 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Test Accounts:</h3>
-            <div className="space-y-2 text-sm text-gray-600">
+            <h3 className="text-sm font-medium text-foreground mb-3">Test Accounts:</h3>
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div>
                 <strong>Doctor:</strong> doctor@hospital.com / 111111
               </div>

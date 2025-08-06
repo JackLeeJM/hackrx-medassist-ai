@@ -347,9 +347,9 @@ export default function NurseDashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="bg-gray-50 font-sans h-screen flex flex-col overflow-hidden">
+      <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
         {/* Compact Header - Consistent with Doctor Dashboard */}
-        <div className="flex-shrink-0 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs">
+        <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
           <div className="flex items-center gap-4">
             <span className="font-bold">MedAssist AI</span>
             <span>{user.name} ({user.role})</span>
@@ -378,27 +378,27 @@ export default function NurseDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => alert('Notifications: New patient admission, Lab results ready')} className="px-2 py-1 bg-white/10 rounded text-xs">
+            <Button variant="secondary" size="sm" onClick={() => alert('Notifications: New patient admission, Lab results ready')} className="text-xs">
               🔔 {2}
-            </button>
-            <button onClick={handleLogout} className="px-2 py-1 bg-red-600 rounded text-xs">
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
               Logout
-            </button>
+            </Button>
           </div>
         </div>
 
         <main className="flex-1 flex flex-col overflow-hidden">
           {/* Compact Header */}
-          <div className="bg-white border-b p-2 flex-shrink-0">
+          <div className="bg-card border-b p-2 flex-shrink-0">
             <div className="flex items-center gap-2 text-xs">
               {/* Search */}
               <div className="relative flex-1 max-w-xs">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
-                <input
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-3 h-3" />
+                <Input
                   placeholder="Search doctors, specialties, patients..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-7 pr-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                  className="pl-7 pr-2 py-1 text-xs w-full"
                 />
               </div>
               
@@ -695,15 +695,15 @@ export default function NurseDashboard() {
                     <div className="border-b pb-2">
                       <div className="font-semibold mb-1">Actions</div>
                       <div className="flex gap-1">
-                        <button className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
+                        <Button size="sm" className="text-xs">
                           Upload Docs
-                        </button>
-                        <button className="px-2 py-1 border rounded text-xs hover:bg-gray-50">
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-xs">
                           Edit Info
-                        </button>
-                        <button className="px-2 py-1 border rounded text-xs hover:bg-gray-50">
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-xs">
                           Full Profile
-                        </button>
+                        </Button>
                       </div>
                     </div>
 

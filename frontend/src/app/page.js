@@ -11,6 +11,10 @@ import CriticalPatientsSection from '@/components/dashboard/CriticalPatientsSect
 import ScheduleSection from '@/components/dashboard/ScheduleSection'
 import RecentActivitySection from '@/components/dashboard/RecentActivitySection'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 // Import data and utilities
 import { mockDashboardData, findPatientById, animateStats } from '@/lib/data'
@@ -87,7 +91,7 @@ export default function Dashboard() {
     // Animate stats on component mount for doctors
     const interval = animateStats(mockDashboardData.stats, setStats)
     return () => clearInterval(interval)
-  }, [])
+  }, [router])
 
   const handlePatientSelect = (patient) => {
     router.push(`/patient-details?id=${patient.id}`)
@@ -151,21 +155,21 @@ export default function Dashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="bg-gray-50 font-sans h-screen flex flex-col overflow-hidden">
+      <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
         {/* Compact Header */}
-        <div className="flex-shrink-0 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs">
+        <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
           <div className="flex items-center gap-4">
             <span className="font-bold">MedAssist AI</span>
             <span>{user.name} ({user.role})</span>
             <span className="text-green-400">{mockDashboardData.doctor.timeSaved} saved today</span>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleNotifications} className="px-2 py-1 bg-white/10 rounded text-xs">
+            <Button variant="secondary" size="sm" onClick={handleNotifications} className="text-xs">
               🔔 {3}
-            </button>
-            <button onClick={handleLogout} className="px-2 py-1 bg-red-600 rounded text-xs">
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
               Logout
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -174,31 +178,31 @@ export default function Dashboard() {
           {/* Compact Search & Stats */}
           <div className="flex-shrink-0 mb-3">
             <div className="flex gap-3 items-center mb-2">
-              <input
+              <Input
                 type="text"
                 placeholder="Search patients..."
-                className="flex-1 text-xs px-3 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="flex-1 text-xs"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') handleSearch(e.target.value);
                 }}
               />
               <div className="flex gap-2 text-xs">
-                <div className="px-2 py-1 bg-blue-600 text-white rounded text-center min-w-16">
+                <Badge variant="default" className="text-center min-w-16 flex-col">
                   <div className="font-bold">{stats.totalPatients}</div>
                   <div>Patients</div>
-                </div>
-                <div className="px-2 py-1 bg-green-600 text-white rounded text-center min-w-16">
+                </Badge>
+                <Badge variant="secondary" className="text-center min-w-16 flex-col">
                   <div className="font-bold">{stats.newAdmissions}</div>
                   <div>New</div>
-                </div>
-                <div className="px-2 py-1 bg-orange-600 text-white rounded text-center min-w-16">
+                </Badge>
+                <Badge variant="outline" className="text-center min-w-16 flex-col">
                   <div className="font-bold">{stats.pendingDischarge}</div>
                   <div>Discharge</div>
-                </div>
-                <div className="px-2 py-1 bg-purple-600 text-white rounded text-center min-w-16">
+                </Badge>
+                <Badge variant="secondary" className="text-center min-w-16 flex-col">
                   <div className="font-bold">{stats.tasksAutomated}%</div>
                   <div>Auto</div>
-                </div>
+                </Badge>
               </div>
             </div>
           </div>
@@ -206,11 +210,11 @@ export default function Dashboard() {
           {/* Main Content Grid */}
           <div className="flex-1 grid grid-cols-4 gap-3 overflow-hidden">
             {/* Inpatient List - Critical Patients */}
-            <div className="col-span-1 bg-white rounded border overflow-hidden flex flex-col">
-              <div className="px-3 py-2 bg-red-50 border-b text-xs font-semibold text-red-800">
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-red-50 border-b text-xs font-semibold text-red-800">
                 🏥 Critical Inpatients ({mockInpatientData.criticalPatients.length})
-              </div>
-              <div className="flex-1 overflow-y-auto p-2">
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
                 {mockInpatientData.criticalPatients.map((patient, index) => (
                   <div key={index} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 cursor-pointer text-xs border-b border-gray-100 last:border-0"
                        onClick={() => handleViewPatient(patient.name)}>
@@ -223,7 +227,7 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <div className="font-medium">{patient.name}</div>
-                        <div className="text-gray-500">Room {patient.room} • {patient.condition}</div>
+                        <div className="text-muted-foreground">Room {patient.room} • {patient.condition}</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -231,19 +235,19 @@ export default function Dashboard() {
                         patient.severity === 'Critical' ? 'text-red-600' : 
                         patient.severity === 'Serious' ? 'text-orange-600' : 'text-yellow-600'
                       }`}>{patient.severity}</div>
-                      <div className="text-gray-500">{patient.time}</div>
+                      <div className="text-muted-foreground">{patient.time}</div>
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Outpatient Schedule */}
-            <div className="col-span-1 bg-white rounded border overflow-hidden flex flex-col">
-              <div className="px-3 py-2 bg-blue-50 border-b text-xs font-semibold text-blue-800">
-                🏢 Today's Appointments ({mockOutpatientData.schedule.length})
-              </div>
-              <div className="flex-1 overflow-y-auto p-2">
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-blue-50 border-b text-xs font-semibold text-blue-800">
+                🏢 Today&apos;s Appointments ({mockOutpatientData.schedule.length})
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
                 {mockOutpatientData.schedule.map((appointment, index) => (
                   <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
                     <div className="flex items-center justify-between mb-1">
@@ -257,26 +261,27 @@ export default function Dashboard() {
                          prepStates[`out_${index}`] === 'ready' ? 'Ready' : 'Pending'}
                       </span>
                     </div>
-                    <div className="text-gray-600">{appointment.patient}</div>
-                    <div className="text-gray-500">{appointment.type}</div>
-                    <div className="text-gray-400 text-xs">{appointment.location}</div>
-                    <button 
+                    <div className="text-foreground">{appointment.patient}</div>
+                    <div className="text-muted-foreground">{appointment.type}</div>
+                    <div className="text-muted-foreground text-xs">{appointment.location}</div>
+                    <Button 
                       onClick={() => handlePrepareVisit(appointment.patient, `out_${index}`)}
-                      className="mt-1 px-2 py-0.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                      size="sm"
+                      className="mt-1 text-xs"
                     >
                       Prepare
-                    </button>
+                    </Button>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Inpatient Rounds Schedule */}
-            <div className="col-span-1 bg-white rounded border overflow-hidden flex flex-col">
-              <div className="px-3 py-2 bg-green-50 border-b text-xs font-semibold text-green-800">
-                📅 Today's Rounds ({mockInpatientData.schedule.length})
-              </div>
-              <div className="flex-1 overflow-y-auto p-2">
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-green-50 border-b text-xs font-semibold text-green-800">
+                📅 Today&apos;s Rounds ({mockInpatientData.schedule.length})
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
                 {mockInpatientData.schedule.map((appointment, index) => (
                   <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
                     <div className="flex items-center justify-between mb-1">
@@ -293,24 +298,26 @@ export default function Dashboard() {
                     <div className="text-gray-600">{appointment.patient}</div>
                     <div className="text-gray-500">{appointment.type}</div>
                     <div className="text-gray-400 text-xs">{appointment.room}</div>
-                    <button 
+                    <Button 
                       onClick={() => handlePrepareVisit(appointment.patient, `in_${index}`)}
-                      className="mt-1 px-2 py-0.5 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                      size="sm"
+                      variant="secondary"
+                      className="mt-1 text-xs"
                     >
                       Prepare
-                    </button>
+                    </Button>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Recent Activity - Compact */}
-            <div className="col-span-1 bg-white rounded border overflow-hidden flex flex-col">
-              <div className="px-3 py-2 bg-purple-50 border-b text-xs font-semibold text-purple-800 flex justify-between">
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-purple-50 border-b text-xs font-semibold text-purple-800 flex justify-between">
                 <span>📊 Recent Activity</span>
-                <button onClick={handleViewAllActivity} className="text-blue-600 hover:underline">View All</button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-2">
+                <Button variant="link" onClick={handleViewAllActivity} className="text-xs p-0 h-auto">View All</Button>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
                 {/* Mix of inpatient and outpatient activities */}
                 {[...mockInpatientData.recentActivity.slice(0, 2), ...mockOutpatientData.recentActivity.slice(0, 2)].map((activity, index) => (
                   <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
@@ -324,8 +331,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
