@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Stethoscope, Clock, Bell } from 'lucide-react';
+import { ArrowLeft, Stethoscope, Clock, Bell, LogOut } from 'lucide-react';
 
 const Header = ({
   onBack,
   onNotifications,
+  onLogout,
   timeSaved = "2h 15m",
   notificationCount = 3,
   title = "MedAssist AI",
@@ -55,6 +56,17 @@ const Header = ({
               </Badge>
             )}
           </Button>
+          {onLogout && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onLogout}
+              className="bg-white/10 hover:bg-red-500/20 text-white transition-all duration-300 group"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4 group-hover:scale-110" />
+            </Button>
+          )}
         </div>
       </div>
     </header>

@@ -17,6 +17,7 @@ import { mockDashboardData, findPatientById, animateStats } from '@/lib/data'
 
 export default function Dashboard() {
   const router = useRouter()
+  const [user, setUser] = useState(null)
   const [stats, setStats] = useState({
     totalPatients: 0,
     newAdmissions: 0,
@@ -26,7 +27,23 @@ export default function Dashboard() {
   const [prepStates, setPrepStates] = useState({})
 
   useEffect(() => {
-    // Animate stats on component mount
+    // Check if user is authenticated
+    const userData = localStorage.getItem('user')
+    if (!userData) {
+      router.push('/login')
+      return
+    }
+    
+    const parsedUser = JSON.parse(userData)
+    setUser(parsedUser)
+
+    // Redirect nurses to their specific dashboard
+    if (parsedUser.role === 'nurse') {
+      router.push('/nurse-dashboard')
+      return
+    }
+
+    // Animate stats on component mount for doctors
     const interval = animateStats(mockDashboardData.stats, setStats)
     return () => clearInterval(interval)
   }, [])
@@ -82,6 +99,15 @@ export default function Dashboard() {
     router.push('/')
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    router.push('/login')
+  }
+
+  if (!user) {
+    return null // Will redirect to login
+  }
+
   return (
     <ErrorBoundary>
       <div className="bg-gray-50 font-sans min-h-screen flex flex-col">
@@ -92,8 +118,9 @@ export default function Dashboard() {
           notificationCount={3}
           onNotifications={handleNotifications}
           title="MedAssist AI"
-          subtitle={mockDashboardData.doctor.name}
+          subtitle={`${user.name} (${user.role})`}
           showBackButton={false}
+          onLogout={handleLogout}
         />
 
         {/* Main Dashboard Content */}
