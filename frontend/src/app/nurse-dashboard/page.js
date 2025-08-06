@@ -285,29 +285,36 @@ export default function NurseDashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="bg-gray-50 font-sans min-h-screen flex flex-col">
-        <Header
-          title="MedAssist AI - Nurse Portal"
-          subtitle={`${user.name} (${user.role})`}
-          showBackButton={false}
-          onLogout={handleLogout}
-          timeSaved="1h 30m"
-          notificationCount={2}
-          onNotifications={() => alert('Notifications: New patient admission, Lab results ready')}
-        />
+      <div className="bg-gray-50 font-sans h-screen flex flex-col overflow-hidden">
+        {/* Compact Header - Consistent with Doctor Dashboard */}
+        <div className="flex-shrink-0 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-4">
+            <span className="font-bold">MedAssist AI</span>
+            <span>{user.name} ({user.role})</span>
+            <span className="text-green-400">1h 30m saved today</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => alert('Notifications: New patient admission, Lab results ready')} className="px-2 py-1 bg-white/10 rounded text-xs">
+              🔔 {2}
+            </button>
+            <button onClick={handleLogout} className="px-2 py-1 bg-red-600 rounded text-xs">
+              Logout
+            </button>
+          </div>
+        </div>
 
-        <main className="flex-1 flex flex-col h-full">
-          {/* Header with Search, Filter, and Date Selector */}
-          <div className="bg-white border-b p-4">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
+        <main className="flex-1 flex flex-col overflow-hidden">
+          {/* Compact Header */}
+          <div className="bg-white border-b p-2 flex-shrink-0">
+            <div className="flex items-center gap-2 text-xs">
               {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search doctors, specialties, or patient names..."
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+                <input
+                  placeholder="Search doctors, specialties, patients..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-7 pr-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
                 />
               </div>
               
@@ -315,7 +322,7 @@ export default function NurseDashboard() {
               <select
                 value={selectedSpecialty}
                 onChange={(e) => setSelectedSpecialty(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
               >
                 <option value="all">All Specialties</option>
                 {specialties.slice(1).map(specialty => (
@@ -324,49 +331,53 @@ export default function NurseDashboard() {
               </select>
 
               {/* Date Selector */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
+              <div className="flex items-center gap-1">
+                <button
                   onClick={() => navigateDate('prev')}
                   disabled={dates.findIndex(date => date.value === selectedDate) === 0}
+                  className="p-1 border rounded hover:bg-gray-50 disabled:opacity-50"
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
+                  <ChevronLeft className="w-3 h-3" />
+                </button>
                 
                 <div className="flex gap-1">
                   {dates.map((date) => (
-                    <Button
+                    <button
                       key={date.value}
-                      variant={selectedDate === date.value ? "default" : "outline"}
-                      size="sm"
-                      className={`min-w-fit px-3 ${date.isToday ? 'ring-2 ring-blue-500' : ''}`}
+                      className={`px-2 py-1 text-xs rounded ${
+                        selectedDate === date.value 
+                          ? 'bg-blue-600 text-white' 
+                          : 'border hover:bg-gray-50'
+                      } ${date.isToday ? 'ring-1 ring-blue-400' : ''}`}
                       onClick={() => setSelectedDate(date.value)}
                     >
                       {date.label}
-                    </Button>
+                    </button>
                   ))}
                 </div>
 
-                <Button
-                  variant="outline"
-                  size="icon"
+                <button
                   onClick={() => navigateDate('next')}
                   disabled={dates.findIndex(date => date.value === selectedDate) === dates.length - 1}
+                  className="p-1 border rounded hover:bg-gray-50 disabled:opacity-50"
                 >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+                  <ChevronRight className="w-3 h-3" />
+                </button>
               </div>
+
+              <span className="text-gray-500">({filteredDoctors.length} doctors)</span>
             </div>
           </div>
 
           {/* Three Column Layout */}
-          <div className="flex-1 grid grid-cols-12 h-full">
+          <div className="flex-1 grid grid-cols-12 overflow-hidden">
             {/* Column 1: Doctor List */}
-            <div className="col-span-3 border-r bg-gray-50 overflow-y-auto">
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-4">Doctors ({filteredDoctors.length})</h3>
-                <div className="space-y-2">
+            <div className="col-span-3 border-r bg-gray-50 flex flex-col overflow-hidden">
+              <div className="flex-shrink-0 px-2 py-1 border-b border-gray-200 bg-white">
+                <h3 className="text-xs font-semibold">Doctors ({filteredDoctors.length})</h3>
+              </div>
+              <div className="flex-1 overflow-y-auto p-2">
+                <div className="space-y-1">
                   {filteredDoctors.map((doctorName) => {
                     const doctor = mockDoctorsSchedule[doctorName]
                     const daySchedule = doctor.schedules[selectedDate] || []
@@ -375,21 +386,19 @@ export default function NurseDashboard() {
                     return (
                       <div
                         key={doctorName}
-                        className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                          isSelected ? 'bg-blue-100 border-blue-300 border' : 'bg-white hover:bg-gray-100'
+                        className={`p-2 rounded cursor-pointer transition-colors text-xs ${
+                          isSelected ? 'bg-blue-100 border-blue-300 border' : 'bg-white hover:bg-gray-100 border'
                         }`}
                         onClick={() => handleDoctorSelect(doctorName)}
                       >
-                        <div className="flex items-center gap-2 mb-1">
-                          <User className="w-4 h-4 text-blue-600" />
-                          <span className="font-medium text-sm">{doctorName}</span>
+                        <div className="flex items-center gap-1 mb-1">
+                          <div className="w-3 h-3 bg-blue-600 rounded-full flex-shrink-0"></div>
+                          <span className="font-medium truncate">{doctorName}</span>
                         </div>
-                        <p className="text-xs text-gray-600 mb-1">{doctor.specialty}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">{daySchedule.length} patients</span>
-                          <Badge variant="outline" className="text-xs">
-                            {doctor.phone.slice(-4)}
-                          </Badge>
+                        <div className="text-xs text-gray-600 mb-1">{doctor.specialty}</div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-500">{daySchedule.length} pts</span>
+                          <span className="text-gray-400">{doctor.phone.slice(-4)}</span>
                         </div>
                       </div>
                     )
@@ -399,122 +408,165 @@ export default function NurseDashboard() {
             </div>
 
             {/* Column 2: Patient List for Selected Doctor */}
-            <div className="col-span-4 border-r overflow-y-auto">
-              <div className="p-4">
+            <div className="col-span-4 border-r flex flex-col overflow-hidden">
+              <div className="flex-shrink-0 px-2 py-1 border-b border-gray-200 bg-white">
                 {selectedDoctor ? (
-                  <>
-                    <h3 className="text-lg font-semibold mb-4">
-                      Patients - {selectedDoctor}
-                    </h3>
-                    <div className="space-y-2">
-                      {(mockDoctorsSchedule[selectedDoctor]?.schedules[selectedDate] || []).map((appointment, index) => {
-                        const isSelected = selectedPatient?.appointment === appointment
-                        
-                        return (
-                          <div
-                            key={index}
-                            className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                              isSelected ? 'bg-green-50 border-green-300' : 'hover:bg-gray-50'
-                            }`}
-                            onClick={() => handlePatientSelect(appointment.patient, appointment)}
-                          >
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-gray-500" />
-                                <span className="font-medium text-sm">{appointment.time}</span>
-                              </div>
-                              <Badge 
-                                variant={appointment.status === 'confirmed' ? 'default' : 'secondary'}
-                                className="text-xs"
-                              >
-                                {appointment.status}
-                              </Badge>
-                            </div>
-                            <h4 className="font-medium text-gray-900 mb-1">{appointment.patient}</h4>
-                            <p className="text-sm text-gray-600 mb-1">{appointment.condition}</p>
-                            <p className="text-xs text-gray-500">Room: {appointment.room}</p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </>
+                  <h3 className="text-xs font-semibold truncate">
+                    Patients - {selectedDoctor}
+                  </h3>
                 ) : (
-                  <div className="text-center py-12">
-                    <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Select a Doctor</h3>
-                    <p className="text-gray-600">Choose a doctor from the list to see their patients</p>
+                  <h3 className="text-xs font-semibold text-gray-400">
+                    Select a Doctor
+                  </h3>
+                )}
+              </div>
+              <div className="flex-1 overflow-y-auto p-2">
+                {selectedDoctor ? (
+                  <div className="space-y-1">
+                    {(mockDoctorsSchedule[selectedDoctor]?.schedules[selectedDate] || []).map((appointment, index) => {
+                      const isSelected = selectedPatient?.appointment === appointment
+                      
+                      return (
+                        <div
+                          key={index}
+                          className={`p-2 border rounded cursor-pointer transition-colors text-xs ${
+                            isSelected ? 'bg-green-50 border-green-300' : 'hover:bg-gray-50 border-gray-200'
+                          }`}
+                          onClick={() => handlePatientSelect(appointment.patient, appointment)}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-gray-500" />
+                              <span className="font-medium">{appointment.time}</span>
+                            </div>
+                            <span className={`px-1 py-0 rounded text-xs ${
+                              appointment.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {appointment.status}
+                            </span>
+                          </div>
+                          <div className="font-medium text-gray-900 mb-1">{appointment.patient}</div>
+                          <div className="text-gray-600 mb-1">{appointment.condition}</div>
+                          <div className="text-gray-500">Room: {appointment.room}</div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-center">
+                    <div>
+                      <div className="w-8 h-8 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                      <div className="text-xs font-medium text-gray-900 mb-1">Select a Doctor</div>
+                      <div className="text-xs text-gray-600">Choose from the list</div>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Column 3: Patient Details Overview */}
-            <div className="col-span-5 overflow-y-auto">
-              <div className="p-4">
+            <div className="col-span-5 flex flex-col overflow-hidden">
+              <div className="flex-shrink-0 px-2 py-1 border-b border-gray-200 bg-white">
                 {selectedPatient ? (
-                  <>
-                    <h3 className="text-lg font-semibold mb-4">Patient Details</h3>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-xl">{selectedPatient.appointment.patient}</CardTitle>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <span>👨‍⚕️ {selectedDoctor}</span>
-                          <span>🕒 {selectedPatient.appointment.time}</span>
-                          <Badge variant={selectedPatient.appointment.status === 'confirmed' ? 'default' : 'secondary'}>
-                            {selectedPatient.appointment.status}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-6">
-                        <div>
-                          <h4 className="font-medium mb-2">Appointment Information</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg space-y-2">
-                            <div><strong>Condition:</strong> {selectedPatient.appointment.condition}</div>
-                            <div><strong>Room:</strong> {selectedPatient.appointment.room}</div>
-                            <div><strong>Date:</strong> {selectedDate}</div>
-                            <div><strong>Doctor:</strong> {selectedDoctor}</div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-medium mb-2">Patient Information</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg space-y-2">
-                            <div><strong>Patient ID:</strong> PT-{Math.floor(Math.random() * 10000)}</div>
-                            <div><strong>Age:</strong> {Math.floor(Math.random() * 50) + 25}</div>
-                            <div><strong>Gender:</strong> {Math.random() > 0.5 ? 'Female' : 'Male'}</div>
-                            <div><strong>Contact:</strong> +1 (555) {Math.floor(Math.random() * 900) + 100}-{Math.floor(Math.random() * 9000) + 1000}</div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium mb-2">Medical History</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg">
-                            <p className="text-sm text-gray-600">Previous visits, allergies, and medical notes would appear here.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium mb-2">Actions</h4>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
-                              Upload Documents
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              Edit Information
-                            </Button>
-                            <Button size="sm">
-                              View Full Profile
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </>
+                  <h3 className="text-xs font-semibold">Patient Details</h3>
                 ) : (
-                  <div className="text-center py-12">
-                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Select a Patient</h3>
-                    <p className="text-gray-600">Choose a patient to see their details and medical information</p>
+                  <h3 className="text-xs font-semibold text-gray-400">Select a Patient</h3>
+                )}
+              </div>
+              <div className="flex-1 overflow-y-auto p-2 text-xs">
+                {selectedPatient ? (
+                  <div className="space-y-2">
+                    {/* Patient Header - Inline */}
+                    <div className="border-b pb-2">
+                      <div className="font-semibold text-sm">{selectedPatient.appointment.patient}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span>👨‍⚕️ {selectedDoctor}</span>
+                        <span>🕒 {selectedPatient.appointment.time}</span>
+                        <span className={`px-1 py-0 rounded text-xs ${
+                          selectedPatient.appointment.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {selectedPatient.appointment.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Appointment Info - Compact */}
+                    <div className="border-b pb-2">
+                      <div className="font-semibold mb-1">Appointment</div>
+                      <div className="space-y-0.5">
+                        <div><strong>Condition:</strong> {selectedPatient.appointment.condition}</div>
+                        <div><strong>Room:</strong> {selectedPatient.appointment.room} • <strong>Date:</strong> {selectedDate}</div>
+                      </div>
+                    </div>
+                    
+                    {/* Patient Info - Compact */}
+                    <div className="border-b pb-2">
+                      <div className="font-semibold mb-1">Patient Info</div>
+                      <div className="space-y-0.5">
+                        <div><strong>ID:</strong> PT-{Math.floor(Math.random() * 10000)} • <strong>Age:</strong> {Math.floor(Math.random() * 50) + 25} • <strong>Gender:</strong> {Math.random() > 0.5 ? 'F' : 'M'}</div>
+                        <div><strong>Contact:</strong> +1 (555) {Math.floor(Math.random() * 900) + 100}-{Math.floor(Math.random() * 9000) + 1000}</div>
+                      </div>
+                    </div>
+
+                    {/* Medical History - Compact */}
+                    <div className="border-b pb-2">
+                      <div className="font-semibold mb-1">Medical History</div>
+                      <div className="text-gray-600">
+                        Previous visits, allergies, and medical notes would appear here. This section can contain detailed patient medical background.
+                      </div>
+                    </div>
+
+                    {/* Quick Actions - Inline */}
+                    <div className="border-b pb-2">
+                      <div className="font-semibold mb-1">Actions</div>
+                      <div className="flex gap-1">
+                        <button className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
+                          Upload Docs
+                        </button>
+                        <button className="px-2 py-1 border rounded text-xs hover:bg-gray-50">
+                          Edit Info
+                        </button>
+                        <button className="px-2 py-1 border rounded text-xs hover:bg-gray-50">
+                          Full Profile
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Additional Info - Compact */}
+                    <div className="space-y-1">
+                      <div className="font-semibold">Recent Activity</div>
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between">
+                          <span>Vitals Check</span>
+                          <span className="text-gray-500">2h ago</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Lab Results</span>
+                          <span className="text-gray-500">4h ago</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Medication Admin</span>
+                          <span className="text-gray-500">6h ago</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Nurse Notes */}
+                    <div>
+                      <div className="font-semibold mb-1">Nurse Notes</div>
+                      <textarea 
+                        placeholder="Add nursing notes..."
+                        className="w-full text-xs p-2 border rounded resize-none h-16 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-center">
+                    <div>
+                      <div className="w-8 h-8 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                      <div className="text-xs font-medium text-gray-900 mb-1">Select a Patient</div>
+                      <div className="text-xs text-gray-600">Choose a patient to see details</div>
+                    </div>
                   </div>
                 )}
               </div>

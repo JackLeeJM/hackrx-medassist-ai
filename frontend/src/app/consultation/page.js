@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 // Import components
-import Header from '@/components/layout/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +20,7 @@ import { User, AlertTriangle, CheckCircle, Save } from 'lucide-react';
 function ConsultationPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const [user, setUser] = useState(null);
     const [currentPatient, setCurrentPatient] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
@@ -43,6 +43,14 @@ function ConsultationPageContent() {
     const recordingStartTime = useRef(null);
 
     useEffect(() => {
+        // Check authentication
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+            router.push('/login');
+            return;
+        }
+        setUser(JSON.parse(userData));
+
         const patientId = searchParams.get('id');
         if (!patientId) {
             alert('No patient ID provided');
@@ -128,13 +136,24 @@ function ConsultationPageContent() {
     };
 
     const populateFormFromSummary = (summary) => {
-        setFormData({
-            chiefComplaint: summary.chiefComplaint,
-            historyPresent: summary.historyPresent,
-            physicalExam: summary.physicalExam,
-            assessment: summary.assessment,
-            plan: summary.plan
-        });
+        // Append AI summary to existing form data instead of replacing
+        setFormData(prev => ({
+            chiefComplaint: prev.chiefComplaint ? 
+                `${prev.chiefComplaint}\n\n--- AI Generated Summary ---\n${summary.chiefComplaint}` : 
+                summary.chiefComplaint,
+            historyPresent: prev.historyPresent ? 
+                `${prev.historyPresent}\n\n--- AI Generated Summary ---\n${summary.historyPresent}` : 
+                summary.historyPresent,
+            physicalExam: prev.physicalExam ? 
+                `${prev.physicalExam}\n\n--- AI Generated Summary ---\n${summary.physicalExam}` : 
+                summary.physicalExam,
+            assessment: prev.assessment ? 
+                `${prev.assessment}\n\n--- AI Generated Summary ---\n${summary.assessment}` : 
+                summary.assessment,
+            plan: prev.plan ? 
+                `${prev.plan}\n\n--- AI Generated Summary ---\n${summary.plan}` : 
+                summary.plan
+        }));
     };
 
     const handleInputChange = (field, value) => {
@@ -183,71 +202,101 @@ Plan: ${aiSummary.plan}
     };
 
     const handleNotifications = () => {
-        alert('Notifications - feature coming soon!');
+        const notifications = [
+            "Recording auto-saved",
+            "Patient vitals updated", 
+            "Lab results available"
+        ];
+        alert(`Notifications:\n${notifications.join('\n')}`);
     };
 
-    if (!currentPatient) {
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        router.push('/login');
+    };
+
+    if (!currentPatient || !user) {
         return <LoadingScreen message="Loading consultation..." />;
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
-            {/* Header */}
-            <Header 
-                onBack={handleBack}
-                timeSaved="2h 15m"
-                notificationCount={3}
-                onNotifications={handleNotifications}
-                title="New Consultation"
-                subtitle="Dr. Sarah Johnson"
-                showBackButton={true}
-            />
+        <div className="h-screen flex flex-col bg-gray-50 font-sans overflow-hidden">
+            {/* Compact Header - Consistent with Doctor/Nurse Dashboard */}
+            <div className="flex-shrink-0 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={handleBack}
+                        className="px-2 py-1 bg-white/10 rounded text-xs hover:bg-white/20"
+                    >
+                        ← Back
+                    </button>
+                    <span className="font-bold">MedAssist AI</span>
+                    <span>{user.name} ({user.role})</span>
+                    <span className="text-green-400">New Consultation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button onClick={handleNotifications} className="px-2 py-1 bg-white/10 rounded text-xs">
+                        🔔 {3}
+                    </button>
+                    <button onClick={handleLogout} className="px-2 py-1 bg-red-600 rounded text-xs">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            {/* Patient Header - Ultra Compact */}
+            <div className="flex-shrink-0 px-3 py-1 bg-white border-b">
+                <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-4">
+                        <div className={`w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold ${currentPatient.status === 'critical' ? 'bg-red-600' : 'bg-gray-600'}`}>
+                            {currentPatient.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="font-bold text-sm">{currentPatient.name}</span>
+                            <span>Age {currentPatient.age}</span>
+                            <span>Room {currentPatient.room}</span>
+                            <span>ID: {currentPatient.id}</span>
+                            <Badge variant={currentPatient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs px-1 py-0">
+                                {currentPatient.status}
+                            </Badge>
+                            <span className="text-gray-500">{new Date().toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Main Content */}
-            <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-                {/* Patient Info Header */}
-                <Card className="mb-8">
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
-                            <div className={`w-16 h-16 ${currentPatient.status === 'critical' ? 'bg-red-600' : 'bg-green-600'} rounded-xl flex items-center justify-center text-white text-xl`}>
-                                {currentPatient.status === 'critical' ? <AlertTriangle className="w-8 h-8" /> : <User className="w-8 h-8" />}
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-1">{currentPatient.name}</h2>
-                                <div className="flex items-center gap-4 text-gray-600 text-sm">
-                                    <span>Age {currentPatient.age} • Room {currentPatient.room} • ID: {currentPatient.id}</span>
-                                    <Badge variant="outline">Today - {new Date().toLocaleString()}</Badge>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+            <main className="flex-1 overflow-y-auto p-2">
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Recording Controls */}
-                    <RecordingControls 
-                        isRecording={isRecording}
-                        isPaused={isPaused}
-                        recordingTime={recordingTime}
-                        currentRecordingNumber={currentRecordingNumber}
-                        recordings={recordings}
-                        isGenerating={isGenerating}
-                        onStartRecording={startRecording}
-                        onPauseRecording={pauseRecording}
-                        onStopRecording={stopRecording}
-                        onGenerateSummary={generateSummary}
-                    />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                    {/* Recording Controls - 1/3 width */}
+                    <div className="lg:col-span-1">
+                        <RecordingControls 
+                            isRecording={isRecording}
+                            isPaused={isPaused}
+                            recordingTime={recordingTime}
+                            currentRecordingNumber={currentRecordingNumber}
+                            recordings={recordings}
+                            isGenerating={isGenerating}
+                            onStartRecording={startRecording}
+                            onPauseRecording={pauseRecording}
+                            onStopRecording={stopRecording}
+                            onGenerateSummary={generateSummary}
+                        />
+                    </div>
 
-                    {/* Consultation Form */}
-                    <ConsultationForm 
-                        formData={formData}
-                        onInputChange={handleInputChange}
-                    />
+                    {/* Consultation Form - 2/3 width */}
+                    <div className="lg:col-span-2">
+                        <ConsultationForm 
+                            formData={formData}
+                            onInputChange={handleInputChange}
+                        />
+                    </div>
                 </div>
 
                 {/* AI Generated Summary */}
                 {showAISummary && aiSummary && (
-                    <div className="mt-8">
+                    <div className="col-span-full mt-2">
                         <SummarySection 
                             summary={aiSummary}
                             onDownload={handleDownloadSummary}
@@ -258,34 +307,34 @@ Plan: ${aiSummary.plan}
                     </div>
                 )}
 
-                {/* Save Consultation */}
-                <Card className="mt-8">
-                    <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
+                {/* Save Consultation - Compact */}
+                <div className="mt-2 mb-4">
+                    <div className="bg-white rounded border p-2">
+                        <div className="flex items-center justify-between text-xs">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-800">Save Consultation</h3>
-                                <p className="text-gray-600 text-sm">This consultation will be added to the patient's medical record</p>
+                                <span className="font-semibold">Save Consultation</span>
+                                <span className="text-gray-500 ml-2">Will be added to patient record</span>
                             </div>
-                            <div className="flex gap-3">
+                            <div className="flex gap-1">
                                 <Button 
                                     onClick={() => alert('Consultation saved as draft')}
                                     variant="outline"
-                                    size="lg"
+                                    size="sm"
+                                    className="text-xs px-2 py-1 h-6"
                                 >
-                                    <Save className="w-4 h-4 mr-2" />
-                                    Save as Draft
+                                    💾 Draft
                                 </Button>
                                 <Button 
                                     onClick={completeConsultation}
-                                    size="lg"
+                                    size="sm"
+                                    className="text-xs px-2 py-1 h-6"
                                 >
-                                    <CheckCircle className="w-4 h-4 mr-2" />
-                                    Complete Consultation
+                                    ✅ Complete
                                 </Button>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </main>
         </div>
     );

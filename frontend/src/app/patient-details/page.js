@@ -2,9 +2,11 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 // Import new modular components
-import Header from '@/components/layout/Header';
 import PatientHeader from '@/components/patient/PatientHeader';
 import AIChat from '@/components/patient/AIChat';
 import PatientCondition from '@/components/patient/PatientCondition';
@@ -170,13 +172,563 @@ const mockPatients = [
     }
 ];
 
+// Patient Information Tabs Component
+function PatientInfoTabs({ patient }) {
+    const [activeTab, setActiveTab] = useState('summary');
+
+    const tabs = [
+        { id: 'summary', label: 'Summary', icon: '📋' },
+        { id: 'vitals', label: 'Vital Signs', icon: '💗' },
+        { id: 'treatment', label: 'Treatment Plan', icon: '💊' },
+        { id: 'clinical', label: 'Clinical Notes', icon: '📝' },
+        { id: 'imaging', label: 'Imaging & Labs', icon: '🧪' },
+        { id: 'timeline', label: 'Timeline', icon: '📅' },
+        { id: 'referral', label: 'Referral & Discharge', icon: '🏥' }
+    ];
+
+    const handleGenerateSummary = () => {
+        console.log('Generating summary for', patient?.name);
+    };
+
+    const handleUpdateTreatment = () => {
+        console.log('Updating treatment for', patient?.name);
+    };
+
+    const handleShareWithTeam = () => {
+        console.log('Sharing with team for', patient?.name);
+    };
+
+    return (
+        <div className="flex flex-col h-full overflow-hidden">
+            {/* Tab Navigation */}
+            <div className="flex-shrink-0 border-b bg-white">
+                <div className="flex">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-4 py-2 text-xs font-medium border-b-2 transition-colors ${
+                                activeTab === tab.id
+                                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                            }`}
+                        >
+                            <span className="mr-1 text-sm">{tab.icon}</span>
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto p-2 bg-white text-xs">
+                {activeTab === 'summary' && (
+                    <div className="space-y-1">
+                        {/* Patient Basic Info - Inline */}
+                        <div className="flex items-center gap-4 py-1 border-b">
+                            <span><strong>Room:</strong> {patient.room}</span>
+                            <span><strong>Age:</strong> {patient.age}</span>
+                            <span><strong>Status:</strong> <Badge variant={patient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs px-1 py-0">{patient.status}</Badge></span>
+                            <span><strong>Condition:</strong> {patient.condition}</span>
+                        </div>
+
+                        {/* AI Insights - Compact */}
+                        <div className="py-1 border-b">
+                            <strong>AI Insights:</strong> {patient.insights}
+                        </div>
+
+                        {/* Current Vitals - Inline */}
+                        <div className="flex items-center gap-4 py-1 border-b">
+                            <span><strong>BP:</strong> <span className="text-red-600">{patient.vitals.bp}</span></span>
+                            <span><strong>HR:</strong> <span className="text-blue-600">{patient.vitals.hr} bpm</span></span>
+                            <span><strong>Temp:</strong> <span className="text-green-600">{patient.vitals.temp}°F</span></span>
+                            <span><strong>O2:</strong> <span className="text-purple-600">{patient.vitals.o2sat}%</span></span>
+                        </div>
+
+                        {/* Recent Timeline - Compact List */}
+                        <div className="py-1">
+                            <div className="font-semibold mb-1">Recent Activity:</div>
+                            {patient.timeline.slice(0, 6).map((item, index) => (
+                                <div key={index} className="flex items-center gap-2 py-0.5 text-xs leading-tight">
+                                    <span className="text-gray-500 w-16 flex-shrink-0">{item.time}</span>
+                                    <span className="flex-1">{item.action}</span>
+                                    <Badge variant="outline" className="text-xs px-1 py-0">{item.status}</Badge>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'vitals' && (
+                    <div className="space-y-1">
+                        {/* Current Vitals - Inline Grid */}
+                        <div className="grid grid-cols-4 gap-2 py-1 border-b text-center">
+                            <div>
+                                <div className="font-semibold text-red-600">{patient.vitals.bp}</div>
+                                <div className="text-xs text-gray-500">BP (mmHg)</div>
+                            </div>
+                            <div>
+                                <div className="font-semibold text-blue-600">{patient.vitals.hr}</div>
+                                <div className="text-xs text-gray-500">HR (bpm)</div>
+                            </div>
+                            <div>
+                                <div className="font-semibold text-green-600">{patient.vitals.temp}</div>
+                                <div className="text-xs text-gray-500">Temp (°F)</div>
+                            </div>
+                            <div>
+                                <div className="font-semibold text-purple-600">{patient.vitals.o2sat}</div>
+                                <div className="text-xs text-gray-500">O2 (%)</div>
+                            </div>
+                        </div>
+
+                        {/* Vitals History - Table Format */}
+                        <div className="py-1">
+                            <div className="font-semibold mb-1">Vital Signs History:</div>
+                            <div className="space-y-0.5">
+                                <div className="grid grid-cols-5 gap-2 font-semibold py-0.5 border-b">
+                                    <span>Time</span>
+                                    <span>BP</span>
+                                    <span>HR</span>
+                                    <span>Temp</span>
+                                    <span>O2</span>
+                                </div>
+                                <div className="grid grid-cols-5 gap-2 py-0.5">
+                                    <span>Current</span>
+                                    <span>{patient.vitals.bp}</span>
+                                    <span>{patient.vitals.hr}</span>
+                                    <span>{patient.vitals.temp}</span>
+                                    <span>{patient.vitals.o2sat}</span>
+                                </div>
+                                <div className="grid grid-cols-5 gap-2 py-0.5">
+                                    <span>2h ago</span>
+                                    <span>175/108</span>
+                                    <span>122</span>
+                                    <span>101.5</span>
+                                    <span>94</span>
+                                </div>
+                                <div className="grid grid-cols-5 gap-2 py-0.5">
+                                    <span>4h ago</span>
+                                    <span>172/105</span>
+                                    <span>118</span>
+                                    <span>101.8</span>
+                                    <span>95</span>
+                                </div>
+                                <div className="grid grid-cols-5 gap-2 py-0.5">
+                                    <span>6h ago</span>
+                                    <span>185/112</span>
+                                    <span>130</span>
+                                    <span>102.1</span>
+                                    <span>92</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Vitals Notes */}
+                        <div className="py-1 border-t">
+                            <strong>Notes:</strong> Blood pressure trending down with treatment. Heart rate stabilizing. Temperature still elevated but improving.
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'timeline' && (
+                    <div className="space-y-0.5">
+                        <div className="font-semibold mb-1">Medical Timeline:</div>
+                        {patient.timeline.map((item, index) => (
+                            <div key={index} className="flex items-start gap-2 py-0.5 border-b border-gray-100">
+                                <span className="text-gray-500 w-20 flex-shrink-0 text-xs">{item.time}</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-medium">{item.action}</span>
+                                        <Badge variant="outline" className="text-xs px-1 py-0">{item.status}</Badge>
+                                    </div>
+                                    {item.details && (
+                                        <div className="text-gray-600 mt-0.5 text-xs leading-tight">{item.details}</div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {activeTab === 'treatment' && (
+                    <div className="space-y-1">
+                        {/* Current Treatment Plan */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Current Treatment Plan:</div>
+                            <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
+                                <div className="font-medium text-xs text-blue-800 mb-1">Primary Diagnosis: {patient.condition}</div>
+                                <div className="text-xs text-blue-700">{patient.insights}</div>
+                            </div>
+                        </div>
+
+                        {/* Active Medications */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Active Medications:</div>
+                            <div className="space-y-1">
+                                <div className="bg-white border rounded p-2">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <div>
+                                            <div className="font-medium text-xs">Ceftriaxone 1g IV</div>
+                                            <div className="text-xs text-gray-600">Antibiotic - Daily at 08:00</div>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-green-600 text-xs font-medium">Active</span>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Edit</Button>
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-gray-500">Started: 3 days ago • Next due: 08:00 tomorrow</div>
+                                </div>
+                                <div className="bg-white border rounded p-2">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <div>
+                                            <div className="font-medium text-xs">Morphine 2mg IV</div>
+                                            <div className="text-xs text-gray-600">Pain relief - PRN (as needed)</div>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-blue-600 text-xs font-medium">PRN</span>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Edit</Button>
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-gray-500">Last given: 4 hours ago • Pain score: 5/10</div>
+                                </div>
+                                <div className="bg-white border rounded p-2">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <div>
+                                            <div className="font-medium text-xs">Lisinopril 10mg PO</div>
+                                            <div className="text-xs text-gray-600">ACE Inhibitor - BID (twice daily)</div>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-green-600 text-xs font-medium">Active</span>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Edit</Button>
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-gray-500">08:00 & 20:00 • Last given: 08:00 today</div>
+                                </div>
+                            </div>
+                            <div className="mt-2 flex gap-1">
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Medication</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">💊 Med Review</Button>
+                            </div>
+                        </div>
+
+                        {/* Treatment Goals */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Treatment Goals:</div>
+                            <div className="space-y-0.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span className="text-xs">Control infection - WBC trending down</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-orange-600">◐</span>
+                                    <span className="text-xs">Pain management - Currently 5/10, target &lt;3/10</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-orange-600">◐</span>
+                                    <span className="text-xs">Blood pressure control - Currently elevated</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-red-600">○</span>
+                                    <span className="text-xs">Restore mobility - PT consultation pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Medication Schedule */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Today's Schedule:</div>
+                            <div className="space-y-0.5">
+                                <div className="grid grid-cols-4 gap-1 text-xs font-semibold py-0.5 border-b">
+                                    <span>Time</span>
+                                    <span>Medication</span>
+                                    <span>Dose</span>
+                                    <span>Status</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-1 text-xs py-0.5 bg-green-50">
+                                    <span>08:00</span>
+                                    <span>Ceftriaxone</span>
+                                    <span>1g IV</span>
+                                    <span className="text-green-600 font-medium">✓ Given</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-1 text-xs py-0.5 bg-green-50">
+                                    <span>08:00</span>
+                                    <span>Lisinopril</span>
+                                    <span>10mg PO</span>
+                                    <span className="text-green-600 font-medium">✓ Given</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-1 text-xs py-0.5 bg-yellow-50">
+                                    <span>20:00</span>
+                                    <span>Lisinopril</span>
+                                    <span>10mg PO</span>
+                                    <span className="text-orange-600 font-medium">⏱ Due</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-1 text-xs py-0.5">
+                                    <span>PRN</span>
+                                    <span>Morphine</span>
+                                    <span>2mg IV</span>
+                                    <span className="text-blue-600 font-medium">As needed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Allergies & Contraindications */}
+                        <div className="py-1">
+                            <div className="font-semibold mb-1">Allergies & Contraindications:</div>
+                            <div className="space-y-0.5">
+                                <div className="bg-red-50 border border-red-200 rounded p-2">
+                                    <div className="font-medium text-xs text-red-800">⚠️ Drug Allergies:</div>
+                                    <div className="text-xs text-red-700">Penicillin - Severe reaction (rash, difficulty breathing)</div>
+                                </div>
+                                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                                    <div className="font-medium text-xs text-yellow-800">⚠️ Precautions:</div>
+                                    <div className="text-xs text-yellow-700">Renal function monitoring required with current medications</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'clinical' && (
+                    <div className="space-y-1">
+                        {/* Current Medications - Table */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Current Medications:</div>
+                            <div className="space-y-0.5">
+                                <div className="flex justify-between items-center">
+                                    <span><strong>Ceftriaxone 1g IV</strong> - Daily</span>
+                                    <span className="text-green-600 text-xs">Active</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span><strong>Morphine 2mg IV</strong> - PRN pain</span>
+                                    <span className="text-blue-600 text-xs">As needed</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span><strong>Lisinopril 10mg PO</strong> - BID</span>
+                                    <span className="text-green-600 text-xs">Active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Clinical Notes */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Recent Clinical Notes:</div>
+                            <div className="space-y-0.5 text-xs">
+                                <div className="border-l-2 border-blue-500 pl-2">
+                                    <div className="font-medium">Dr. Johnson - Today 08:30</div>
+                                    <div>Patient continues to show signs of improvement. Pain levels decreased from 8/10 to 5/10. Wound site appears clean and healing properly.</div>
+                                </div>
+                                <div className="border-l-2 border-green-500 pl-2">
+                                    <div className="font-medium">Nurse Martinez - Yesterday 14:00</div>
+                                    <div>Vitals stable. Patient ambulating independently. Diet tolerance good. No complaints of nausea or vomiting.</div>
+                                </div>
+                                <div className="border-l-2 border-orange-500 pl-2">
+                                    <div className="font-medium">Dr. Smith - Yesterday 09:15</div>
+                                    <div>Post-operative check. Surgical site healing well. Recommend continuing current antibiotic regimen. Consider PT consultation.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Add New Note */}
+                        <div className="py-1">
+                            <div className="font-semibold mb-1">Add Clinical Note:</div>
+                            <textarea 
+                                placeholder="Enter clinical observations, assessments, or plan updates..."
+                                className="w-full text-xs p-2 border rounded resize-none h-16 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                            <div className="mt-1 flex gap-1">
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">Save Note</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Voice Note</Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'imaging' && (
+                    <div className="space-y-1">
+                        {/* Lab Results */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Recent Lab Results:</div>
+                            <div className="space-y-0.5">
+                                <div className="grid grid-cols-4 gap-2 text-xs font-semibold py-0.5 border-b">
+                                    <span>Test</span>
+                                    <span>Result</span>
+                                    <span>Range</span>
+                                    <span>Status</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2 text-xs py-0.5">
+                                    <span>WBC</span>
+                                    <span className="font-medium">15,000</span>
+                                    <span className="text-gray-500">4,500-11,000</span>
+                                    <span className="text-red-600 font-medium">High</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2 text-xs py-0.5">
+                                    <span>CRP</span>
+                                    <span className="font-medium">25</span>
+                                    <span className="text-gray-500">&lt;3.0</span>
+                                    <span className="text-red-600 font-medium">Elevated</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2 text-xs py-0.5">
+                                    <span>Creatinine</span>
+                                    <span className="font-medium">1.1</span>
+                                    <span className="text-gray-500">0.7-1.3</span>
+                                    <span className="text-green-600 font-medium">Normal</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2 text-xs py-0.5">
+                                    <span>Glucose</span>
+                                    <span className="font-medium">145</span>
+                                    <span className="text-gray-500">70-100</span>
+                                    <span className="text-orange-600 font-medium">Mild ↑</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Imaging Studies */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Imaging Studies:</div>
+                            <div className="space-y-0.5">
+                                <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                    <div>
+                                        <div className="font-medium text-xs">CT Abdomen/Pelvis with Contrast</div>
+                                        <div className="text-xs text-gray-600">Today 06:30 - Dr. Radiologist</div>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                    <div>
+                                        <div className="font-medium text-xs">Chest X-Ray PA/Lateral</div>
+                                        <div className="text-xs text-gray-600">Yesterday 14:15 - Dr. Chen</div>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Pending Orders */}
+                        <div className="py-1">
+                            <div className="font-semibold mb-1">Pending Orders:</div>
+                            <div className="space-y-0.5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs">📊 Complete Blood Count</span>
+                                    <span className="text-orange-600 text-xs">Pending</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs">🧪 Blood Culture x2</span>
+                                    <span className="text-blue-600 text-xs">In Progress</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs">📷 Follow-up CT Scan</span>
+                                    <span className="text-gray-600 text-xs">Scheduled</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'referral' && (
+                    <div className="space-y-1">
+                        {/* Referrals */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Active Referrals:</div>
+                            <div className="space-y-0.5">
+                                <div className="border border-blue-200 rounded p-2 bg-blue-50">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="font-medium text-xs">Cardiology Consultation</span>
+                                        <span className="text-blue-600 text-xs">Urgent</span>
+                                    </div>
+                                    <div className="text-xs text-gray-600">Dr. Martinez - Requested today for cardiac evaluation</div>
+                                    <div className="text-xs text-gray-500 mt-1">Status: Appointment scheduled for tomorrow 10:00 AM</div>
+                                </div>
+                                <div className="border border-green-200 rounded p-2 bg-green-50">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="font-medium text-xs">Physical Therapy</span>
+                                        <span className="text-green-600 text-xs">Routine</span>
+                                    </div>
+                                    <div className="text-xs text-gray-600">Post-surgical mobility assessment and treatment plan</div>
+                                    <div className="text-xs text-gray-500 mt-1">Status: Initial eval completed - ongoing sessions</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Discharge Planning */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Discharge Planning:</div>
+                            <div className="space-y-0.5">
+                                <div className="grid grid-cols-3 gap-1 text-xs">
+                                    <span className="font-medium">Est. Discharge:</span>
+                                    <span className="col-span-2">March 18, 2024 (3 days)</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-1 text-xs">
+                                    <span className="font-medium">Discharge To:</span>
+                                    <span className="col-span-2">Home with family support</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-1 text-xs">
+                                    <span className="font-medium">Follow-up:</span>
+                                    <span className="col-span-2">Clinic in 1 week</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Discharge Criteria */}
+                        <div className="py-1 border-b">
+                            <div className="font-semibold mb-1">Discharge Criteria:</div>
+                            <div className="space-y-0.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span className="text-xs">Pain controlled with oral medications</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span className="text-xs">Tolerating regular diet</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-orange-600">◐</span>
+                                    <span className="text-xs">Ambulating independently</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-red-600">○</span>
+                                    <span className="text-xs">Normal WBC count</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="py-1">
+                            <div className="font-semibold mb-1">Actions:</div>
+                            <div className="flex gap-1">
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">📋 Discharge Summary</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📞 New Referral</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📅 Schedule</Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
 function PatientDetailsPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const [user, setUser] = useState(null);
     const [currentPatient, setCurrentPatient] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
 
     useEffect(() => {
+        // Check authentication
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+            router.push('/login');
+            return;
+        }
+        setUser(JSON.parse(userData));
+
         const patientId = searchParams.get('id');
         if (!patientId) {
             alert('No patient ID provided');
@@ -295,62 +847,169 @@ function PatientDetailsPageContent() {
         return `I understand you're asking about ${patient.name}. Based on their current status (${patient.status}) and condition (${patient.condition}), I can provide detailed insights. Could you be more specific about what aspect of their care you'd like to discuss?`;
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        router.push('/login');
+    };
 
+    const handleNotifications = () => {
+        const notifications = [
+            "Lab results ready for review",
+            "Medication due in 30 minutes", 
+            "Vitals trending upward"
+        ];
+        alert(`Notifications:\n${notifications.join('\n')}`);
+    };
 
-
-
-    if (!currentPatient) {
+    if (!currentPatient || !user) {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
-            {/* Header */}
-            <Header onBack={() => router.back()} />
-
-            {/* Main Content */}
-            <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-                {/* Patient Header */}
-                <PatientHeader
-                    patient={currentPatient}
-                    onStartConsultation={startNewConsultation}
-                />
-
-                {/* AI Chat Interface */}
-                <AIChat
-                    patient={currentPatient}
-                    chatMessages={chatMessages}
-                    onSendMessage={handleSendMessage}
-                    onQuickQuestion={handleQuickQuestion}
-                />
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Patient Overview */}
-                    <section className="lg:col-span-2 space-y-8">
-                        {/* Current Condition and AI Data */}
-                        <PatientCondition patient={currentPatient} />
-
-                        {/* Patient Timeline */}
-                        <Timeline timeline={currentPatient.timeline} />
-                    </section>
-
-                    {/* Sidebar */}
-                    <section className="space-y-8">
-                        {/* Vital Signs */}
-                        <VitalSigns vitals={currentPatient.vitals} />
-
-                        {/* Quick Actions */}
-                        <QuickActions
-                            onGenerateSummary={handleGenerateSummary}
-                            onUpdateTreatment={handleUpdateTreatment}
-                            onShareWithTeam={handleShareWithTeam}
-                        />
-
-                        {/* Status */}
-                        <PatientStatus patient={currentPatient} />
-                    </section>
+        <div className="h-screen flex flex-col bg-gray-50 font-sans overflow-hidden">
+            {/* Compact Header - Consistent with Doctor/Nurse Dashboard */}
+            <div className="flex-shrink-0 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => router.back()}
+                        className="px-2 py-1 bg-white/10 rounded text-xs hover:bg-white/20"
+                    >
+                        ← Back
+                    </button>
+                    <span className="font-bold">MedAssist AI</span>
+                    <span>{user.name} ({user.role})</span>
+                    <span className="text-green-400">Patient Details</span>
                 </div>
-            </main>
+                <div className="flex items-center gap-2">
+                    <button onClick={handleNotifications} className="px-2 py-1 bg-white/10 rounded text-xs">
+                        🔔 {3}
+                    </button>
+                    <button onClick={handleLogout} className="px-2 py-1 bg-red-600 rounded text-xs">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            {/* Patient Header - Ultra Compact */}
+            <div className="flex-shrink-0 px-3 py-1 bg-white border-b">
+                <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-4">
+                        <div className={`w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold ${
+                            currentPatient.status === 'critical' ? 'bg-red-600' : 'bg-gray-600'
+                        }`}>
+                            {currentPatient.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="font-bold text-sm">{currentPatient.name}</span>
+                            <span>Age {currentPatient.age}</span>
+                            <span>Room {currentPatient.room}</span>
+                            <span>ID: {currentPatient.id}</span>
+                            <Badge variant={currentPatient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs px-1 py-0">
+                                {currentPatient.status}
+                            </Badge>
+                            <span className="font-medium">{currentPatient.condition}</span>
+                        </div>
+                    </div>
+                    <Button onClick={startNewConsultation} size="sm" className="text-xs px-2 py-1 h-6">
+                        New Consultation
+                    </Button>
+                </div>
+            </div>
+
+            {/* Main Two Column Layout */}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Left Column - Chat (1/3 width) */}
+                <div className="w-1/3 border-r bg-white flex flex-col overflow-hidden">
+                    <div className="flex-shrink-0 px-2 py-1 border-b bg-gray-50 flex items-center justify-between">
+                        <span className="text-xs font-semibold">AI Assistant</span>
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <div className="w-1 h-1 bg-green-500 rounded-full"></div>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                    
+                    {/* Chat Messages */}
+                    <div className="flex-1 overflow-y-auto p-2 bg-gray-50">
+                        {chatMessages.map((msg) => (
+                            <div key={msg.id} className={`flex items-start gap-1 mb-2 ${msg.type === 'user' ? 'justify-end' : ''}`}>
+                                {msg.type === 'ai' && (
+                                    <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                        <span className="text-xs">🤖</span>
+                                    </div>
+                                )}
+                                <div className={`${msg.type === 'user' ? 'text-right' : ''}`}>
+                                    <div className={`rounded p-2 text-xs max-w-xs ${
+                                        msg.type === 'user' 
+                                            ? 'bg-blue-600 text-white inline-block' 
+                                            : 'bg-white border'
+                                    }`}>
+                                        {msg.message}
+                                    </div>
+                                    <div className="text-xs text-gray-400 mt-0.5">Just now</div>
+                                </div>
+                                {msg.type === 'user' && (
+                                    <div className="w-4 h-4 bg-gray-600 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                        <span className="text-xs">👤</span>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Chat Input */}
+                    <div className="flex-shrink-0 p-2 border-t bg-white">
+                        <div className="flex gap-1 mb-2">
+                            <input
+                                type="text"
+                                placeholder="Ask about patient..."
+                                className="flex-1 text-xs px-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && e.target.value.trim()) {
+                                        handleSendMessage(e.target.value);
+                                        e.target.value = '';
+                                    }
+                                }}
+                            />
+                            <button className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">
+                                Send
+                            </button>
+                        </div>
+                        
+                        {/* Quick Questions */}
+                        <div className="flex flex-wrap gap-1">
+                            <button 
+                                onClick={() => handleQuickQuestion("What's the patient's current condition?")}
+                                className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50"
+                            >
+                                Condition
+                            </button>
+                            <button 
+                                onClick={() => handleQuickQuestion("What are the latest lab results?")}
+                                className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50"
+                            >
+                                Labs
+                            </button>
+                            <button 
+                                onClick={() => handleQuickQuestion("Any medication interactions?")}
+                                className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50"
+                            >
+                                Drugs
+                            </button>
+                            <button 
+                                onClick={() => handleQuickQuestion("Recommend next steps?")}
+                                className="text-xs px-2 py-0.5 border rounded hover:bg-gray-50"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column - Patient Information (2/3 width) */}
+                <div className="w-2/3 flex flex-col overflow-hidden">
+                    <PatientInfoTabs patient={currentPatient} />
+                </div>
+            </div>
         </div>
     );
 }

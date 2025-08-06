@@ -110,81 +110,142 @@ export default function Dashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="bg-gray-50 font-sans min-h-screen flex flex-col">
-        {/* Header */}
-        <Header
-          onBack={handleBack}
-          timeSaved={mockDashboardData.doctor.timeSaved}
-          notificationCount={3}
-          onNotifications={handleNotifications}
-          title="MedAssist AI"
-          subtitle={`${user.name} (${user.role})`}
-          showBackButton={false}
-          onLogout={handleLogout}
-        />
-
-        {/* Main Dashboard Content */}
-        <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-        {/* Patient Search Bar */}
-        <section className="mb-8">
-          <PatientSearchBar 
-            onPatientSelect={handlePatientSelect}
-            onSearch={handleSearch}
-          />
-        </section>
-
-        {/* Quick Stats Row */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard 
-            icon="fas fa-users"
-            value={stats.totalPatients}
-            label="Total Patients"
-            iconColor="bg-gray-800"
-          />
-          <StatCard 
-            icon="fas fa-user-plus"
-            value={stats.newAdmissions}
-            label="New Admissions"
-            iconColor="bg-gray-700"
-          />
-          <StatCard 
-            icon="fas fa-sign-out-alt"
-            value={stats.pendingDischarge}
-            label="Pending Discharge"
-            iconColor="bg-gray-600"
-          />
-          <StatCard 
-            icon="fas fa-robot"
-            value={`${stats.tasksAutomated}%`}
-            label="Tasks Automated"
-            iconColor="bg-gray-500"
-          />
-        </section>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Left Column - Critical Patients + Schedule */}
-          <section className="lg:col-span-3 space-y-8">
-            <CriticalPatientsSection
-              criticalPatients={mockDashboardData.criticalPatients}
-              onViewPatient={handleViewPatient}
-            />
-
-            <ScheduleSection
-              schedule={mockDashboardData.schedule}
-              prepStates={prepStates}
-              onPrepareVisit={handlePrepareVisit}
-            />
-          </section>
-
-          {/* Right Column - Recent Activity */}
-          <section className="lg:col-span-1">
-            <RecentActivitySection
-              recentActivity={mockDashboardData.recentActivity}
-              onViewAll={handleViewAllActivity}
-            />
-          </section>
+      <div className="bg-gray-50 font-sans h-screen flex flex-col overflow-hidden">
+        {/* Compact Header */}
+        <div className="flex-shrink-0 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-4">
+            <span className="font-bold">MedAssist AI</span>
+            <span>{user.name} ({user.role})</span>
+            <span className="text-green-400">{mockDashboardData.doctor.timeSaved} saved today</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={handleNotifications} className="px-2 py-1 bg-white/10 rounded text-xs">
+              🔔 {3}
+            </button>
+            <button onClick={handleLogout} className="px-2 py-1 bg-red-600 rounded text-xs">
+              Logout
+            </button>
+          </div>
         </div>
-      </main>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden flex flex-col p-3">
+          {/* Compact Search & Stats */}
+          <div className="flex-shrink-0 mb-3">
+            <div className="flex gap-3 items-center mb-2">
+              <input
+                type="text"
+                placeholder="Search patients..."
+                className="flex-1 text-xs px-3 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') handleSearch(e.target.value);
+                }}
+              />
+              <div className="flex gap-2 text-xs">
+                <div className="px-2 py-1 bg-blue-600 text-white rounded text-center min-w-16">
+                  <div className="font-bold">{stats.totalPatients}</div>
+                  <div>Patients</div>
+                </div>
+                <div className="px-2 py-1 bg-green-600 text-white rounded text-center min-w-16">
+                  <div className="font-bold">{stats.newAdmissions}</div>
+                  <div>New</div>
+                </div>
+                <div className="px-2 py-1 bg-orange-600 text-white rounded text-center min-w-16">
+                  <div className="font-bold">{stats.pendingDischarge}</div>
+                  <div>Discharge</div>
+                </div>
+                <div className="px-2 py-1 bg-purple-600 text-white rounded text-center min-w-16">
+                  <div className="font-bold">{stats.tasksAutomated}%</div>
+                  <div>Auto</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content Grid */}
+          <div className="flex-1 grid grid-cols-4 gap-3 overflow-hidden">
+            {/* Critical Patients - Compact */}
+            <div className="col-span-2 bg-white rounded border overflow-hidden flex flex-col">
+              <div className="px-3 py-2 bg-red-50 border-b text-xs font-semibold text-red-800">
+                🚨 Critical Patients ({mockDashboardData.criticalPatients.length})
+              </div>
+              <div className="flex-1 overflow-y-auto p-2">
+                {mockDashboardData.criticalPatients.map((patient, index) => (
+                  <div key={index} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 cursor-pointer text-xs border-b border-gray-100 last:border-0"
+                       onClick={() => handleViewPatient(patient.name)}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-red-600 rounded text-white text-xs flex items-center justify-center">
+                        {patient.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <div className="font-medium">{patient.name}</div>
+                        <div className="text-gray-500">Room {patient.room} • {patient.condition}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-red-600 font-medium">{patient.severity}</div>
+                      <div className="text-gray-500">{patient.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Schedule - Compact */}
+            <div className="col-span-1 bg-white rounded border overflow-hidden flex flex-col">
+              <div className="px-3 py-2 bg-blue-50 border-b text-xs font-semibold text-blue-800">
+                📅 Today's Schedule
+              </div>
+              <div className="flex-1 overflow-y-auto p-2">
+                {mockDashboardData.schedule.map((appointment, index) => (
+                  <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium">{appointment.time}</span>
+                      <span className={`px-1 py-0 rounded text-xs ${
+                        prepStates[index] === 'preparing' ? 'bg-yellow-100 text-yellow-800' :
+                        prepStates[index] === 'ready' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {prepStates[index] === 'preparing' ? 'Prep...' :
+                         prepStates[index] === 'ready' ? 'Ready' : 'Pending'}
+                      </span>
+                    </div>
+                    <div className="text-gray-600">{appointment.patient}</div>
+                    <div className="text-gray-500">{appointment.type}</div>
+                    <button 
+                      onClick={() => handlePrepareVisit(appointment.patient, index)}
+                      className="mt-1 px-2 py-0.5 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                    >
+                      Prepare
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Activity - Compact */}
+            <div className="col-span-1 bg-white rounded border overflow-hidden flex flex-col">
+              <div className="px-3 py-2 bg-green-50 border-b text-xs font-semibold text-green-800 flex justify-between">
+                <span>📊 Recent Activity</span>
+                <button onClick={handleViewAllActivity} className="text-blue-600 hover:underline">View All</button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-2">
+                {mockDashboardData.recentActivity.map((activity, index) => (
+                  <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">{activity.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{activity.action}</div>
+                        <div className="text-gray-500">{activity.patient}</div>
+                        <div className="text-gray-400">{activity.time}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </ErrorBoundary>
   )
