@@ -20,4 +20,12 @@
 - Frontend: 
 - Backend: 
 - Database: 
-- Tools: 
+- Tools: CLAUDE
+
+## Project Structure
+> /frontend        → frontend files  
+> /backend        → backend logic  
+> CLAUDE.md          → CLAUDE 
+> PRD.md      →
+
+## Getting Started
