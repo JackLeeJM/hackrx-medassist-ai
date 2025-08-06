@@ -528,25 +528,16 @@ function PatientInfoTabs({ patient, onNewClinicalNote }) {
                             </div>
                         </div>
 
-                        {/* Add New Note */}
+                        {/* New Clinical Note */}
                         <div className="py-1">
-                            <div className="font-semibold mb-1">Add Clinical Note:</div>
-                            <textarea 
-                                placeholder="Enter clinical observations, assessments, or plan updates..."
-                                className="w-full text-xs p-2 border rounded resize-none h-16 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            />
-                            <div className="mt-1 flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6">Save Note</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Voice Note</Button>
-                                <Button 
-                                    onClick={onNewClinicalNote}
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="text-xs px-2 py-1 h-6 border-blue-500 text-blue-600 hover:bg-blue-50"
-                                >
-                                    📝 New Clinical Note
-                                </Button>
-                            </div>
+                            <div className="font-semibold mb-1">Clinical Documentation:</div>
+                            <Button 
+                                onClick={onNewClinicalNote}
+                                size="sm" 
+                                className="text-xs px-3 py-2 h-8 bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                                📝 New Clinical Note
+                            </Button>
                         </div>
                     </div>
                 )}
