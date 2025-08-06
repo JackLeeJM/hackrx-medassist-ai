@@ -8,32 +8,32 @@ const ConsultationForm = ({ formData, onInputChange }) => {
   const formFields = [
     {
       id: 'chiefComplaint',
-      label: 'Chief Complaint',
-      placeholder: "Patient's primary concern or reason for visit...",
+      label: 'Subjective (Patient Report)',
+      placeholder: "Patient's reported symptoms, concerns, and subjective information...",
       rows: 3
     },
     {
       id: 'historyPresent',
-      label: 'History of Present Illness',
-      placeholder: 'Detailed description of current symptoms and timeline...',
+      label: 'History & Background',
+      placeholder: 'Relevant medical history, current medications, and background information...',
       rows: 4
     },
     {
       id: 'physicalExam',
-      label: 'Physical Examination',
-      placeholder: 'Physical examination findings...',
+      label: 'Objective (Examination & Findings)',
+      placeholder: 'Physical examination findings, vital signs, test results...',
       rows: 3
     },
     {
       id: 'assessment',
-      label: 'Assessment',
-      placeholder: 'Clinical assessment and diagnosis...',
+      label: 'Assessment (Clinical Impression)',
+      placeholder: 'Clinical assessment, diagnosis, and interpretation of findings...',
       rows: 3
     },
     {
       id: 'plan',
-      label: 'Plan',
-      placeholder: 'Treatment plan and next steps...',
+      label: 'Plan (Treatment & Follow-up)',
+      placeholder: 'Treatment plan, medications, follow-up instructions, and next steps...',
       rows: 3
     }
   ];
@@ -43,7 +43,7 @@ const ConsultationForm = ({ formData, onInputChange }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
           <FileText className="w-5 h-5 text-gray-700" />
-          Consultation Notes
+          Clinical Note Documentation
         </CardTitle>
       </CardHeader>
       <CardContent>

@@ -168,6 +168,78 @@ const mockDoctorsSchedule = {
   }
 }
 
+// Mock inpatient data - patients assigned to doctors
+const mockInpatientData = {
+  'Dr. John Smith': {
+    specialty: 'Cardiology',
+    phone: '+1 (555) 123-4567',
+    inpatients: [
+      { 
+        name: 'Robert Davis', 
+        room: '412B', 
+        condition: 'Cardiac monitoring', 
+        status: 'Critical', 
+        admitted: '2 days ago',
+        vitals: { bp: '160/100', hr: '95', temp: '99.1', o2: '95' },
+        lastRound: '6:00 AM',
+        nextMeds: '2:00 PM - Metoprolol 25mg'
+      },
+      { 
+        name: 'Patricia Wilson', 
+        room: '415A', 
+        condition: 'Post-cardiac cath', 
+        status: 'Stable', 
+        admitted: '1 day ago',
+        vitals: { bp: '130/85', hr: '78', temp: '98.4', o2: '98' },
+        lastRound: '6:00 AM',
+        nextMeds: '4:00 PM - Aspirin 81mg'
+      }
+    ]
+  },
+  'Dr. Michael Brown': {
+    specialty: 'Orthopedics',
+    phone: '+1 (555) 456-7890',
+    inpatients: [
+      { 
+        name: 'Maria Rodriguez', 
+        room: '302A', 
+        condition: 'Post-op complications', 
+        status: 'Critical', 
+        admitted: '3 days ago',
+        vitals: { bp: '180/110', hr: '125', temp: '101.2', o2: '94' },
+        lastRound: '6:00 AM',
+        nextMeds: '10:00 AM - Ceftriaxone 1g'
+      },
+      { 
+        name: 'James Taylor', 
+        room: '401D', 
+        condition: 'Knee replacement recovery', 
+        status: 'Stable', 
+        admitted: '2 days ago',
+        vitals: { bp: '135/88', hr: '75', temp: '98.3', o2: '98' },
+        lastRound: '6:00 AM',
+        nextMeds: '11:00 AM - Pain medication'
+      }
+    ]
+  },
+  'Dr. Sarah Williams': {
+    specialty: 'Neurology',
+    phone: '+1 (555) 234-5678',
+    inpatients: [
+      { 
+        name: 'Michael Zhang', 
+        room: '302C', 
+        condition: 'Stroke recovery', 
+        status: 'Stable', 
+        admitted: '5 days ago',
+        vitals: { bp: '140/90', hr: '72', temp: '98.6', o2: '97' },
+        lastRound: '6:30 AM',
+        nextMeds: '12:00 PM - Clopidogrel 75mg'
+      }
+    ]
+  }
+}
+
 export default function NurseDashboard() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -177,6 +249,7 @@ export default function NurseDashboard() {
   const [filteredDoctors, setFilteredDoctors] = useState(Object.keys(mockDoctorsSchedule))
   const [selectedDoctor, setSelectedDoctor] = useState(null)
   const [selectedPatient, setSelectedPatient] = useState(null)
+  const [patientView, setPatientView] = useState('outpatient') // 'inpatient' or 'outpatient'
 
   // Generate date options (today + 6 days)
   const generateDates = () => {
@@ -292,6 +365,28 @@ export default function NurseDashboard() {
             <span className="font-bold">MedAssist AI</span>
             <span>{user.name} ({user.role})</span>
             <span className="text-green-400">1h 30m saved today</span>
+            <div className="flex items-center gap-1 ml-4">
+              <button 
+                onClick={() => setPatientView('outpatient')}
+                className={`px-2 py-1 rounded text-xs ${
+                  patientView === 'outpatient' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                }`}
+              >
+                Outpatient Schedule
+              </button>
+              <button 
+                onClick={() => setPatientView('inpatient')}
+                className={`px-2 py-1 rounded text-xs ${
+                  patientView === 'inpatient' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                }`}
+              >
+                Inpatient Rounds
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => alert('Notifications: New patient admission, Lab results ready')} className="px-2 py-1 bg-white/10 rounded text-xs">
@@ -397,7 +492,12 @@ export default function NurseDashboard() {
                         </div>
                         <div className="text-xs text-gray-600 mb-1">{doctor.specialty}</div>
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-500">{daySchedule.length} pts</span>
+                          <span className="text-gray-500">
+                            {patientView === 'outpatient' 
+                              ? `${daySchedule.length} pts` 
+                              : `${mockInpatientData[doctorName]?.inpatients?.length || 0} inpts`
+                            }
+                          </span>
                           <span className="text-gray-400">{doctor.phone.slice(-4)}</span>
                         </div>
                       </div>
@@ -412,7 +512,7 @@ export default function NurseDashboard() {
               <div className="flex-shrink-0 px-2 py-1 border-b border-gray-200 bg-white">
                 {selectedDoctor ? (
                   <h3 className="text-xs font-semibold truncate">
-                    Patients - {selectedDoctor}
+                    {patientView === 'outpatient' ? 'Schedule' : 'Inpatients'} - {selectedDoctor}
                   </h3>
                 ) : (
                   <h3 className="text-xs font-semibold text-gray-400">
@@ -423,34 +523,72 @@ export default function NurseDashboard() {
               <div className="flex-1 overflow-y-auto p-2">
                 {selectedDoctor ? (
                   <div className="space-y-1">
-                    {(mockDoctorsSchedule[selectedDoctor]?.schedules[selectedDate] || []).map((appointment, index) => {
-                      const isSelected = selectedPatient?.appointment === appointment
-                      
-                      return (
-                        <div
-                          key={index}
-                          className={`p-2 border rounded cursor-pointer transition-colors text-xs ${
-                            isSelected ? 'bg-green-50 border-green-300' : 'hover:bg-gray-50 border-gray-200'
-                          }`}
-                          onClick={() => handlePatientSelect(appointment.patient, appointment)}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-gray-500" />
-                              <span className="font-medium">{appointment.time}</span>
+                    {patientView === 'outpatient' ? (
+                      // Outpatient Schedule View
+                      (mockDoctorsSchedule[selectedDoctor]?.schedules[selectedDate] || []).map((appointment, index) => {
+                        const isSelected = selectedPatient?.appointment === appointment
+                        
+                        return (
+                          <div
+                            key={index}
+                            className={`p-2 border rounded cursor-pointer transition-colors text-xs ${
+                              isSelected ? 'bg-green-50 border-green-300' : 'hover:bg-gray-50 border-gray-200'
+                            }`}
+                            onClick={() => handlePatientSelect(appointment.patient, appointment)}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3 text-gray-500" />
+                                <span className="font-medium">{appointment.time}</span>
+                              </div>
+                              <span className={`px-1 py-0 rounded text-xs ${
+                                appointment.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+                              }`}>
+                                {appointment.status}
+                              </span>
                             </div>
-                            <span className={`px-1 py-0 rounded text-xs ${
-                              appointment.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
-                            }`}>
-                              {appointment.status}
-                            </span>
+                            <div className="font-medium text-gray-900 mb-1">{appointment.patient}</div>
+                            <div className="text-gray-600 mb-1">{appointment.condition}</div>
+                            <div className="text-gray-500">Room: {appointment.room}</div>
                           </div>
-                          <div className="font-medium text-gray-900 mb-1">{appointment.patient}</div>
-                          <div className="text-gray-600 mb-1">{appointment.condition}</div>
-                          <div className="text-gray-500">Room: {appointment.room}</div>
-                        </div>
-                      )
-                    })}
+                        )
+                      })
+                    ) : (
+                      // Inpatient View
+                      (mockInpatientData[selectedDoctor]?.inpatients || []).map((patient, index) => {
+                        const isSelected = selectedPatient?.name === patient.name
+                        
+                        return (
+                          <div
+                            key={index}
+                            className={`p-2 border rounded cursor-pointer transition-colors text-xs ${
+                              isSelected ? 'bg-green-50 border-green-300' : 'hover:bg-gray-50 border-gray-200'
+                            }`}
+                            onClick={() => handlePatientSelect(patient.name, patient)}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-1">
+                                <User className="w-3 h-3 text-gray-500" />
+                                <span className="font-medium">{patient.name}</span>
+                              </div>
+                              <span className={`px-1 py-0 rounded text-xs ${
+                                patient.status === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                              }`}>
+                                {patient.status}
+                              </span>
+                            </div>
+                            <div className="text-gray-600 mb-1">{patient.condition}</div>
+                            <div className="flex justify-between text-gray-500">
+                              <span>Room: {patient.room}</span>
+                              <span>Admitted: {patient.admitted}</span>
+                            </div>
+                            <div className="mt-1 text-gray-400 text-xs">
+                              Last round: {patient.lastRound} • Next: {patient.nextMeds}
+                            </div>
+                          </div>
+                        )
+                      })
+                    )}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full text-center">
@@ -478,33 +616,81 @@ export default function NurseDashboard() {
                   <div className="space-y-2">
                     {/* Patient Header - Inline */}
                     <div className="border-b pb-2">
-                      <div className="font-semibold text-sm">{selectedPatient.appointment.patient}</div>
+                      <div className="font-semibold text-sm">{patientView === 'outpatient' ? selectedPatient.appointment?.patient : selectedPatient.name}</div>
                       <div className="flex items-center gap-2 mt-1">
                         <span>👨‍⚕️ {selectedDoctor}</span>
-                        <span>🕒 {selectedPatient.appointment.time}</span>
-                        <span className={`px-1 py-0 rounded text-xs ${
-                          selectedPatient.appointment.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {selectedPatient.appointment.status}
-                        </span>
+                        {patientView === 'outpatient' ? (
+                          <>
+                            <span>🕒 {selectedPatient.appointment?.time}</span>
+                            <span className={`px-1 py-0 rounded text-xs ${
+                              selectedPatient.appointment?.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {selectedPatient.appointment?.status}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span>🏥 Room {selectedPatient.room}</span>
+                            <span className={`px-1 py-0 rounded text-xs ${
+                              selectedPatient.status === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                            }`}>
+                              {selectedPatient.status}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
 
-                    {/* Appointment Info - Compact */}
+                    {/* Appointment/Patient Info - Compact */}
                     <div className="border-b pb-2">
-                      <div className="font-semibold mb-1">Appointment</div>
+                      <div className="font-semibold mb-1">{patientView === 'outpatient' ? 'Appointment' : 'Patient Info'}</div>
                       <div className="space-y-0.5">
-                        <div><strong>Condition:</strong> {selectedPatient.appointment.condition}</div>
-                        <div><strong>Room:</strong> {selectedPatient.appointment.room} • <strong>Date:</strong> {selectedDate}</div>
+                        {patientView === 'outpatient' ? (
+                          <>
+                            <div><strong>Condition:</strong> {selectedPatient.appointment?.condition}</div>
+                            <div><strong>Room:</strong> {selectedPatient.appointment?.room} • <strong>Date:</strong> {selectedDate}</div>
+                          </>
+                        ) : (
+                          <>
+                            <div><strong>Condition:</strong> {selectedPatient.condition}</div>
+                            <div><strong>Room:</strong> {selectedPatient.room} • <strong>Admitted:</strong> {selectedPatient.admitted}</div>
+                            <div><strong>Last Round:</strong> {selectedPatient.lastRound} • <strong>Next Meds:</strong> {selectedPatient.nextMeds}</div>
+                          </>
+                        )}
                       </div>
                     </div>
                     
-                    {/* Patient Info - Compact */}
+                    {/* Vital Signs - Compact */}
+                    {patientView === 'inpatient' && selectedPatient.vitals && (
+                      <div className="border-b pb-2">
+                        <div className="font-semibold mb-1">Current Vitals</div>
+                        <div className="grid grid-cols-4 gap-2 text-xs">
+                          <div className="text-center">
+                            <div className="font-medium text-red-600">{selectedPatient.vitals.bp}</div>
+                            <div className="text-gray-500">BP</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-medium text-blue-600">{selectedPatient.vitals.hr}</div>
+                            <div className="text-gray-500">HR</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-medium text-green-600">{selectedPatient.vitals.temp}</div>
+                            <div className="text-gray-500">Temp</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-medium text-purple-600">{selectedPatient.vitals.o2}</div>
+                            <div className="text-gray-500">O2</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Basic Info - Compact */}
                     <div className="border-b pb-2">
-                      <div className="font-semibold mb-1">Patient Info</div>
+                      <div className="font-semibold mb-1">Basic Info</div>
                       <div className="space-y-0.5">
-                        <div><strong>ID:</strong> PT-{Math.floor(Math.random() * 10000)} • <strong>Age:</strong> {Math.floor(Math.random() * 50) + 25} • <strong>Gender:</strong> {Math.random() > 0.5 ? 'F' : 'M'}</div>
-                        <div><strong>Contact:</strong> +1 (555) {Math.floor(Math.random() * 900) + 100}-{Math.floor(Math.random() * 9000) + 1000}</div>
+                        <div><strong>ID:</strong> PT-{patientView === 'outpatient' && selectedPatient.appointment ? selectedPatient.appointment.patient.replace(/\s+/g, '').slice(0,4) : selectedPatient.name ? selectedPatient.name.replace(/\s+/g, '').slice(0,4) : '0000'} • <strong>Age:</strong> {patientView === 'outpatient' ? '42' : selectedPatient.name ? selectedPatient.name.length + 25 : '45'} • <strong>Gender:</strong> {patientView === 'outpatient' && selectedPatient.appointment ? (selectedPatient.appointment.patient.includes('Maria') || selectedPatient.appointment.patient.includes('Emma') || selectedPatient.appointment.patient.includes('Lisa') ? 'F' : 'M') : (selectedPatient.name && (selectedPatient.name.includes('Maria') || selectedPatient.name.includes('Patricia') || selectedPatient.name.includes('Emma')) ? 'F' : 'M')}</div>
+                        <div><strong>Contact:</strong> +1 (555) 123-4567</div>
                       </div>
                     </div>
 

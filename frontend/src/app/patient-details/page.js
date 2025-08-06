@@ -173,7 +173,7 @@ const mockPatients = [
 ];
 
 // Patient Information Tabs Component
-function PatientInfoTabs({ patient }) {
+function PatientInfoTabs({ patient, onNewClinicalNote }) {
     const [activeTab, setActiveTab] = useState('summary');
 
     const tabs = [
@@ -538,6 +538,14 @@ function PatientInfoTabs({ patient }) {
                             <div className="mt-1 flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">Save Note</Button>
                                 <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Voice Note</Button>
+                                <Button 
+                                    onClick={onNewClinicalNote}
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="text-xs px-2 py-1 h-6 border-blue-500 text-blue-600 hover:bg-blue-50"
+                                >
+                                    📝 New Clinical Note
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -750,13 +758,13 @@ function PatientDetailsPageContent() {
             id: 1,
             type: 'ai',
             message: `Hello! I'm your AI assistant. I have access to ${patient.name}'s complete medical data. How can I help you today?`,
-            timestamp: new Date()
+            timestamp: '2024-01-15T09:00:00Z'
         }]);
     }, [searchParams, router]);
 
-    const startNewConsultation = () => {
+    const startNewClinicalNote = () => {
         if (currentPatient) {
-            console.log(`Starting new consultation for ${currentPatient.name}`);
+            console.log(`Starting new clinical note for ${currentPatient.name}`);
             router.push(`/consultation?id=${currentPatient.id}`);
         } else {
             alert('Patient data not available');
@@ -767,10 +775,10 @@ function PatientDetailsPageContent() {
         if (!message.trim()) return;
 
         const userMessage = {
-            id: Date.now(),
+            id: chatMessages.length + 1,
             type: 'user',
             message: message,
-            timestamp: new Date()
+            timestamp: '2024-01-15T10:00:00Z'
         };
 
         setChatMessages(prev => [...prev, userMessage]);
@@ -778,10 +786,10 @@ function PatientDetailsPageContent() {
         // Generate AI response
         setTimeout(() => {
             const aiResponse = {
-                id: Date.now() + 1,
+                id: chatMessages.length + 2,
                 type: 'ai',
                 message: generateAIResponse(message),
-                timestamp: new Date()
+                timestamp: '2024-01-15T10:01:00Z'
             };
             setChatMessages(prev => [...prev, aiResponse]);
         }, 1000);
@@ -910,9 +918,6 @@ function PatientDetailsPageContent() {
                             <span className="font-medium">{currentPatient.condition}</span>
                         </div>
                     </div>
-                    <Button onClick={startNewConsultation} size="sm" className="text-xs px-2 py-1 h-6">
-                        New Consultation
-                    </Button>
                 </div>
             </div>
 
@@ -1007,7 +1012,7 @@ function PatientDetailsPageContent() {
 
                 {/* Right Column - Patient Information (2/3 width) */}
                 <div className="w-2/3 flex flex-col overflow-hidden">
-                    <PatientInfoTabs patient={currentPatient} />
+                    <PatientInfoTabs patient={currentPatient} onNewClinicalNote={startNewClinicalNote} />
                 </div>
             </div>
         </div>

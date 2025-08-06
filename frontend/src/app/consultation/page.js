@@ -100,7 +100,7 @@ function ConsultationPageContent() {
         const newRecording = {
             id: currentRecordingNumber,
             duration: recordingTime,
-            timestamp: new Date(),
+            timestamp: '2024-01-15T10:00:00Z',
             title: `Recording ${currentRecordingNumber}`
         };
         
@@ -123,7 +123,7 @@ function ConsultationPageContent() {
                 physicalExam: `Comprehensive examination documented across multiple recording sessions. ${currentPatient.status === 'critical' ? 'Patient shows signs of distress with concerning vital parameters.' : 'Patient appears comfortable with stable vital signs.'}`,
                 assessment: `Comprehensive assessment based on ${recordings.length} consultation recordings: ${currentPatient.condition} in ${currentPatient.age}-year-old patient.`,
                 plan: `Based on comprehensive consultation analysis: ${currentPatient.status === 'critical' ? 'Immediate intervention required, continuous monitoring, specialized care consultation.' : 'Continue current management plan, scheduled follow-up care, patient education reinforcement.'}`,
-                timestamp: new Date(),
+                timestamp: '2024-01-15T10:00:00Z',
                 recordingsAnalyzed: recordings.length,
                 processingTime: 4
             };
@@ -191,7 +191,7 @@ Plan: ${aiSummary.plan}
     };
 
     const completeConsultation = () => {
-        alert(`Consultation completed for ${currentPatient?.name} with ${recordings.length} recordings`);
+        alert(`Clinical note completed for ${currentPatient?.name} with ${recordings.length} recordings`);
         setTimeout(() => {
             router.push(`/patient-details?id=${currentPatient?.id}`);
         }, 1000);
@@ -232,7 +232,7 @@ Plan: ${aiSummary.plan}
                     </button>
                     <span className="font-bold">MedAssist AI</span>
                     <span>{user.name} ({user.role})</span>
-                    <span className="text-green-400">New Consultation</span>
+                    <span className="text-green-400">New Clinical Note</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <button onClick={handleNotifications} className="px-2 py-1 bg-white/10 rounded text-xs">
@@ -259,7 +259,7 @@ Plan: ${aiSummary.plan}
                             <Badge variant={currentPatient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs px-1 py-0">
                                 {currentPatient.status}
                             </Badge>
-                            <span className="text-gray-500">{new Date().toLocaleDateString()}</span>
+                            <span className="text-gray-500">Jan 15, 2024</span>
                         </div>
                     </div>
                 </div>
@@ -307,17 +307,17 @@ Plan: ${aiSummary.plan}
                     </div>
                 )}
 
-                {/* Save Consultation - Compact */}
+                {/* Save Clinical Note - Compact */}
                 <div className="mt-2 mb-4">
                     <div className="bg-white rounded border p-2">
                         <div className="flex items-center justify-between text-xs">
                             <div>
-                                <span className="font-semibold">Save Consultation</span>
-                                <span className="text-gray-500 ml-2">Will be added to patient record</span>
+                                <span className="font-semibold">Save Clinical Note</span>
+                                <span className="text-gray-500 ml-2">Will be added to patient's clinical records</span>
                             </div>
                             <div className="flex gap-1">
                                 <Button 
-                                    onClick={() => alert('Consultation saved as draft')}
+                                    onClick={() => alert('Clinical note saved as draft')}
                                     variant="outline"
                                     size="sm"
                                     className="text-xs px-2 py-1 h-6"
@@ -329,7 +329,7 @@ Plan: ${aiSummary.plan}
                                     size="sm"
                                     className="text-xs px-2 py-1 h-6"
                                 >
-                                    ✅ Complete
+                                    ✅ Save Note
                                 </Button>
                             </div>
                         </div>
