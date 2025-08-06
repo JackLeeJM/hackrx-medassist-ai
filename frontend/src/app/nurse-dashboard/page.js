@@ -251,27 +251,16 @@ export default function NurseDashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null)
   const [patientView, setPatientView] = useState('outpatient') // 'inpatient' or 'outpatient'
 
-  // Generate date options (today + 6 days)
-  const generateDates = () => {
-    const dates = []
-    const today = new Date('2024-01-15') // Mock today date
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today)
-      date.setDate(today.getDate() + i)
-      dates.push({
-        value: date.toISOString().split('T')[0],
-        label: date.toLocaleDateString('en-US', { 
-          weekday: 'short', 
-          month: 'short', 
-          day: 'numeric' 
-        }),
-        isToday: i === 0
-      })
-    }
-    return dates
-  }
-
-  const [dates] = useState(generateDates())
+  // Static date options to avoid hydration mismatch
+  const dates = [
+    { value: '2024-01-15', label: 'Mon, Jan 15', isToday: true },
+    { value: '2024-01-16', label: 'Tue, Jan 16', isToday: false },
+    { value: '2024-01-17', label: 'Wed, Jan 17', isToday: false },
+    { value: '2024-01-18', label: 'Thu, Jan 18', isToday: false },
+    { value: '2024-01-19', label: 'Fri, Jan 19', isToday: false },
+    { value: '2024-01-20', label: 'Sat, Jan 20', isToday: false },
+    { value: '2024-01-21', label: 'Sun, Jan 21', isToday: false }
+  ]
 
   // Get unique specialties for filter
   const specialties = ['all', ...new Set(Object.values(mockDoctorsSchedule).map(doctor => doctor.specialty))]
