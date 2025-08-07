@@ -264,7 +264,7 @@ Plan: ${aiSummary.plan}
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-800">Save Consultation</h3>
-                                <p className="text-gray-600 text-sm">This consultation will be added to the patient's medical record</p>
+                                <p className="text-gray-600 text-sm">This consultation will be added to the patient&apos;s medical record</p>
                             </div>
                             <div className="flex gap-3">
                                 <Button 
