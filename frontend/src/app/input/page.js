@@ -346,7 +346,7 @@ Plan: ${aiSummary.plan}
                         <div className="flex items-center justify-between text-xs">
                             <div>
                                 <span className="font-semibold">Save Clinical Note</span>
-                                <span className="text-gray-500 ml-2">Will be added to patient's clinical records</span>
+                                <span className="text-gray-500 ml-2">Will be added to patient&apos;s clinical records</span>
                             </div>
                             <div className="flex gap-1">
                                 <Button 

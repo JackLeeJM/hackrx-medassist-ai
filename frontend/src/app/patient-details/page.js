@@ -1030,7 +1030,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote }) {
 
                         {/* Medication Schedule */}
                         <div className="py-1 border-b">
-                            <div className="font-semibold mb-1">Today's Schedule:</div>
+                            <div className="font-semibold mb-1">Today&apos;s Schedule:</div>
                             <div className="space-y-0.5">
                                 <div className="grid grid-cols-4 gap-1 text-xs font-semibold py-0.5 border-b">
                                     <span>Time</span>
