@@ -11,12 +11,58 @@ import CriticalPatientsSection from '@/components/dashboard/CriticalPatientsSect
 import ScheduleSection from '@/components/dashboard/ScheduleSection'
 import RecentActivitySection from '@/components/dashboard/RecentActivitySection'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 // Import data and utilities
 import { mockDashboardData, findPatientById, animateStats } from '@/lib/data'
 
+// Mock data for inpatient and outpatient views
+const mockInpatientData = {
+  criticalPatients: [
+    { name: "Maria Rodriguez", room: "302A", condition: "Post-op complications", severity: "Critical", time: "2h ago", type: "inpatient" },
+    { name: "Robert Davis", room: "412B", condition: "Cardiac monitoring", severity: "Serious", time: "4h ago", type: "inpatient" },
+    { name: "William Garcia", room: "367C", condition: "Emergency admission", severity: "Critical", time: "1h ago", type: "inpatient" }
+  ],
+  schedule: [
+    { time: "08:00", patient: "Maria Rodriguez", type: "Post-op Round", room: "302A" },
+    { time: "09:30", patient: "Robert Davis", type: "Cardiac Consult", room: "412B" },
+    { time: "11:00", patient: "Jennifer Miller", type: "Wound Check", room: "289D" },
+    { time: "14:00", patient: "William Garcia", type: "Emergency Eval", room: "367C" }
+  ],
+  recentActivity: [
+    { icon: "🏥", action: "Admitted patient", patient: "William Garcia", time: "1h ago" },
+    { icon: "💊", action: "Medication adjusted", patient: "Maria Rodriguez", time: "2h ago" },
+    { icon: "📊", action: "Lab results reviewed", patient: "Robert Davis", time: "3h ago" },
+    { icon: "🔔", action: "Critical alert resolved", patient: "Jennifer Miller", time: "4h ago" }
+  ]
+}
+
+const mockOutpatientData = {
+  criticalPatients: [
+    { name: "James Wilson", room: "Clinic A", condition: "Chest pain eval", severity: "Urgent", time: "30m ago", type: "outpatient" },
+    { name: "Sarah Johnson", room: "Clinic B", condition: "Hypertension crisis", severity: "Serious", time: "1h ago", type: "outpatient" }
+  ],
+  schedule: [
+    { time: "09:00", patient: "Emma Thompson", type: "Follow-up visit", location: "Clinic A" },
+    { time: "10:00", patient: "Michael Chen", type: "New patient consult", location: "Clinic B" },
+    { time: "11:00", patient: "Lisa Parker", type: "Annual physical", location: "Clinic A" },
+    { time: "14:00", patient: "David Brown", type: "Diabetes management", location: "Clinic C" },
+    { time: "15:30", patient: "Sarah Johnson", type: "BP follow-up", location: "Clinic B" }
+  ],
+  recentActivity: [
+    { icon: "📋", action: "Consultation completed", patient: "Emma Thompson", time: "30m ago" },
+    { icon: "🧪", action: "Lab ordered", patient: "Michael Chen", time: "1h ago" },
+    { icon: "💊", action: "Prescription sent", patient: "Lisa Parker", time: "1.5h ago" },
+    { icon: "📞", action: "Follow-up scheduled", patient: "David Brown", time: "2h ago" }
+  ]
+}
+
 export default function Dashboard() {
   const router = useRouter()
+  const [user, setUser] = useState(null)
   const [stats, setStats] = useState({
     totalPatients: 0,
     newAdmissions: 0,
@@ -26,10 +72,26 @@ export default function Dashboard() {
   const [prepStates, setPrepStates] = useState({})
 
   useEffect(() => {
-    // Animate stats on component mount
+    // Check if user is authenticated
+    const userData = localStorage.getItem('user')
+    if (!userData) {
+      router.push('/login')
+      return
+    }
+    
+    const parsedUser = JSON.parse(userData)
+    setUser(parsedUser)
+
+    // Redirect nurses to their specific dashboard
+    if (parsedUser.role === 'nurse') {
+      router.push('/nurse-dashboard')
+      return
+    }
+
+    // Animate stats on component mount for doctors
     const interval = animateStats(mockDashboardData.stats, setStats)
     return () => clearInterval(interval)
-  }, [])
+  }, [router])
 
   const handlePatientSelect = (patient) => {
     router.push(`/patient-details?id=${patient.id}`)
@@ -82,82 +144,197 @@ export default function Dashboard() {
     router.push('/')
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    router.push('/login')
+  }
+
+  if (!user) {
+    return null // Will redirect to login
+  }
+
   return (
     <ErrorBoundary>
-      <div className="bg-gray-50 font-sans min-h-screen flex flex-col">
-        {/* Header */}
-        <Header
-          onBack={handleBack}
-          timeSaved={mockDashboardData.doctor.timeSaved}
-          notificationCount={3}
-          onNotifications={handleNotifications}
-          title="MedAssist AI"
-          subtitle={mockDashboardData.doctor.name}
-          showBackButton={false}
-        />
-
-        {/* Main Dashboard Content */}
-        <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-        {/* Patient Search Bar */}
-        <section className="mb-8">
-          <PatientSearchBar 
-            onPatientSelect={handlePatientSelect}
-            onSearch={handleSearch}
-          />
-        </section>
-
-        {/* Quick Stats Row */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard 
-            icon="fas fa-users"
-            value={stats.totalPatients}
-            label="Total Patients"
-            iconColor="bg-gray-800"
-          />
-          <StatCard 
-            icon="fas fa-user-plus"
-            value={stats.newAdmissions}
-            label="New Admissions"
-            iconColor="bg-gray-700"
-          />
-          <StatCard 
-            icon="fas fa-sign-out-alt"
-            value={stats.pendingDischarge}
-            label="Pending Discharge"
-            iconColor="bg-gray-600"
-          />
-          <StatCard 
-            icon="fas fa-robot"
-            value={`${stats.tasksAutomated}%`}
-            label="Tasks Automated"
-            iconColor="bg-gray-500"
-          />
-        </section>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Left Column - Critical Patients + Schedule */}
-          <section className="lg:col-span-3 space-y-8">
-            <CriticalPatientsSection
-              criticalPatients={mockDashboardData.criticalPatients}
-              onViewPatient={handleViewPatient}
-            />
-
-            <ScheduleSection
-              schedule={mockDashboardData.schedule}
-              prepStates={prepStates}
-              onPrepareVisit={handlePrepareVisit}
-            />
-          </section>
-
-          {/* Right Column - Recent Activity */}
-          <section className="lg:col-span-1">
-            <RecentActivitySection
-              recentActivity={mockDashboardData.recentActivity}
-              onViewAll={handleViewAllActivity}
-            />
-          </section>
+      <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
+        {/* Compact Header */}
+        <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
+          <div className="flex items-center gap-4">
+            <span className="font-bold">MedAssist AI</span>
+            <span>{user.name} ({user.role})</span>
+            <span className="text-green-400">{mockDashboardData.doctor.timeSaved} saved today</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" onClick={handleNotifications} className="text-xs">
+              🔔 {3}
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
+              Logout
+            </Button>
+          </div>
         </div>
-      </main>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden flex flex-col p-3">
+          {/* Compact Search & Stats */}
+          <div className="flex-shrink-0 mb-3">
+            <div className="flex gap-3 items-center mb-2">
+              <Input
+                type="text"
+                placeholder="Search patients..."
+                className="flex-1 text-xs"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') handleSearch(e.target.value);
+                }}
+              />
+              <div className="flex gap-2 text-xs">
+                <Badge variant="default" className="text-center min-w-16 flex-col">
+                  <div className="font-bold">{stats.totalPatients}</div>
+                  <div>Patients</div>
+                </Badge>
+                <Badge variant="secondary" className="text-center min-w-16 flex-col">
+                  <div className="font-bold">{stats.newAdmissions}</div>
+                  <div>New</div>
+                </Badge>
+                <Badge variant="outline" className="text-center min-w-16 flex-col">
+                  <div className="font-bold">{stats.pendingDischarge}</div>
+                  <div>Discharge</div>
+                </Badge>
+                <Badge variant="secondary" className="text-center min-w-16 flex-col">
+                  <div className="font-bold">{stats.tasksAutomated}%</div>
+                  <div>Auto</div>
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content Grid */}
+          <div className="flex-1 grid grid-cols-4 gap-3 overflow-hidden">
+            {/* Inpatient List - Critical Patients */}
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-red-50 border-b text-xs font-semibold text-red-800">
+                🏥 Critical Inpatients ({mockInpatientData.criticalPatients.length})
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
+                {mockInpatientData.criticalPatients.map((patient, index) => (
+                  <div key={index} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 cursor-pointer text-xs border-b border-gray-100 last:border-0"
+                       onClick={() => handleViewPatient(patient.name)}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-6 h-6 rounded text-white text-xs flex items-center justify-center ${
+                        patient.severity === 'Critical' ? 'bg-red-600' : 
+                        patient.severity === 'Serious' ? 'bg-orange-600' : 'bg-yellow-600'
+                      }`}>
+                        {patient.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <div className="font-medium">{patient.name}</div>
+                        <div className="text-muted-foreground">Room {patient.room} • {patient.condition}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`font-medium ${
+                        patient.severity === 'Critical' ? 'text-red-600' : 
+                        patient.severity === 'Serious' ? 'text-orange-600' : 'text-yellow-600'
+                      }`}>{patient.severity}</div>
+                      <div className="text-muted-foreground">{patient.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Outpatient Schedule */}
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-blue-50 border-b text-xs font-semibold text-blue-800">
+                🏢 Today&apos;s Appointments ({mockOutpatientData.schedule.length})
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
+                {mockOutpatientData.schedule.map((appointment, index) => (
+                  <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium">{appointment.time}</span>
+                      <span className={`px-1 py-0 rounded text-xs ${
+                        prepStates[`out_${index}`] === 'preparing' ? 'bg-yellow-100 text-yellow-800' :
+                        prepStates[`out_${index}`] === 'ready' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {prepStates[`out_${index}`] === 'preparing' ? 'Prep...' :
+                         prepStates[`out_${index}`] === 'ready' ? 'Ready' : 'Pending'}
+                      </span>
+                    </div>
+                    <div className="text-foreground">{appointment.patient}</div>
+                    <div className="text-muted-foreground">{appointment.type}</div>
+                    <div className="text-muted-foreground text-xs">{appointment.location}</div>
+                    <Button 
+                      onClick={() => handlePrepareVisit(appointment.patient, `out_${index}`)}
+                      size="sm"
+                      className="mt-1 text-xs"
+                    >
+                      Prepare
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Inpatient Rounds Schedule */}
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-green-50 border-b text-xs font-semibold text-green-800">
+                📅 Today&apos;s Rounds ({mockInpatientData.schedule.length})
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
+                {mockInpatientData.schedule.map((appointment, index) => (
+                  <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium">{appointment.time}</span>
+                      <span className={`px-1 py-0 rounded text-xs ${
+                        prepStates[`in_${index}`] === 'preparing' ? 'bg-yellow-100 text-yellow-800' :
+                        prepStates[`in_${index}`] === 'ready' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {prepStates[`in_${index}`] === 'preparing' ? 'Prep...' :
+                         prepStates[`in_${index}`] === 'ready' ? 'Ready' : 'Pending'}
+                      </span>
+                    </div>
+                    <div className="text-gray-600">{appointment.patient}</div>
+                    <div className="text-gray-500">{appointment.type}</div>
+                    <div className="text-gray-400 text-xs">{appointment.room}</div>
+                    <Button 
+                      onClick={() => handlePrepareVisit(appointment.patient, `in_${index}`)}
+                      size="sm"
+                      variant="secondary"
+                      className="mt-1 text-xs"
+                    >
+                      Prepare
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity - Compact */}
+            <Card className="col-span-1 overflow-hidden flex flex-col">
+              <CardHeader className="px-3 py-2 bg-purple-50 border-b text-xs font-semibold text-purple-800 flex justify-between">
+                <span>📊 Recent Activity</span>
+                <Button variant="link" onClick={handleViewAllActivity} className="text-xs p-0 h-auto">View All</Button>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto p-2">
+                {/* Mix of inpatient and outpatient activities */}
+                {[...mockInpatientData.recentActivity.slice(0, 2), ...mockOutpatientData.recentActivity.slice(0, 2)].map((activity, index) => (
+                  <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">{activity.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{activity.action}</div>
+                        <div className="text-gray-500">{activity.patient}</div>
+                        <div className="text-gray-400">{activity.time}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </ErrorBoundary>
   )
