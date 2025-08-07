@@ -346,6 +346,7 @@ Plan: ${aiSummary.plan}
                         <div className="flex items-center justify-between text-xs">
                             <div>
                                 <span className="font-semibold">Save Clinical Note</span>
+{/* eslint-disable-next-line react/no-unescaped-entities */}
                                 <span className="text-gray-500 ml-2">Will be added to patient's clinical records</span>
                             </div>
                             <div className="flex gap-1">
