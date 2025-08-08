@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -221,11 +222,60 @@ const mockPatients = [
             { type: "imaging", action: "CT scan completed", time: "2 hours ago", date: "March 14, 2024", icon: "fas fa-x-ray", status: "completed", details: "CT scan shows appendicitis with possible perforation and abscess formation." },
             { type: "consultation", action: "Surgical consult", time: "1 hour ago", date: "March 14, 2024", icon: "fas fa-user-md", status: "completed", details: "General surgery consulted, recommends immediate surgical intervention." }
         ]
+    },
+    // Ophthalmology patients for Dr. Ahmad
+    { 
+        id: "P011", 
+        name: "Ahmed Hassan", 
+        room: "205B", 
+        age: 65, 
+        condition: "Acute angle-closure glaucoma", 
+        status: "critical",
+        vitals: { bp: "160/95", hr: "100", temp: "99.1", o2sat: "96" },
+        insights: "Acute angle-closure glaucoma with severe IOP elevation in both eyes. Patient reports severe eye pain, nausea, and seeing halos around lights. Requires immediate laser peripheral iridotomy to prevent permanent vision loss.",
+        timeline: [
+            { type: "emergency", action: "Emergency ophthalmology consultation", time: "2 hours ago", date: "March 14, 2024", icon: "fas fa-eye", status: "completed", details: "Patient presented with severe bilateral eye pain and vision loss." },
+            { type: "diagnostic", action: "IOP measurement", time: "1.5 hours ago", date: "March 14, 2024", icon: "fas fa-compress", status: "completed", details: "Intraocular pressure: OD 45mmHg, OS 42mmHg (Critical elevation)" },
+            { type: "medication", action: "Anti-glaucoma drops started", time: "1 hour ago", date: "March 14, 2024", icon: "fas fa-eye-dropper", status: "ongoing", details: "Pilocarpine 2% Q15min, Timolol 0.5% BID, Acetazolamide IV" },
+            { type: "surgery", action: "Laser peripheral iridotomy scheduled", time: "scheduled", date: "March 14, 2024", icon: "fas fa-laser", status: "pending", details: "Urgent LPI procedure scheduled within 2 hours to restore aqueous drainage." }
+        ]
+    },
+    { 
+        id: "P012", 
+        name: "Linda Chen", 
+        room: "208A", 
+        age: 58, 
+        condition: "Retinal detachment", 
+        status: "critical",
+        vitals: { bp: "135/85", hr: "78", temp: "98.4", o2sat: "98" },
+        insights: "Macula-off retinal detachment in right eye. Vision significantly compromised. Requires urgent vitrectomy and retinal reattachment surgery to prevent permanent vision loss.",
+        timeline: [
+            { type: "emergency", action: "Urgent ophthalmology referral", time: "4 hours ago", date: "March 14, 2024", icon: "fas fa-eye", status: "completed", details: "Patient reported sudden vision loss and flashing lights in right eye." },
+            { type: "diagnostic", action: "Dilated fundus examination", time: "3 hours ago", date: "March 14, 2024", icon: "fas fa-search", status: "completed", details: "Large superior retinal detachment involving macula confirmed." },
+            { type: "imaging", action: "OCT scan performed", time: "2 hours ago", date: "March 14, 2024", icon: "fas fa-camera", status: "completed", details: "OCT confirms macular detachment with subretinal fluid." },
+            { type: "surgery", action: "Vitrectomy scheduled", time: "scheduled", date: "March 14, 2024", icon: "fas fa-scalpel", status: "pending", details: "Emergency vitrectomy with gas tamponade scheduled for today." }
+        ]
+    },
+    { 
+        id: "P013", 
+        name: "Omar Malik", 
+        room: "210C", 
+        age: 72, 
+        condition: "Corneal perforation", 
+        status: "serious",
+        vitals: { bp: "145/90", hr: "82", temp: "98.8", o2sat: "97" },
+        insights: "Traumatic corneal perforation with iris prolapse. High risk of endophthalmitis. Requires immediate corneal repair and prophylactic antibiotic therapy.",
+        timeline: [
+            { type: "emergency", action: "Eye trauma admission", time: "6 hours ago", date: "March 14, 2024", icon: "fas fa-ambulance", status: "completed", details: "Patient sustained penetrating eye injury from metal fragment." },
+            { type: "diagnostic", action: "Slit lamp examination", time: "5 hours ago", date: "March 14, 2024", icon: "fas fa-eye", status: "completed", details: "3mm corneal laceration with iris tissue prolapse identified." },
+            { type: "medication", action: "Prophylactic antibiotics", time: "4 hours ago", date: "March 14, 2024", icon: "fas fa-pills", status: "ongoing", details: "Topical and systemic antibiotics started to prevent infection." },
+            { type: "surgery", action: "Corneal repair scheduled", time: "scheduled", date: "March 14, 2024", icon: "fas fa-band-aid", status: "pending", details: "Primary corneal repair with iris repositioning planned." }
+        ]
     }
 ];
 
 // Patient Information Tabs Component
-function PatientInfoTabs({ patient, onNewClinicalNote }) {
+function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
     const [activeTab, setActiveTab] = useState('summary');
     const [patientUpdates, setPatientUpdates] = useState([]);
     const [selectedTrend, setSelectedTrend] = useState(null);
@@ -310,7 +360,10 @@ function PatientInfoTabs({ patient, onNewClinicalNote }) {
                                     <span className="font-bold">CRITICAL PATIENT</span>
                                 </div>
                                 <div className="text-red-700 text-xs mt-1">
-                                    Requires immediate attention and continuous monitoring
+                                    {user?.specialty === 'Ophthalmologist' 
+                                        ? 'Immediate ophthalmological intervention required'
+                                        : 'Requires immediate attention and continuous monitoring'
+                                    }
                                 </div>
                             </div>
                         )}
@@ -318,7 +371,9 @@ function PatientInfoTabs({ patient, onNewClinicalNote }) {
                         {/* Patient Overview Card */}
                         <div className="bg-blue-50 border border-blue-200 rounded p-2">
                             <div className="flex items-center justify-between mb-2">
-                                <div className="font-bold text-blue-900">Patient Overview</div>
+                                <div className="font-bold text-blue-900">
+                                    {user?.specialty === 'Ophthalmologist' ? '👁️ Ophthalmology Overview' : 'Patient Overview'}
+                                </div>
                                 <Badge variant={patient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
                                     {patient.status.toUpperCase()}
                                 </Badge>
@@ -328,14 +383,98 @@ function PatientInfoTabs({ patient, onNewClinicalNote }) {
                                 <div><strong>Age:</strong> {patient.age} years old</div>
                                 <div><strong>Primary Condition:</strong> {patient.condition}</div>
                                 <div><strong>Admission:</strong> 3 days ago</div>
+                                {user?.specialty === 'Ophthalmologist' && (
+                                    <>
+                                        <div><strong>Visual Acuity:</strong> OD 20/200, OS 20/400</div>
+                                        <div><strong>IOP:</strong> OD 45mmHg, OS 42mmHg</div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
-                        {/* Clinical Assessment */}
+                        {/* Clinical Assessment - Ophthalmology Specific */}
                         <div className="bg-purple-50 border border-purple-200 rounded p-2">
-                            <div className="font-bold text-purple-900 mb-1">🧠 AI Clinical Assessment</div>
-                            <div className="text-purple-800 text-xs leading-relaxed">{patient.insights}</div>
+                            <div className="font-bold text-purple-900 mb-1">
+                                {user?.specialty === 'Ophthalmologist' ? '👁️ Ophthalmological Assessment' : '🧠 AI Clinical Assessment'}
+                            </div>
+                            <div className="text-purple-800 text-xs leading-relaxed">
+                                {user?.specialty === 'Ophthalmologist' 
+                                    ? `Acute angle-closure glaucoma with severe IOP elevation. Immediate laser peripheral iridotomy indicated. Patient reports severe eye pain, nausea, and seeing halos around lights. Pupil is mid-dilated and non-reactive. Corneal edema present.`
+                                    : patient.insights
+                                }
+                            </div>
                         </div>
+
+                        {/* Ophthalmology-Specific Sections */}
+                        {user?.specialty === 'Ophthalmologist' && (
+                            <>
+                                {/* Eye Examination */}
+                                <div className="bg-green-50 border border-green-200 rounded p-2">
+                                    <div className="font-bold text-green-900 mb-2">👁️ Eye Examination Findings</div>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <div className="p-2 rounded bg-white border">
+                                            <div className="font-medium">Right Eye (OD)</div>
+                                            <div className="text-sm">• VA: 20/200</div>
+                                            <div className="text-sm">• IOP: 45mmHg ↑</div>
+                                            <div className="text-sm">• Pupil: Mid-dilated, non-reactive</div>
+                                            <div className="text-sm">• Cornea: Edematous</div>
+                                        </div>
+                                        <div className="p-2 rounded bg-white border">
+                                            <div className="font-medium">Left Eye (OS)</div>
+                                            <div className="text-sm">• VA: 20/400</div>
+                                            <div className="text-sm">• IOP: 42mmHg ↑</div>
+                                            <div className="text-sm">• Pupil: Mid-dilated, sluggish</div>
+                                            <div className="text-sm">• Cornea: Mild edema</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Ophthalmic Medications */}
+                                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                                    <div className="font-bold text-yellow-900 mb-2">💊 Current Ophthalmic Medications</div>
+                                    <div className="space-y-1 text-xs">
+                                        <div className="flex justify-between items-center">
+                                            <span>• Pilocarpine 2% drops</span>
+                                            <span className="text-green-600 font-medium">Q15min x 4</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span>• Timolol 0.5%</span>
+                                            <span className="text-blue-600 font-medium">BID</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span>• Acetazolamide 500mg</span>
+                                            <span className="text-purple-600 font-medium">IV STAT</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span>• Mannitol 20%</span>
+                                            <span className="text-red-600 font-medium">IV 1.5g/kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Treatment Plan */}
+                                <div className="bg-indigo-50 border border-indigo-200 rounded p-2">
+                                    <div className="font-bold text-indigo-900 mb-2">🎯 Treatment Plan</div>
+                                    <div className="space-y-1 text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                            <span className="font-medium">URGENT:</span>
+                                            <span>Laser peripheral iridotomy within 2 hours</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                                            <span className="font-medium">Monitor:</span>
+                                            <span>IOP every 30 minutes post-treatment</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                            <span className="font-medium">Follow-up:</span>
+                                            <span>Schedule bilateral prophylactic LPI</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         {/* Current Vitals with Status */}
                         <div className="bg-gray-50 border rounded p-2">
@@ -1840,28 +1979,16 @@ function PatientDetailsPageContent() {
 
     return (
         <div className="h-screen flex flex-col bg-background text-foreground font-sans overflow-hidden">
-            {/* Compact Header - Consistent with Doctor/Nurse Dashboard */}
-            <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
-                <div className="flex items-center gap-4">
-                    <button 
-                        onClick={() => router.back()}
-                        className="px-2 py-1 bg-white/10 rounded text-xs hover:bg-white/20"
-                    >
-                        ← Back
-                    </button>
-                    <span className="font-bold">MedAssist AI</span>
-                    <span>{user.name} ({user.role})</span>
-                    <span className="text-green-400">Patient Details</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="secondary" size="sm" onClick={handleNotifications} className="text-xs">
-                        🔔 {3}
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
-                        Logout
-                    </Button>
-                </div>
-            </div>
+            <Header
+                showBackButton={true}
+                onBack={() => router.back()}
+                onNotifications={handleNotifications}
+                onLogout={handleLogout}
+                onProfile={() => alert('Profile page - feature coming soon!')}
+                userName={user.name}
+                userEmail={user.email}
+                notificationCount={3}
+            />
 
             {/* Patient Header - Ultra Compact */}
             <div className="flex-shrink-0 px-3 py-1 bg-card border-b">
@@ -1986,7 +2113,7 @@ function PatientDetailsPageContent() {
 
                 {/* Right Column - Patient Information (expanded to ~77% width) */}
                 <div className="w-[77%] flex flex-col overflow-hidden">
-                    <PatientInfoTabs patient={currentPatient} onNewClinicalNote={startNewClinicalNote} />
+                    <PatientInfoTabs patient={currentPatient} onNewClinicalNote={startNewClinicalNote} user={user} />
                 </div>
             </div>
         </div>

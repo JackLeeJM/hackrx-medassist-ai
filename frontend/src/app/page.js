@@ -14,13 +14,12 @@ import { ErrorBoundary } from '@/components/ui/error-boundary'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 
 // Import data and utilities
-import { mockDashboardData, findPatientById, animateStats } from '@/lib/data'
+import { mockDashboardData, findPatientById, findPatientByName } from '@/lib/data'
 
-// Mock data for inpatient and outpatient views
-const mockInpatientData = {
+// Mock data for different specialties
+const mockDrSitiData = {
   criticalPatients: [
     { name: "Maria Rodriguez", room: "302A", condition: "Post-op complications", severity: "Critical", time: "2h ago", type: "inpatient" },
     { name: "Robert Davis", room: "412B", condition: "Cardiac monitoring", severity: "Serious", time: "4h ago", type: "inpatient" },
@@ -39,6 +38,29 @@ const mockInpatientData = {
     { icon: "🔔", action: "Critical alert resolved", patient: "Jennifer Miller", time: "4h ago" }
   ]
 }
+
+const mockDrAhmadData = {
+  criticalPatients: [
+    { name: "Ahmed Hassan", room: "205B", condition: "Acute angle-closure glaucoma", severity: "Critical", time: "1h ago", type: "inpatient" },
+    { name: "Linda Chen", room: "208A", condition: "Retinal detachment", severity: "Critical", time: "3h ago", type: "inpatient" },
+    { name: "Omar Malik", room: "210C", condition: "Corneal perforation", severity: "Serious", time: "5h ago", type: "inpatient" }
+  ],
+  schedule: [
+    { time: "08:00", patient: "Ahmed Hassan", type: "Emergency Surgery", room: "205B" },
+    { time: "10:00", patient: "Linda Chen", type: "Vitrectomy", room: "208A" },
+    { time: "13:00", patient: "Sarah Al-Zahra", type: "Cataract Surgery", room: "OR-3" },
+    { time: "15:00", patient: "Omar Malik", type: "Corneal Repair", room: "210C" }
+  ],
+  recentActivity: [
+    { icon: "👁️", action: "Emergency surgery completed", patient: "Ahmed Hassan", time: "1h ago" },
+    { icon: "📊", action: "OCT scan reviewed", patient: "Linda Chen", time: "2h ago" },
+    { icon: "💊", action: "IOP lowering drops prescribed", patient: "Fatima Al-Rashid", time: "3h ago" },
+    { icon: "🔍", action: "Fundus photography ordered", patient: "Omar Malik", time: "4h ago" }
+  ]
+}
+
+// Default to GP data for backward compatibility
+const mockInpatientData = mockDrSitiData;
 
 const mockOutpatientData = {
   criticalPatients: [
@@ -63,13 +85,8 @@ const mockOutpatientData = {
 export default function Dashboard() {
   const router = useRouter()
   const [user, setUser] = useState(null)
-  const [stats, setStats] = useState({
-    totalPatients: 0,
-    newAdmissions: 0,
-    pendingDischarge: 0,
-    tasksAutomated: 0
-  })
   const [prepStates, setPrepStates] = useState({})
+  const [currentData, setCurrentData] = useState(mockInpatientData)
 
   useEffect(() => {
     // Check if user is authenticated
@@ -88,9 +105,14 @@ export default function Dashboard() {
       return
     }
 
-    // Animate stats on component mount for doctors
-    const interval = animateStats(mockDashboardData.stats, setStats)
-    return () => clearInterval(interval)
+    // Set appropriate data based on doctor's email
+    if (parsedUser.email === 'drahmad@hospital.com') {
+      setCurrentData(mockDrAhmadData)
+    } else {
+      setCurrentData(mockDrSitiData)
+    }
+
+    // No stats animation needed
   }, [router])
 
   const handlePatientSelect = (patient) => {
@@ -107,11 +129,12 @@ export default function Dashboard() {
   }
 
   const handleViewPatient = (patientName) => {
-    const patient = mockDashboardData.criticalPatients.find(p => p.name === patientName)
-    if (patient) {
-      // Find the patient ID from the main patient list
-      const fullPatient = findPatientById(patient.name) || { id: 'P001' } // fallback
+    // Find the patient by name from the main patient list
+    const fullPatient = findPatientByName(patientName)
+    if (fullPatient) {
       router.push(`/patient-details?id=${fullPatient.id}`)
+    } else {
+      alert(`Patient ${patientName} not found in the system`)
     }
   }
 
@@ -156,25 +179,18 @@ export default function Dashboard() {
   return (
     <ErrorBoundary>
       <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
-        {/* Compact Header */}
-        <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
-          <div className="flex items-center gap-4">
-            <span className="font-bold">MedAssist AI</span>
-            <span>{user.name} ({user.role})</span>
-            <span className="text-green-400">{mockDashboardData.doctor.timeSaved} saved today</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" onClick={handleNotifications} className="text-xs">
-              🔔 {3}
-            </Button>
-            <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
-              Logout
-            </Button>
-          </div>
-        </div>
+        <Header
+          showBackButton={false}
+          onNotifications={handleNotifications}
+          onLogout={handleLogout}
+          onProfile={() => alert('Profile page - feature coming soon!')}
+          userName={user.name}
+          userEmail={user.email}
+          notificationCount={3}
+        />
 
         {/* Main Content */}
-        <div className="flex-1 overflow-hidden flex flex-col p-3">
+        <div className="flex-1 overflow-hidden flex flex-col p-3" style={{ backgroundColor: '#f9f9f9' }}>
           {/* Compact Search & Stats */}
           <div className="flex-shrink-0 mb-3">
             <div className="flex gap-3 items-center mb-2">
@@ -186,24 +202,6 @@ export default function Dashboard() {
                   if (e.key === 'Enter') handleSearch(e.target.value);
                 }}
               />
-              <div className="flex gap-2 text-xs">
-                <Badge variant="default" className="text-center min-w-16 flex-col">
-                  <div className="font-bold">{stats.totalPatients}</div>
-                  <div>Patients</div>
-                </Badge>
-                <Badge variant="secondary" className="text-center min-w-16 flex-col">
-                  <div className="font-bold">{stats.newAdmissions}</div>
-                  <div>New</div>
-                </Badge>
-                <Badge variant="outline" className="text-center min-w-16 flex-col">
-                  <div className="font-bold">{stats.pendingDischarge}</div>
-                  <div>Discharge</div>
-                </Badge>
-                <Badge variant="secondary" className="text-center min-w-16 flex-col">
-                  <div className="font-bold">{stats.tasksAutomated}%</div>
-                  <div>Auto</div>
-                </Badge>
-              </div>
             </div>
           </div>
 
@@ -212,10 +210,10 @@ export default function Dashboard() {
             {/* Inpatient List - Critical Patients */}
             <Card className="col-span-1 overflow-hidden flex flex-col">
               <CardHeader className="px-3 py-2 bg-red-50 border-b text-xs font-semibold text-red-800">
-                🏥 Critical Inpatients ({mockInpatientData.criticalPatients.length})
+                🏥 Critical Inpatients ({currentData.criticalPatients.length})
               </CardHeader>
               <CardContent className="flex-1 overflow-y-auto p-2">
-                {mockInpatientData.criticalPatients.map((patient, index) => (
+                {currentData.criticalPatients.map((patient, index) => (
                   <div key={index} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 cursor-pointer text-xs border-b border-gray-100 last:border-0"
                        onClick={() => handleViewPatient(patient.name)}>
                     <div className="flex items-center gap-2">
@@ -279,10 +277,10 @@ export default function Dashboard() {
             {/* Inpatient Rounds Schedule */}
             <Card className="col-span-1 overflow-hidden flex flex-col">
               <CardHeader className="px-3 py-2 bg-green-50 border-b text-xs font-semibold text-green-800">
-                📅 Today&apos;s Rounds ({mockInpatientData.schedule.length})
+                📅 Today's Rounds ({currentData.schedule.length})
               </CardHeader>
               <CardContent className="flex-1 overflow-y-auto p-2">
-                {mockInpatientData.schedule.map((appointment, index) => (
+                {currentData.schedule.map((appointment, index) => (
                   <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium">{appointment.time}</span>
@@ -319,7 +317,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="flex-1 overflow-y-auto p-2">
                 {/* Mix of inpatient and outpatient activities */}
-                {[...mockInpatientData.recentActivity.slice(0, 2), ...mockOutpatientData.recentActivity.slice(0, 2)].map((activity, index) => (
+                {[...currentData.recentActivity.slice(0, 2), ...mockOutpatientData.recentActivity.slice(0, 2)].map((activity, index) => (
                   <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-lg">{activity.icon}</span>

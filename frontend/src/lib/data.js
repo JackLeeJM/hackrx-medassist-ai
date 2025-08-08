@@ -10,7 +10,11 @@ export const mockPatients = [
   { id: "P007", name: "Sarah Johnson", room: "334", age: 39, condition: "Hypertension", status: "stable" },
   { id: "P008", name: "Robert Davis", room: "412", age: 55, condition: "Cardiac monitoring", status: "critical" },
   { id: "P009", name: "Jennifer Miller", room: "289", age: 42, condition: "Post-surgery", status: "stable" },
-  { id: "P010", name: "William Garcia", room: "367", age: 33, condition: "Emergency admission", status: "critical" }
+  { id: "P010", name: "William Garcia", room: "367", age: 33, condition: "Emergency admission", status: "critical" },
+  // Ophthalmology patients for Dr. Ahmad
+  { id: "P011", name: "Ahmed Hassan", room: "205B", age: 65, condition: "Acute angle-closure glaucoma", status: "critical" },
+  { id: "P012", name: "Linda Chen", room: "208A", age: 58, condition: "Retinal detachment", status: "critical" },
+  { id: "P013", name: "Omar Malik", room: "210C", age: 72, condition: "Corneal perforation", status: "serious" }
 ];
 
 export const mockDashboardData = {
@@ -98,6 +102,10 @@ export const mockDashboardData = {
 // Patient utility functions
 export const findPatientById = (id) => {
   return mockPatients.find(patient => patient.id === id);
+};
+
+export const findPatientByName = (name) => {
+  return mockPatients.find(patient => patient.name.toLowerCase() === name.toLowerCase());
 };
 
 export const filterPatients = (query) => {

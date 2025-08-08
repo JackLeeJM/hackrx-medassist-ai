@@ -1,20 +1,39 @@
 import React from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Stethoscope, Clock, Bell, LogOut } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ArrowLeft, Bell, User } from 'lucide-react';
 
 const Header = ({
   onBack,
   onNotifications,
   onLogout,
-  timeSaved = "2h 15m",
+  onProfile,
   notificationCount = 3,
-  title = "MedAssist AI",
-  subtitle = "Dr. Sarah Johnson",
+  userName = "Dr. Siti Aminah",
+  userEmail = "",
   showBackButton = true
 }) => {
+  
+  // Determine profile photo based on user email
+  const getProfilePhoto = () => {
+    if (userEmail === 'drahmad@hospital.com') {
+      return '/drahmad.jpg';
+    } else if (userEmail === 'drsiti@hospital.com') {
+      return '/drsiti.jpg';
+    } else if (userEmail === 'nurse@hospital.com') {
+      return '/drsiti.jpg'; // Default for nurse or fallback
+    }
+    return '/drsiti.jpg'; // Default fallback
+  };
   return (
-    <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white px-8 py-4 shadow-xl border-b border-gray-700">
+    <header className="bg-white text-gray-900 px-6 py-2 shadow-sm border-b border-gray-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           {showBackButton && (
@@ -22,31 +41,29 @@ const Header = ({
               variant="ghost"
               size="icon"
               onClick={onBack}
-              className="bg-white/10 hover:bg-white/20 text-white"
+              className="hover:bg-gray-100 text-gray-700 p-2"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-5 h-5" />
             </Button>
           )}
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-semibold mb-1 flex items-center gap-2">
-              <Stethoscope className="w-6 h-6 text-gray-300" />
-              {title}
-            </h1>
-            <span className="text-white/90 text-sm">{subtitle}</span>
+          <div className="flex items-center">
+            <Image
+              src="/mymia_icon.svg"
+              alt="MyMia Icon"
+              width={32}
+              height={32}
+              className="h-8 w-auto"
+            />
           </div>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
-            <Clock className="w-4 h-4 text-green-400" />
-            <span className="font-medium">{timeSaved} saved today</span>
-          </div>
+        <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={onNotifications}
-            className="relative bg-white/10 hover:bg-white/20 text-white transition-all duration-300 group"
+            className="relative hover:bg-gray-100 text-blue-600 transition-all duration-300 group p-2"
           >
-            <Bell className="w-4 h-4 group-hover:animate-bounce" />
+            <Bell className="w-5 h-5 group-hover:animate-bounce" />
             {notificationCount > 0 && (
               <Badge
                 variant="destructive"
@@ -56,17 +73,30 @@ const Header = ({
               </Badge>
             )}
           </Button>
-          {onLogout && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onLogout}
-              className="bg-white/10 hover:bg-red-500/20 text-white transition-all duration-300 group"
-              title="Logout"
-            >
-              <LogOut className="w-4 h-4 group-hover:scale-110" />
-            </Button>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 transition-all duration-200">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  <Image
+                    src={getProfilePhoto()}
+                    alt="Profile"
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-gray-600 text-sm font-medium">{userName}</span>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={onProfile}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onLogout}>
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

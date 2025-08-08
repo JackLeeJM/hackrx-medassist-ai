@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 // Import components
+import Header from '@/components/layout/Header';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -254,28 +255,16 @@ Plan: ${aiSummary.plan}
 
     return (
         <div className="h-screen flex flex-col bg-background text-foreground font-sans overflow-hidden">
-            {/* Compact Header - Consistent with Doctor/Nurse Dashboard */}
-            <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
-                <div className="flex items-center gap-4">
-                    <button 
-                        onClick={handleBack}
-                        className="px-2 py-1 bg-white/10 rounded text-xs hover:bg-white/20"
-                    >
-                        ← Back
-                    </button>
-                    <span className="font-bold">MedAssist AI</span>
-                    <span>{user.name} ({user.role})</span>
-                    <span className="text-green-400">New Clinical Note</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="secondary" size="sm" onClick={handleNotifications} className="text-xs">
-                        🔔 {3}
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
-                        Logout
-                    </Button>
-                </div>
-            </div>
+            <Header
+                showBackButton={true}
+                onBack={handleBack}
+                onNotifications={handleNotifications}
+                onLogout={handleLogout}
+                onProfile={() => alert('Profile page - feature coming soon!')}
+                userName={user.name}
+                userEmail={user.email}
+                notificationCount={3}
+            />
 
             {/* Patient Header - Ultra Compact */}
             <div className="flex-shrink-0 px-3 py-1 bg-white border-b">

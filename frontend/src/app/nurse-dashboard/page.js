@@ -348,42 +348,38 @@ export default function NurseDashboard() {
   return (
     <ErrorBoundary>
       <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
-        {/* Compact Header - Consistent with Doctor Dashboard */}
-        <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
-          <div className="flex items-center gap-4">
-            <span className="font-bold">MedAssist AI</span>
-            <span>{user.name} ({user.role})</span>
-            <span className="text-green-400">1h 30m saved today</span>
-            <div className="flex items-center gap-1 ml-4">
-              <button 
-                onClick={() => setPatientView('outpatient')}
-                className={`px-2 py-1 rounded text-xs ${
-                  patientView === 'outpatient' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white/10 text-white/70 hover:bg-white/20'
-                }`}
-              >
-                Outpatient Schedule
-              </button>
-              <button 
-                onClick={() => setPatientView('inpatient')}
-                className={`px-2 py-1 rounded text-xs ${
-                  patientView === 'inpatient' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white/10 text-white/70 hover:bg-white/20'
-                }`}
-              >
-                Inpatient Rounds
-              </button>
-            </div>
-          </div>
+        <Header
+          showBackButton={false}
+          onNotifications={() => alert('Notifications: New patient admission, Lab results ready')}
+          onLogout={handleLogout}
+          onProfile={() => alert('Profile page - feature coming soon!')}
+          userName={user.name}
+          userEmail={user.email}
+          notificationCount={2}
+        />
+        {/* Patient View Toggle */}
+        <div className="flex-shrink-0 bg-gray-100 border-b px-4 py-2">
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" onClick={() => alert('Notifications: New patient admission, Lab results ready')} className="text-xs">
-              🔔 {2}
-            </Button>
-            <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
-              Logout
-            </Button>
+            <button 
+              onClick={() => setPatientView('outpatient')}
+              className={`px-3 py-1 rounded text-sm ${
+                patientView === 'outpatient' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Outpatient Schedule
+            </button>
+            <button 
+              onClick={() => setPatientView('inpatient')}
+              className={`px-3 py-1 rounded text-sm ${
+                patientView === 'inpatient' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Inpatient Rounds
+            </button>
           </div>
         </div>
 
