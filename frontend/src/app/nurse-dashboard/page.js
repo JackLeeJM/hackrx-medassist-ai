@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Search, ChevronLeft, ChevronRight, Clock, User, Phone, FileText } from 'lucide-react'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faHospital, faClock } from '@fortawesome/free-solid-svg-icons'
 
 // Static mock data for 30 doctors to avoid hydration mismatch
 const mockDoctorsSchedule = {
@@ -350,7 +352,6 @@ export default function NurseDashboard() {
       <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
         <Header
           showBackButton={false}
-          onNotifications={() => alert('Notifications: New patient admission, Lab results ready')}
           onLogout={handleLogout}
           onProfile={() => alert('Profile page - feature coming soon!')}
           userName={user.name}
@@ -603,10 +604,10 @@ export default function NurseDashboard() {
                     <div className="border-b pb-2">
                       <div className="font-semibold text-sm">{patientView === 'outpatient' ? selectedPatient.appointment?.patient : selectedPatient.name}</div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span>👨‍⚕️ {selectedDoctor}</span>
+                        <span><FontAwesomeIcon icon={faUser} className="mr-1" />{selectedDoctor}</span>
                         {patientView === 'outpatient' ? (
                           <>
-                            <span>🕒 {selectedPatient.appointment?.time}</span>
+                            <span><FontAwesomeIcon icon={faClock} className="mr-1" />{selectedPatient.appointment?.time}</span>
                             <span className={`px-1 py-0 rounded text-xs ${
                               selectedPatient.appointment?.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
                             }`}>
@@ -615,7 +616,7 @@ export default function NurseDashboard() {
                           </>
                         ) : (
                           <>
-                            <span>🏥 Room {selectedPatient.room}</span>
+                            <span><FontAwesomeIcon icon={faHospital} className="mr-1" />Room {selectedPatient.room}</span>
                             <span className={`px-1 py-0 rounded text-xs ${
                               selectedPatient.status === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                             }`}>

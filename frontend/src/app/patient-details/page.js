@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClipboard, faPills, faFlask, faChartLine, faHospital, faEye, faBrain, faExclamationTriangle, faEdit, faTrash, faPhone, faFilter, faHeart, faFile, faCalendar, faUsers, faCamera, faExclamationCircle, faCrosshairs, faLightbulb, faCircle, faUser, faDownload, faHome, faRobot } from '@fortawesome/free-solid-svg-icons';
 
 // Import new modular components
 import PatientHeader from '@/components/patient/PatientHeader';
@@ -17,52 +19,65 @@ import VitalSigns from '@/components/patient/VitalSigns';
 import QuickActions from '@/components/patient/QuickActions';
 import PatientStatus from '@/components/patient/PatientStatus';
 
-// Mock blood test data for all patients
+// Mock blood test data for selected patients
 const mockBloodTestData = {
-    'P001': [
+    'P003': [
+        {
+            date: '2024-08-08',
+            time: '09:00',
+            testType: 'HbA1c and Lipid Panel',
+            orderedBy: 'Dr. Siti Aminah',
+            results: {
+                hba1c: { value: 6.8, unit: '%', range: '<7.0', status: 'borderline' },
+                glucose: { value: 142, unit: 'mg/dL', range: '70-100', status: 'high' },
+                totalCholesterol: { value: 185, unit: 'mg/dL', range: '<200', status: 'normal' },
+                hdl: { value: 48, unit: 'mg/dL', range: '>40', status: 'normal' },
+                ldl: { value: 115, unit: 'mg/dL', range: '<100', status: 'borderline' },
+                triglycerides: { value: 160, unit: 'mg/dL', range: '<150', status: 'borderline' },
+                creatinine: { value: 0.9, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' },
+                bun: { value: 15, unit: 'mg/dL', range: '7-20', status: 'normal' }
+            }
+        },
+        {
+            date: '2024-02-15',
+            time: '09:30',
+            testType: 'HbA1c and Basic Metabolic Panel',
+            orderedBy: 'Dr. Siti Aminah',
+            results: {
+                hba1c: { value: 7.2, unit: '%', range: '<7.0', status: 'high' },
+                glucose: { value: 165, unit: 'mg/dL', range: '70-100', status: 'high' },
+                creatinine: { value: 0.8, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' },
+                bun: { value: 14, unit: 'mg/dL', range: '7-20', status: 'normal' }
+            }
+        },
+        {
+            date: '2023-08-22',
+            time: '10:15',
+            testType: 'Initial Diabetes Screening Panel',
+            orderedBy: 'Dr. Siti Aminah',
+            results: {
+                hba1c: { value: 7.8, unit: '%', range: '<7.0', status: 'high' },
+                glucose: { value: 188, unit: 'mg/dL', range: '70-100', status: 'high' },
+                totalCholesterol: { value: 205, unit: 'mg/dL', range: '<200', status: 'borderline' },
+                creatinine: { value: 0.8, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' }
+            }
+        }
+    ],
+    'P030': [
         {
             date: '2024-01-15',
-            time: '08:00',
+            time: '10:00',
             testType: 'Complete Blood Count with Differential',
-            orderedBy: 'Dr. Smith',
+            orderedBy: 'Dr. Ahmad',
             results: {
-                wbc: { value: 15.0, unit: 'K/µL', range: '4.5-11.0', status: 'high' },
-                rbc: { value: 4.2, unit: 'M/µL', range: '4.5-5.5', status: 'low' },
-                hgb: { value: 12.1, unit: 'g/dL', range: '14.0-17.4', status: 'low' },
-                hct: { value: 36.2, unit: '%', range: '42-52', status: 'low' },
-                plt: { value: 245, unit: 'K/µL', range: '150-400', status: 'normal' },
-                crp: { value: 25.3, unit: 'mg/L', range: '<3.0', status: 'high' },
-                glucose: { value: 145, unit: 'mg/dL', range: '70-100', status: 'high' },
-                creatinine: { value: 1.1, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' },
-                bun: { value: 18, unit: 'mg/dL', range: '7-20', status: 'normal' }
-            }
-        },
-        {
-            date: '2024-01-14',
-            time: '06:30',
-            testType: 'Basic Metabolic Panel',
-            orderedBy: 'Dr. Johnson',
-            results: {
-                wbc: { value: 16.2, unit: 'K/µL', range: '4.5-11.0', status: 'high' },
-                crp: { value: 28.7, unit: 'mg/L', range: '<3.0', status: 'high' },
-                glucose: { value: 152, unit: 'mg/dL', range: '70-100', status: 'high' },
-                creatinine: { value: 1.2, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' },
-                bun: { value: 19, unit: 'mg/dL', range: '7-20', status: 'normal' }
-            }
-        },
-        {
-            date: '2024-01-13',
-            time: '07:15',
-            testType: 'Complete Blood Count',
-            orderedBy: 'Dr. Smith',
-            results: {
-                wbc: { value: 18.5, unit: 'K/µL', range: '4.5-11.0', status: 'high' },
-                rbc: { value: 4.1, unit: 'M/µL', range: '4.5-5.5', status: 'low' },
-                hgb: { value: 11.8, unit: 'g/dL', range: '14.0-17.4', status: 'low' },
-                hct: { value: 35.1, unit: '%', range: '42-52', status: 'low' },
-                plt: { value: 230, unit: 'K/µL', range: '150-400', status: 'normal' },
-                crp: { value: 32.1, unit: 'mg/L', range: '<3.0', status: 'high' },
-                glucose: { value: 158, unit: 'mg/dL', range: '70-100', status: 'high' }
+                wbc: { value: 9.2, unit: 'K/µL', range: '4.5-11.0', status: 'normal' },
+                rbc: { value: 4.8, unit: 'M/µL', range: '4.5-5.5', status: 'normal' },
+                hgb: { value: 14.5, unit: 'g/dL', range: '14.0-17.4', status: 'normal' },
+                hct: { value: 43.2, unit: '%', range: '42-52', status: 'normal' },
+                plt: { value: 285, unit: 'K/µL', range: '150-400', status: 'normal' },
+                crp: { value: 2.1, unit: 'mg/L', range: '<3.0', status: 'normal' },
+                glucose: { value: 95, unit: 'mg/dL', range: '70-100', status: 'normal' },
+                creatinine: { value: 0.9, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' }
             }
         }
     ]
@@ -105,17 +120,86 @@ const mockPatients = [
     },
     { 
         id: "P003", 
-        name: "Emma Thompson", 
+        name: "Loh Xin Yi", 
         room: "205", 
         age: 34, 
-        condition: "Follow-up", 
+        condition: "Diabetes Type 2 - Follow-up", 
         status: "stable",
-        vitals: { bp: "120/80", hr: "72", temp: "98.4", o2sat: "99" },
-        insights: "Patient recovering well from previous treatment. All vital signs within normal limits. Ready for discharge pending final consultation.",
+        vitals: { bp: "125/78", hr: "68", temp: "36.8", o2sat: "99%" },
+        vitalHistory: [
+            { date: "2024-08-08", bp: "125/78", hr: "68", temp: "36.8", o2sat: "99%", weight: "68.2", bmi: "24.1" },
+            { date: "2024-02-15", bp: "128/82", hr: "72", temp: "36.9", o2sat: "98%", weight: "69.5", bmi: "24.5" },
+            { date: "2023-11-10", bp: "132/85", hr: "74", temp: "37.0", o2sat: "98%", weight: "70.1", bmi: "24.7" },
+            { date: "2023-08-22", bp: "135/88", hr: "76", temp: "37.1", o2sat: "97%", weight: "71.0", bmi: "25.0" },
+            { date: "2023-05-18", bp: "138/90", hr: "78", temp: "37.0", o2sat: "97%", weight: "72.3", bmi: "25.5" },
+            { date: "2022-08-15", bp: "142/92", hr: "80", temp: "37.2", o2sat: "96%", weight: "73.8", bmi: "26.0" }
+        ],
+        insights: "34-year-old patient with well-controlled Type 2 diabetes mellitus. Started treatment 2 years ago with excellent compliance. Recent HbA1c shows good improvement from 7.8% to 6.8%. Patient reports hypoglycemic episodes with shakiness - likely due to medication timing. Blood sugar management has significantly improved with lifestyle modifications and metformin therapy. Continue current regimen with minor adjustments to prevent hypoglycemic episodes.",
+        clinicalNotes: [
+            {
+                date: "2024-02-15",
+                visit: 5,
+                chiefComplaint: "Routine diabetes follow-up, reports occasional dizziness after meals",
+                assessment: "Type 2 diabetes mellitus, well-controlled. HbA1c improved to 7.2%. Patient reports some post-prandial hypoglycemic symptoms.",
+                plan: "Continue metformin 500mg BID. Advised on proper meal timing and blood sugar monitoring. Ordered HbA1c and lipid panel for next visit.",
+                doctor: "Dr. Siti Aminah"
+            },
+            {
+                date: "2023-11-10",
+                visit: 4,
+                chiefComplaint: "Diabetes follow-up, checking medication effectiveness",
+                assessment: "Type 2 diabetes mellitus responding well to metformin. Blood pressure slightly elevated but improving.",
+                plan: "Continue current metformin dosage. Encouraged weight loss through diet modification. Blood pressure monitoring.",
+                doctor: "Dr. Siti Aminah"
+            },
+            {
+                date: "2023-08-22",
+                visit: 3,
+                chiefComplaint: "Follow-up diabetes management, fatigue complaints",
+                assessment: "Type 2 diabetes, HbA1c still elevated at 7.8% but improving from initial diagnosis. Patient showing good compliance.",
+                plan: "Increase metformin to 500mg BID. Nutritionist referral for meal planning. Exercise program recommendation.",
+                doctor: "Dr. Siti Aminah"
+            },
+            {
+                date: "2023-05-18",
+                visit: 2,
+                chiefComplaint: "Diabetes medication side effects, stomach upset",
+                assessment: "Newly diagnosed Type 2 diabetes. Patient experiencing mild GI upset from metformin, likely due to rapid initiation.",
+                plan: "Reduce metformin to 250mg daily, gradual increase as tolerated. Diet counseling provided. Blood sugar monitoring education.",
+                doctor: "Dr. Siti Aminah"
+            },
+            {
+                date: "2022-08-15",
+                visit: 1,
+                chiefComplaint: "Frequent urination, increased thirst, fatigue for 2 months",
+                assessment: "New diagnosis Type 2 diabetes mellitus. HbA1c 8.1%, fasting glucose 195 mg/dL. Overweight (BMI 26.0).",
+                plan: "Started metformin 250mg daily. Diabetes education provided. Lifestyle modifications discussed. Follow-up in 3 months.",
+                doctor: "Dr. Siti Aminah"
+            }
+        ],
         timeline: [
-            { type: "consultation", action: "Follow-up consultation", time: "1 hour ago", date: "March 14, 2024", icon: "fas fa-user-md", status: "completed", details: "Patient reports feeling well, no new symptoms." },
-            { type: "vitals", action: "Vitals check", time: "3 hours ago", date: "March 14, 2024", icon: "fas fa-thermometer", status: "completed", details: "All vital signs stable and within normal ranges." },
-            { type: "medication", action: "Medication review", time: "5 hours ago", date: "March 14, 2024", icon: "fas fa-pills", status: "completed", details: "Current medications reviewed, no changes needed." }
+            { type: "consultation", action: "Diabetes Follow-up Visit #6 - Blood Test Results", time: "Today", date: "August 8, 2024", icon: "fas fa-user-md", status: "completed", details: "Patient reports recent episodes of feeling shaky and dizzy when blood sugar drops. HbA1c improved to 6.8%. Discussed hypoglycemia management and meal timing." },
+            { type: "lab", action: "HbA1c and Lipid Panel Results Reviewed", time: "Today", date: "August 8, 2024", icon: "fas fa-vial", status: "completed", details: "HbA1c: 6.8% (improved from 7.2%), glucose: 142 mg/dL. Lipid profile within normal limits. Kidney function normal." },
+            { type: "medication", action: "Metformin Dosage Adjustment", time: "Today", date: "August 8, 2024", icon: "fas fa-pills", status: "completed", details: "Reduced metformin to 500mg in morning only to prevent hypoglycemic episodes. Patient advised to take with breakfast." },
+            { type: "education", action: "Hypoglycemia Management Education", time: "Today", date: "August 8, 2024", icon: "fas fa-graduation-cap", status: "completed", details: "Taught signs/symptoms of hypoglycemia, when to check blood sugar, and how to treat low blood sugar episodes." },
+            { type: "lab", action: "Blood Tests Ordered", time: "6 months ago", date: "February 15, 2024", icon: "fas fa-vial", status: "completed", details: "HbA1c and basic metabolic panel ordered due to patient reporting dizziness episodes after meals." },
+            { type: "consultation", action: "Routine Diabetes Follow-up Visit #5", time: "6 months ago", date: "February 15, 2024", icon: "fas fa-user-md", status: "completed", details: "Patient doing well on metformin 500mg BID. Some post-meal dizziness reported. Weight loss of 1.3kg noted." }
+        ]
+    },
+    { 
+        id: "P030", 
+        name: "Ahmad Hafiz", 
+        room: "205B", 
+        age: 65, 
+        condition: "Acute angle-closure glaucoma", 
+        status: "critical",
+        vitals: { bp: "170/100", hr: "88", temp: "37.3", o2sat: "96%" },
+        insights: "Acute angle-closure glaucoma requiring immediate intervention. IOP severely elevated at 45mmHg. Emergency surgery completed successfully. Patient responding well to treatment.",
+        timeline: [
+            { type: "emergency", action: "Emergency Surgery - Laser Iridotomy", time: "2 hours ago", date: "March 14, 2024", icon: "fas fa-eye", status: "completed", details: "Peripheral laser iridotomy performed successfully. IOP reduced from 45mmHg to 18mmHg." },
+            { type: "assessment", action: "Initial Assessment", time: "4 hours ago", date: "March 14, 2024", icon: "fas fa-stethoscope", status: "completed", details: "Patient presented with severe eye pain, blurred vision, and nausea. IOP measured at 45mmHg." },
+            { type: "medication", action: "IOP Lowering Drops", time: "3 hours ago", date: "March 14, 2024", icon: "fas fa-pills", status: "ongoing", details: "Started on Timolol and Acetazolamide to reduce intraocular pressure." },
+            { type: "monitoring", action: "Post-operative Monitoring", time: "ongoing", date: "March 14, 2024", icon: "fas fa-heartbeat", status: "active", details: "Continuous IOP monitoring. Patient comfort improved significantly." }
         ]
     },
     { 
@@ -281,15 +365,15 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
     const [selectedTrend, setSelectedTrend] = useState(null);
 
     const tabs = [
-        { id: 'summary', label: 'Summary', icon: '📋' },
-        { id: 'vitals', label: 'Vital Signs', icon: '💗' },
-        { id: 'treatment', label: 'Treatment Plan', icon: '💊' },
-        { id: 'clinical', label: 'Clinical Notes', icon: '📝' },
-        { id: 'imaging', label: 'Imaging & Labs', icon: '🧪' },
-        { id: 'timeline', label: 'Timeline', icon: '📅' },
-        { id: 'log', label: 'Log', icon: '📊' },
-        { id: 'referrals', label: 'Referrals', icon: '👥' },
-        { id: 'discharge', label: 'Discharge', icon: '🏥' }
+        { id: 'summary', label: 'Summary', icon: faClipboard },
+        { id: 'vitals', label: 'Vital Signs', icon: faHeart },
+        { id: 'treatment', label: 'Treatment Plan', icon: faPills },
+        { id: 'clinical', label: 'Clinical Notes', icon: faFile },
+        { id: 'imaging', label: 'Imaging & Labs', icon: faFlask },
+        { id: 'timeline', label: 'Timeline', icon: faCalendar },
+        { id: 'log', label: 'Log', icon: faChartLine },
+        { id: 'referrals', label: 'Referrals', icon: faUsers },
+        { id: 'discharge', label: 'Discharge', icon: faHospital }
     ];
 
     const handleGenerateSummary = () => {
@@ -341,7 +425,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
                         >
-                            <span className="mr-1 text-sm">{tab.icon}</span>
+                            <FontAwesomeIcon icon={tab.icon} className="mr-1 text-sm" />
                             {tab.label}
                         </button>
                     ))}
@@ -356,7 +440,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         {patient.status === 'critical' && (
                             <div className="bg-red-50 border border-red-200 rounded p-2">
                                 <div className="flex items-center gap-2 text-red-800">
-                                    <span className="text-lg">🚨</span>
+                                    <FontAwesomeIcon icon={faExclamationCircle} className="text-lg text-red-600" />
                                     <span className="font-bold">CRITICAL PATIENT</span>
                                 </div>
                                 <div className="text-red-700 text-xs mt-1">
@@ -372,7 +456,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="bg-blue-50 border border-blue-200 rounded p-2">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="font-bold text-blue-900">
-                                    {user?.specialty === 'Ophthalmologist' ? '👁️ Ophthalmology Overview' : 'Patient Overview'}
+                                    {user?.specialty === 'Ophthalmologist' ? <><FontAwesomeIcon icon={faEye} className="mr-1" />Ophthalmology Overview</> : 'Patient Overview'}
                                 </div>
                                 <Badge variant={patient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
                                     {patient.status.toUpperCase()}
@@ -395,7 +479,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         {/* Clinical Assessment - Ophthalmology Specific */}
                         <div className="bg-purple-50 border border-purple-200 rounded p-2">
                             <div className="font-bold text-purple-900 mb-1">
-                                {user?.specialty === 'Ophthalmologist' ? '👁️ Ophthalmological Assessment' : '🧠 AI Clinical Assessment'}
+                                {user?.specialty === 'Ophthalmologist' ? <><FontAwesomeIcon icon={faEye} className="mr-1" />Ophthalmological Assessment</> : <><FontAwesomeIcon icon={faBrain} className="mr-1" />AI Clinical Assessment</>}
                             </div>
                             <div className="text-purple-800 text-xs leading-relaxed">
                                 {user?.specialty === 'Ophthalmologist' 
@@ -410,7 +494,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <>
                                 {/* Eye Examination */}
                                 <div className="bg-green-50 border border-green-200 rounded p-2">
-                                    <div className="font-bold text-green-900 mb-2">👁️ Eye Examination Findings</div>
+                                    <div className="font-bold text-green-900 mb-2"><FontAwesomeIcon icon={faEye} className="mr-1" />Eye Examination Findings</div>
                                     <div className="grid grid-cols-2 gap-2 text-xs">
                                         <div className="p-2 rounded bg-white border">
                                             <div className="font-medium">Right Eye (OD)</div>
@@ -431,7 +515,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                                 {/* Ophthalmic Medications */}
                                 <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                                    <div className="font-bold text-yellow-900 mb-2">💊 Current Ophthalmic Medications</div>
+                                    <div className="font-bold text-yellow-900 mb-2"><FontAwesomeIcon icon={faPills} className="mr-1" />Current Ophthalmic Medications</div>
                                     <div className="space-y-1 text-xs">
                                         <div className="flex justify-between items-center">
                                             <span>• Pilocarpine 2% drops</span>
@@ -454,7 +538,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                                 {/* Treatment Plan */}
                                 <div className="bg-indigo-50 border border-indigo-200 rounded p-2">
-                                    <div className="font-bold text-indigo-900 mb-2">🎯 Treatment Plan</div>
+                                    <div className="font-bold text-indigo-900 mb-2"><FontAwesomeIcon icon={faCrosshairs} className="mr-1" />Treatment Plan</div>
                                     <div className="space-y-1 text-xs">
                                         <div className="flex items-center gap-2">
                                             <span className="w-2 h-2 bg-red-500 rounded-full"></span>
@@ -478,7 +562,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                         {/* Current Vitals with Status */}
                         <div className="bg-gray-50 border rounded p-2">
-                            <div className="font-bold text-gray-900 mb-2">📊 Current Vital Signs</div>
+                            <div className="font-bold text-gray-900 mb-2"><FontAwesomeIcon icon={faChartLine} className="mr-1" />Current Vital Signs</div>
                             <div className="grid grid-cols-2 gap-2 text-xs">
                                 <div className={`p-2 rounded ${patient.status === 'critical' ? 'bg-red-100' : 'bg-white'} border`}>
                                     <div className="font-medium">Blood Pressure</div>
@@ -522,7 +606,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         {/* Critical Lab Values */}
                         {mockBloodTestData[patient?.id] && (
                             <div className="bg-orange-50 border border-orange-200 rounded p-2">
-                                <div className="font-bold text-orange-900 mb-2">🧪 Critical Lab Values (Latest)</div>
+                                <div className="font-bold text-orange-900 mb-2"><FontAwesomeIcon icon={faFlask} className="mr-1" />Critical Lab Values (Latest)</div>
                                 <div className="grid grid-cols-3 gap-2 text-xs">
                                     {Object.entries(mockBloodTestData[patient.id][0].results)
                                         .filter(([key, result]) => result.status === 'high' || result.status === 'low')
@@ -540,15 +624,14 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     ))}
                                 </div>
                                 <div className="text-orange-700 text-xs mt-2 font-medium">
-                                    {/* eslint-disable-next-line react/no-unescaped-entities */}
-                                    ⚠️ {Object.entries(mockBloodTestData[patient.id][0].results).filter(([key, result]) => result.status !== 'normal').length} abnormal values require attention
+                                    <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />{Object.entries(mockBloodTestData[patient.id][0].results).filter(([key, result]) => result.status !== 'normal').length} abnormal values require attention
                                 </div>
                             </div>
                         )}
 
                         {/* Active Treatment Plan */}
                         <div className="bg-green-50 border border-green-200 rounded p-2">
-                            <div className="font-bold text-green-900 mb-2">💊 Active Treatment</div>
+                            <div className="font-bold text-green-900 mb-2"><FontAwesomeIcon icon={faPills} className="mr-1" />Active Treatment</div>
                             <div className="space-y-1 text-xs">
                                 {patient.status === 'critical' ? (
                                     <>
@@ -596,11 +679,13 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             item.type === 'monitoring' ? 'bg-purple-500' :
                                             'bg-gray-500'
                                         }`}>
-                                            {item.type === 'surgery' ? '🏥' :
-                                             item.type === 'lab' ? '🧪' :
-                                             item.type === 'medication' ? '💊' :
-                                             item.type === 'monitoring' ? '📊' :
-                                             '📋'}
+                                            <FontAwesomeIcon icon={
+                                                item.type === 'surgery' ? faHospital :
+                                                item.type === 'lab' ? faFlask :
+                                                item.type === 'medication' ? faPills :
+                                                item.type === 'monitoring' ? faChartLine :
+                                                faClipboard
+                                            } className="text-blue-600" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
@@ -616,31 +701,31 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                         {/* Quick Action Recommendations */}
                         <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                            <div className="font-bold text-yellow-900 mb-2">💡 Recommended Actions</div>
+                            <div className="font-bold text-yellow-900 mb-2"><FontAwesomeIcon icon={faLightbulb} className="mr-1" />Recommended Actions</div>
                             <div className="space-y-1 text-xs">
                                 {patient.status === 'critical' ? (
                                     <>
                                         <div className="flex items-center gap-2 text-yellow-800">
-                                            <span>🔴</span>
+                                            <FontAwesomeIcon icon={faCircle} className="text-red-600" />
                                             <span><strong>PRIORITY:</strong> Review latest blood culture results</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-yellow-800">
-                                            <span>🟡</span>
+                                            <FontAwesomeIcon icon={faCircle} className="text-yellow-500" />
                                             <span><strong>MONITOR:</strong> Temperature trend - consider cooling measures</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-yellow-800">
-                                            <span>🟡</span>
+                                            <FontAwesomeIcon icon={faCircle} className="text-yellow-500" />
                                             <span><strong>CONSIDER:</strong> Infectious disease consult if no improvement</span>
                                         </div>
                                     </>
                                 ) : (
                                     <>
                                         <div className="flex items-center gap-2 text-yellow-800">
-                                            <span>🟢</span>
+                                            <FontAwesomeIcon icon={faCircle} className="text-green-600" />
                                             <span><strong>ROUTINE:</strong> Continue current treatment plan</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-yellow-800">
-                                            <span>🟢</span>
+                                            <FontAwesomeIcon icon={faCircle} className="text-green-600" />
                                             <span><strong>DISCHARGE:</strong> Prepare discharge planning materials</span>
                                         </div>
                                     </>
@@ -821,7 +906,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                                 <span className="font-medium text-xs text-blue-800">
                                                     {new Date(update.timestamp).toLocaleString()}
                                                 </span>
-                                                <span className="text-blue-600 text-xs">📝 New Entry</span>
+                                                <span className="text-blue-600 text-xs"><FontAwesomeIcon icon={faFile} className="mr-1" />New Entry</span>
                                             </div>
                                             <div className="text-xs text-gray-700 bg-white p-2 rounded">
                                                 {update.vitalSigns}
@@ -884,8 +969,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Vitals:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Reading</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️ Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -914,8 +999,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Timeline:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Event</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️ Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -935,7 +1020,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-red-600">💗</span>
+                                                    <FontAwesomeIcon icon={faHeart} className="text-red-600" />
                                                     <span className="font-medium text-xs">Vital Signs Updated</span>
                                                 </div>
                                                 <div className="text-gray-600 text-xs">{update.vitalSigns.substring(0, 80)}...</div>
@@ -950,7 +1035,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-green-600">💊</span>
+                                                    <FontAwesomeIcon icon={faPills} className="text-green-600" />
                                                     <span className="font-medium text-xs">Treatment Plan Updated</span>
                                                 </div>
                                                 <div className="text-gray-600 text-xs">{update.treatmentPlan.substring(0, 80)}...</div>
@@ -968,7 +1053,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-blue-600">📝</span>
+                                                    <FontAwesomeIcon icon={faFile} className="text-blue-600" />
                                                     <span className="font-medium text-xs">Clinical Note Added</span>
                                                 </div>
                                                 <div className="text-gray-600 text-xs">
@@ -985,7 +1070,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">2:30 PM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-blue-600">📝</span>
+                                        <FontAwesomeIcon icon={faFile} className="text-blue-600" />
                                         <span className="font-medium text-xs">Clinical Note Added</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">Dr. Smith documented post-operative assessment</div>
@@ -996,7 +1081,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-red-600 w-16 flex-shrink-0 text-xs font-medium">1:45 PM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-red-600">💗</span>
+                                        <FontAwesomeIcon icon={faHeart} className="text-red-600" />
                                         <span className="font-medium text-xs">Vital Signs Updated</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">BP: 180/110 → 175/108, HR: 125 → 122 (Nurse Martinez)</div>
@@ -1007,7 +1092,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-green-600 w-16 flex-shrink-0 text-xs font-medium">12:15 PM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-green-600">💊</span>
+                                        <FontAwesomeIcon icon={faPills} className="text-green-600" />
                                         <span className="font-medium text-xs">Medication Administered</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">Ceftriaxone 1g IV - Antibiotic therapy (Nurse Johnson)</div>
@@ -1018,7 +1103,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-purple-600 w-16 flex-shrink-0 text-xs font-medium">11:30 AM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-purple-600">🧪</span>
+                                        <FontAwesomeIcon icon={faFlask} className="text-purple-600" />
                                         <span className="font-medium text-xs">Lab Results Uploaded</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">Complete Blood Count - WBC: 15,000 (elevated)</div>
@@ -1029,7 +1114,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-orange-600 w-16 flex-shrink-0 text-xs font-medium">10:45 AM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-orange-600">📷</span>
+                                        <FontAwesomeIcon icon={faCamera} className="text-orange-600" />
                                         <span className="font-medium text-xs">Imaging Ordered</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">CT Abdomen/Pelvis with contrast - Dr. Smith</div>
@@ -1040,7 +1125,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-yellow-600 w-16 flex-shrink-0 text-xs font-medium">9:20 AM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-yellow-600">👥</span>
+                                        <FontAwesomeIcon icon={faUsers} className="text-yellow-600" />
                                         <span className="font-medium text-xs">Referral Sent</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">Infectious Disease consultation - Dr. Kim</div>
@@ -1051,7 +1136,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-gray-600 w-16 flex-shrink-0 text-xs font-medium">8:00 AM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-600">👤</span>
+                                        <FontAwesomeIcon icon={faUser} className="text-gray-600" />
                                         <span className="font-medium text-xs">Patient Assessment</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">Morning rounds completed - Dr. Smith</div>
@@ -1062,7 +1147,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 <span className="text-indigo-600 w-16 flex-shrink-0 text-xs font-medium">7:30 AM</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-indigo-600">🏥</span>
+                                        <FontAwesomeIcon icon={faHospital} className="text-indigo-600" />
                                         <span className="font-medium text-xs">Discharge Planning</span>
                                     </div>
                                     <div className="text-gray-600 text-xs">Discharge criteria reviewed by care team</div>
@@ -1075,10 +1160,10 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="py-1 border-t mt-2">
                             <div className="font-semibold mb-1">View Options:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6">📊 Filter</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📅 Date Range</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">👤 By User</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📥 Export</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faFilter} className="mr-1" />Filter</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faCalendar} className="mr-1" />Date Range</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faUser} className="mr-1" />By User</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faDownload} className="mr-1" />Export</Button>
                             </div>
                         </div>
                     </div>
@@ -1141,7 +1226,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                             <div className="mt-2 flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Medication</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">💊 Med Review</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faPills} className="mr-1" />Med Review</Button>
                             </div>
                         </div>
 
@@ -1170,8 +1255,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                         {/* Medication Schedule */}
                         <div className="py-1 border-b">
-{/* eslint-disable-next-line react/no-unescaped-entities */}
-                            <div className="font-semibold mb-1">Today's Schedule:</div>
+                            <div className="font-semibold mb-1">Today&apos;s Schedule:</div>
                             <div className="space-y-0.5">
                                 <div className="grid grid-cols-4 gap-1 text-xs font-semibold py-0.5 border-b">
                                     <span>Time</span>
@@ -1221,7 +1305,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                                 <span className="font-medium text-xs text-green-800">
                                                     {new Date(update.timestamp).toLocaleString()}
                                                 </span>
-                                                <span className="text-green-600 text-xs">💊 Plan Update</span>
+                                                <FontAwesomeIcon icon={faPills} className="text-green-600 text-xs mr-1" />Plan Update
                                             </div>
                                             <div className="text-xs text-gray-700 bg-white p-2 rounded">
                                                 {update.treatmentPlan}
@@ -1237,11 +1321,11 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Allergies & Contraindications:</div>
                             <div className="space-y-0.5">
                                 <div className="bg-red-50 border border-red-200 rounded p-2">
-                                    <div className="font-medium text-xs text-red-800">⚠️ Drug Allergies:</div>
+                                    <div className="font-medium text-xs text-red-800"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />Drug Allergies:</div>
                                     <div className="text-xs text-red-700">Penicillin - Severe reaction (rash, difficulty breathing)</div>
                                 </div>
                                 <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                                    <div className="font-medium text-xs text-yellow-800">⚠️ Precautions:</div>
+                                    <div className="font-medium text-xs text-yellow-800"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />Precautions:</div>
                                     <div className="text-xs text-yellow-700">Renal function monitoring required with current medications</div>
                                 </div>
                             </div>
@@ -1252,8 +1336,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Treatment:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Item</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit Plan</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️ Remove</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit Plan</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Remove</Button>
                             </div>
                         </div>
                     </div>
@@ -1326,7 +1410,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             )}
                                             
                                             <div className="mt-2 text-xs text-gray-500 bg-white p-1 rounded">
-                                                📊 Data also routed to: 
+                                                <FontAwesomeIcon icon={faChartLine} className="mr-1" />Data also routed to: 
                                                 {update.vitalSigns?.trim() && <span className="text-red-600"> Vital Signs</span>}
                                                 {update.treatmentPlan?.trim() && <span className="text-green-600"> Treatment Plan</span>}
                                                 <span className="text-blue-600"> Activity Log</span>
@@ -1361,8 +1445,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Notes:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️ Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -1403,7 +1487,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             className="text-xs px-2 py-0.5 h-5"
                                             onClick={() => setSelectedTrend(key)}
                                         >
-                                            📊 Compare
+                                            <FontAwesomeIcon icon={faChartLine} className="mr-1" />Compare
                                         </Button>
                                     </div>
                                 ))}
@@ -1462,15 +1546,15 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Pending Orders:</div>
                             <div className="space-y-0.5">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs">📊 Complete Blood Count</span>
+                                    <span className="text-xs"><FontAwesomeIcon icon={faChartLine} className="mr-1" />Complete Blood Count</span>
                                     <span className="text-orange-600 text-xs">Pending</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs">🧪 Blood Culture x2</span>
+                                    <span className="text-xs"><FontAwesomeIcon icon={faFlask} className="mr-1" />Blood Culture x2</span>
                                     <span className="text-blue-600 text-xs">In Progress</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs">📷 Follow-up CT Scan</span>
+                                    <span className="text-xs"><FontAwesomeIcon icon={faCamera} className="mr-1" />Follow-up CT Scan</span>
                                     <span className="text-gray-600 text-xs">Scheduled</span>
                                 </div>
                             </div>
@@ -1481,8 +1565,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Records:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Result</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️ Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -1501,7 +1585,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     </div>
                                     <div className="text-xs text-gray-600 mb-1">Dr. Martinez - Requested today for cardiac evaluation</div>
                                     <div className="text-xs text-gray-500">Status: Appointment scheduled for tomorrow 10:00 AM</div>
-                                    <div className="text-xs text-blue-600 mt-1">📞 Contact: (555) 123-4567</div>
+                                    <div className="text-xs text-blue-600 mt-1"><FontAwesomeIcon icon={faPhone} className="mr-1" />Contact: (555) 123-4567</div>
                                 </div>
                                 <div className="border border-green-200 rounded p-2 bg-green-50">
                                     <div className="flex items-center justify-between mb-1">
@@ -1510,7 +1594,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     </div>
                                     <div className="text-xs text-gray-600 mb-1">Post-surgical mobility assessment and treatment plan</div>
                                     <div className="text-xs text-gray-500">Status: Initial eval completed - ongoing sessions</div>
-                                    <div className="text-xs text-green-600 mt-1">📅 Next: March 16, 2024 at 2:00 PM</div>
+                                    <div className="text-xs text-green-600 mt-1"><FontAwesomeIcon icon={faCalendar} className="mr-1" />Next: March 16, 2024 at 2:00 PM</div>
                                 </div>
                                 <div className="border border-purple-200 rounded p-2 bg-purple-50">
                                     <div className="flex items-center justify-between mb-1">
@@ -1559,10 +1643,10 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="py-1">
                             <div className="font-semibold mb-1">Manage Referrals:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6">📞 New Referral</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️ Cancel</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📋 Track Status</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faPhone} className="mr-1" />New Referral</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Cancel</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faClipboard} className="mr-1" />Track Status</Button>
                             </div>
                         </div>
                     </div>
@@ -1665,7 +1749,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     <span className="text-orange-600 text-xs font-medium">In Progress</span>
                                 </div>
                                 <div className="text-xs text-gray-600 mb-1">Last updated: Today 2:30 PM by Dr. Smith</div>
-                                <div className="text-xs text-orange-600">⚠️ Pending final review and signatures</div>
+                                <div className="text-xs text-orange-600"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />Pending final review and signatures</div>
                             </div>
                         </div>
 
@@ -1673,10 +1757,10 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="py-1">
                             <div className="font-semibold mb-1">Manage Discharge:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6">📋 Complete Summary</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️ Edit Plan</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📅 Reschedule</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🏠 Home Care</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faClipboard} className="mr-1" />Complete Summary</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit Plan</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faCalendar} className="mr-1" />Reschedule</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faHome} className="mr-1" />Home Care</Button>
                             </div>
                         </div>
                     </div>
@@ -1982,7 +2066,6 @@ function PatientDetailsPageContent() {
             <Header
                 showBackButton={true}
                 onBack={() => router.back()}
-                onNotifications={handleNotifications}
                 onLogout={handleLogout}
                 onProfile={() => alert('Profile page - feature coming soon!')}
                 userName={user.name}
@@ -2016,7 +2099,7 @@ function PatientDetailsPageContent() {
                             size="sm" 
                             className="text-xs px-3 py-1 h-7"
                         >
-                            📝 New Input
+                            <FontAwesomeIcon icon={faFile} className="mr-1" />New Input
                         </Button>
                     </div>
                 </div>
@@ -2040,7 +2123,7 @@ function PatientDetailsPageContent() {
                             <div key={msg.id} className={`flex items-start gap-1 mb-2 ${msg.type === 'user' ? 'justify-end' : ''}`}>
                                 {msg.type === 'ai' && (
                                     <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center text-primary-foreground flex-shrink-0">
-                                        <span className="text-xs">🤖</span>
+                                        <FontAwesomeIcon icon={faRobot} className="text-xs" />
                                     </div>
                                 )}
                                 <div className={`${msg.type === 'user' ? 'text-right' : ''}`}>
@@ -2055,7 +2138,7 @@ function PatientDetailsPageContent() {
                                 </div>
                                 {msg.type === 'user' && (
                                     <div className="w-4 h-4 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground flex-shrink-0">
-                                        <span className="text-xs">👤</span>
+                                        <FontAwesomeIcon icon={faUser} className="text-xs" />
                                     </div>
                                 )}
                             </div>

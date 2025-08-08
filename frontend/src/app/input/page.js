@@ -17,6 +17,8 @@ import SummarySection from '@/components/consultation/SummarySection';
 // Import data and utilities
 import { mockPatients, findPatientById, formatTime } from '@/lib/data';
 import { User, AlertTriangle, CheckCircle, Save } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSave, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 function ConsultationPageContent() {
     const searchParams = useSearchParams();
@@ -258,7 +260,6 @@ Plan: ${aiSummary.plan}
             <Header
                 showBackButton={true}
                 onBack={handleBack}
-                onNotifications={handleNotifications}
                 onLogout={handleLogout}
                 onProfile={() => alert('Profile page - feature coming soon!')}
                 userName={user.name}
@@ -345,14 +346,14 @@ Plan: ${aiSummary.plan}
                                     size="sm"
                                     className="text-xs px-2 py-1 h-6"
                                 >
-                                    💾 Draft
+                                    <FontAwesomeIcon icon={faSave} className="mr-1" />Draft
                                 </Button>
                                 <Button 
                                     onClick={completeConsultation}
                                     size="sm"
                                     className="text-xs px-2 py-1 h-6"
                                 >
-                                    ✅ Save Note
+                                    <FontAwesomeIcon icon={faCheckCircle} className="mr-1" />Save Note
                                 </Button>
                             </div>
                         </div>

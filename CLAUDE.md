@@ -42,6 +42,6 @@ The project has specific Claude Code permissions configured in `.claude/settings
 ## Important Notes
 
 - This is a medical AI application, so ensure all implementations follow healthcare data privacy standards
-- **Frontend only**: Do not implement backend services, databases, or server-side functionality
+- **Frontend** Always use shadcn colors and styling
 - Focus on client-side medical AI assistant features and user interface
 - No specific technology stack has been chosen yet - consult with the team before making technology decisions
