@@ -9,7 +9,7 @@ Input is the JSON produced by the AI Documentation Reviewer (verdict, issues, fi
 
 Rules:
 - If `verdict` == `pass`, return `approved: true` and emit `fields` exactly equal to `finalJson`.
-- If `verdict` != `pass` (review or fail), return `approved: false`, set all fields to data not mentioned strings ("Data not mentioned") and include a concise `notes` string describing that manual clinician review is required.
+- If `verdict` != `pass` (review or fail), return `approved: false`, emit `fields` exactly equal to `finalJson` (with actual extracted data), and include a concise `notes` string describing that manual clinician review is required.
 - Output must be valid JSON with the schema below. No extra commentary.
 ```
 
@@ -63,22 +63,22 @@ Expected final output:
 }
 ```
 
-Review/fail case (hold for manual review):
+Review/fail case (populate fields but require manual review):
 Input reviewer output (abridged):
 ```json
-{ "verdict": "review", "issues": [{"field":"assessment","type":"unsupported"}], "finalJson": {"chiefComplaint":"…","assessment":""} }
+{ "verdict": "review", "issues": [{"field":"assessment","type":"unsupported"}], "finalJson": {"chiefComplaint":"Patient reports chest pain","historyPresent":"Pain started 2 hours ago","vitalSigns":"BP 140/90, HR 85","physicalExam":"Chest clear, no distress","assessment":"Possible cardiac etiology","plan":"ECG, cardiac enzymes"} }
 ```
 Expected final output:
 ```json
 {
   "approved": false,
   "fields": {
-    "chiefComplaint": "",
-    "historyPresent": "",
-    "vitalSigns": "",
-    "physicalExam": "",
-    "assessment": "",
-    "plan": ""
+    "chiefComplaint": "Patient reports chest pain",
+    "historyPresent": "Pain started 2 hours ago",
+    "vitalSigns": "BP 140/90, HR 85",
+    "physicalExam": "Chest clear, no distress",
+    "assessment": "Possible cardiac etiology",
+    "plan": "ECG, cardiac enzymes"
   },
   "notes": "Reviewer verdict is not pass; manual clinician review required."
 }

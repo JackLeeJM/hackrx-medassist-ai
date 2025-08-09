@@ -6,7 +6,7 @@ High level steps
 1) Speech is recorded and uploaded; Google Medical STT transcribes it
 2) `ai-summarization-prompt.md` converts the transcript into the required fields
 3) `ai-documentation-reviewer.md` validates the summary against the transcript (no hallucinations)
-4) `final-summariser.md` emits final UI fields: auto‑fill only when the review verdict is `pass`; otherwise return fields as "Data not mentioned" and require manual review
+4) `final-summariser.md` emits final UI fields: always populate fields with extracted data regardless of review verdict; show manual review banner when verdict is not `pass`
 
 Current implementation
 - Done
@@ -34,8 +34,8 @@ UI orchestration (input page)
   - Call `/api/summarize` with transcript
   - Call `/api/review` with transcript + proposed JSON
   - Call `/api/finalise` with reviewer output
-  - If `approved: true` → auto‑fill all fields
-  - Else → set all fields to "Data not mentioned" and show a banner: "Manual clinician review required"
+  - Always populate all fields with extracted data from finalise response
+  - If `approved: false` → show a banner: "Manual clinician review required"
 
 JSON contracts
 - Summary JSON (from summarizer and reviewer.finalJson):
@@ -60,6 +60,6 @@ Operational notes
 Error handling
 - Upload: show retry, keep transcript state untouched
 - STT: if failed, display error and allow re‑record/retry
-- Summarize/Review/Finalise: on any failure, do not auto‑fill; show banner for manual review
+- Summarize/Review/Finalise: on any failure, do not auto‑fill; show banner for manual review. On success but non-pass verdict, still populate fields but show review banner
 
 
