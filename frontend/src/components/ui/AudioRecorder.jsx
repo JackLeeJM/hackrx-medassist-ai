@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Mic, Square, Play, Pause, AlertCircle, X } from 'lucide-react';
 
-const AudioRecorder = ({ onRecordingComplete, onRecordingStart, onRecordingStop, isExpanded = false }) => {
+const AudioRecorder = ({ onRecordingComplete, onRecordingStart, onRecordingStop, isExpanded = false, cta = false }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -241,6 +241,18 @@ const AudioRecorder = ({ onRecordingComplete, onRecordingStart, onRecordingStop,
   }
 
   // Default microphone button (not recording)
+  if (cta) {
+    return (
+      <Button
+        onClick={startRecording}
+        disabled={!permissionGranted}
+        className="w-full h-12 rounded-md"
+      >
+        <Mic className="w-4 h-4 mr-2" /> Start recording
+      </Button>
+    );
+  }
+
   return (
     <Button
       onClick={startRecording}

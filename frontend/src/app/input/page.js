@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingScreen, ErrorMessage } from '@/components/ui/loading-spinner';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
-import RecordingControls from '@/components/consultation/RecordingControls';
+// RecordingControls removed per new design
+import AudioRecorder from '@/components/ui/AudioRecorder';
 import ConsultationForm from '@/components/consultation/ConsultationForm';
 import SummarySection from '@/components/consultation/SummarySection';
 
@@ -34,6 +35,15 @@ function ConsultationPageContent() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [aiSummary, setAiSummary] = useState(null);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [uploadInfo, setUploadInfo] = useState(null);
+    const [transcribeOp, setTranscribeOp] = useState(null);
+    const [transcribeStatus, setTranscribeStatus] = useState('idle');
+    const pollRef = useRef(null);
+    const [transcriptText, setTranscriptText] = useState('');
+    const [pipelineStatus, setPipelineStatus] = useState('idle'); // idle|summarizing|reviewing|finalising|done|error
+    const [pipelineNote, setPipelineNote] = useState('');
+    const [pipelineApproved, setPipelineApproved] = useState(null); // null|boolean
     const [formData, setFormData] = useState({
         chiefComplaint: '',
         historyPresent: '',
@@ -113,6 +123,80 @@ function ConsultationPageContent() {
         setCurrentRecordingNumber(prev => prev + 1);
     };
 
+    // New: handle audio blob from the actual recorder component and upload to GCS via signed URL
+    const handleRecordingComplete = async (blob) => {
+        try {
+            setUploading(true);
+            setUploadInfo(null);
+            const contentType = blob?.type || 'audio/webm';
+            const fileExt = contentType.includes('mp4') ? 'mp4' : 'webm';
+            const fileName = `consultation-${Date.now()}.${fileExt}`;
+
+            const res = await fetch('/api/audio/upload-init', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contentType, fileName, languageCode: 'en-US' }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data?.uploadUrl) {
+                throw new Error(data?.error || 'Failed to init upload');
+            }
+
+            const putRes = await fetch(data.uploadUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': contentType },
+                body: blob,
+            });
+            if (!putRes.ok) {
+                throw new Error(`Upload failed with status ${putRes.status}`);
+            }
+
+            setUploadInfo({ gcsUri: data.gcsUri, conversation: data.conversation });
+
+            // Immediately start transcription
+            const startRes = await fetch('/api/transcribe/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gcsUri: data.gcsUri, languageCode: 'en-US' }),
+            });
+            const startJson = await startRes.json();
+            if (!startRes.ok || !startJson?.operationName) {
+                throw new Error(startJson?.error || 'Failed to start transcription');
+            }
+            setTranscribeOp(startJson.operationName);
+            setTranscribeStatus('processing');
+
+            // Poll status every 5s until done
+            if (pollRef.current) clearInterval(pollRef.current);
+            pollRef.current = setInterval(async () => {
+                try {
+                    const sres = await fetch(`/api/transcribe/status?operationName=${encodeURIComponent(startJson.operationName)}`);
+                    const sjson = await sres.json();
+                    if (!sres.ok) throw new Error(sjson?.error || 'status error');
+                    if (sjson.done) {
+                        clearInterval(pollRef.current);
+                        setTranscribeStatus('done');
+                        const t = sjson.transcript || '';
+                        setTranscriptText(t);
+                        if (t) {
+                            setFormData(prev => ({ ...prev, chiefComplaint: t }));
+                        }
+                        // Start AI pipeline automatically
+                        runAIPipeline(t);
+                    }
+                } catch (e) {
+                    clearInterval(pollRef.current);
+                    setTranscribeStatus('error');
+                    alert(`Transcription polling failed: ${e?.message || e}`);
+                }
+            }, 5000);
+        } catch (err) {
+            alert(`Upload error: ${err?.message || err}`);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const generateSummary = () => {
         if (recordings.length === 0) {
             alert('No recordings available to generate summary');
@@ -180,24 +264,84 @@ function ConsultationPageContent() {
     };
 
     const handleCopySummary = () => {
+        if (!aiSummary) return;
         const summaryText = `
-Chief Complaint: ${aiSummary.chiefComplaint}
+Chief Complaint: ${aiSummary.chiefComplaint || ''}
 
-History of Present Illness: ${aiSummary.historyPresent}
+History of Present Illness: ${aiSummary.historyPresent || ''}
 
-Vital Signs: ${aiSummary.vitalSigns}
+Vital Signs: ${aiSummary.vitalSigns || ''}
 
-Physical Examination: ${aiSummary.physicalExam}
+Physical Examination: ${aiSummary.physicalExam || ''}
 
-Assessment: ${aiSummary.assessment}
+Assessment: ${aiSummary.assessment || ''}
 
-Plan: ${aiSummary.plan}
+Plan: ${aiSummary.plan || ''}
         `.trim();
         
         navigator.clipboard.writeText(summaryText).then(() => {
             setCopySuccess(true);
             setTimeout(() => setCopySuccess(false), 2000);
         });
+    };
+
+    // Runs summarize -> review -> finalise and fills the form based on rules
+    const runAIPipeline = async (transcript) => {
+        if (!transcript?.trim()) return;
+        try {
+            setPipelineStatus('summarizing');
+            setPipelineNote('');
+            setPipelineApproved(null);
+
+            const sRes = await fetch('/api/summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transcript, patientContext: { patientId: currentPatient?.id } }),
+            });
+            const sJson = await sRes.json();
+            if (!sRes.ok || !sJson?.ok) throw new Error(sJson?.error || 'summarize failed');
+
+            setPipelineStatus('reviewing');
+            const rRes = await fetch('/api/review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transcript, proposedJson: sJson.summaryJson }),
+            });
+            const rJson = await rRes.json();
+            if (!rRes.ok || !rJson?.ok) throw new Error(rJson?.error || 'review failed');
+
+            setPipelineStatus('finalising');
+            const fRes = await fetch('/api/finalise', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ review: rJson.review }),
+            });
+            const fJson = await fRes.json();
+            if (!fRes.ok || !fJson?.ok) throw new Error(fJson?.error || 'finalise failed');
+
+            setPipelineApproved(Boolean(fJson.approved));
+            setPipelineNote(fJson?.notes || '');
+            setPipelineStatus('done');
+
+            // Apply mapping to form (always fill regardless of verdict)
+            const fields =
+                fJson.fields ||
+                rJson?.review?.finalJson ||
+                sJson?.summaryJson ||
+                {};
+            setFormData(prev => ({
+                ...prev,
+                chiefComplaint: fields.chiefComplaint ?? prev.chiefComplaint,
+                historyPresent: fields.historyPresent ?? prev.historyPresent,
+                vitalSigns: fields.vitalSigns ?? prev.vitalSigns,
+                physicalExam: fields.physicalExam ?? prev.physicalExam,
+                assessment: fields.assessment ?? prev.assessment,
+                plan: fields.plan ?? prev.plan,
+            }));
+        } catch (err) {
+            setPipelineStatus('error');
+            setPipelineNote(err?.message || String(err));
+        }
     };
 
     const completeConsultation = () => {
@@ -234,7 +378,11 @@ Plan: ${aiSummary.plan}
     };
 
     const handleBack = () => {
-        router.back();
+        if (currentPatient?.id) {
+            router.push(`/patient-details?id=${currentPatient.id}`);
+        } else {
+            router.push('/');
+        }
     };
 
     const handleNotifications = () => {
@@ -320,20 +468,63 @@ Plan: ${aiSummary.plan}
             <main className="flex-1 overflow-y-auto p-2">
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                    {/* Recording Controls - 1/3 width */}
-                    <div className="lg:col-span-1">
-                        <RecordingControls 
-                            isRecording={isRecording}
-                            isPaused={isPaused}
-                            recordingTime={recordingTime}
-                            currentRecordingNumber={currentRecordingNumber}
-                            recordings={recordings}
-                            isGenerating={isGenerating}
-                            onStartRecording={startRecording}
-                            onPauseRecording={pauseRecording}
-                            onStopRecording={stopRecording}
-                            onGenerateSummary={generateSummary}
-                        />
+                    {/* Left column: Start Recording + Conversation Transcription */}
+                    <div className="lg:col-span-1 space-y-2">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">Start Recording</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <AudioRecorder onRecordingComplete={handleRecordingComplete} cta />
+                                {uploading && (
+                                    <div className="text-xs text-gray-500 mt-2">Uploading audio...</div>
+                                )}
+                                {uploadInfo && (
+                                    <div className="text-xs text-green-600 mt-2 break-all">Uploaded to: {uploadInfo.gcsUri}</div>
+                                )}
+                                {transcribeStatus !== 'idle' && (
+                                    <div className="text-xs mt-2">Transcription status: {transcribeStatus}</div>
+                                )}
+                                {pipelineStatus !== 'idle' && (
+                                    <div className="text-xs mt-2">AI pipeline: {pipelineStatus}</div>
+                                )}
+                                {pipelineStatus === 'done' && pipelineApproved === false && (
+                                    <div className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 p-2 rounded">
+                                        {pipelineNote || 'Manual clinician review required.'}
+                                    </div>
+                                )}
+                                {pipelineStatus === 'done' && pipelineApproved === true && (
+                                    <div className="mt-2 text-xs text-green-700 bg-green-50 border border-green-200 p-2 rounded">
+                                        AI reviewed pass
+                                    </div>
+                                )}
+                                {pipelineStatus === 'error' && (
+                                    <div className="mt-2 text-xs text-red-700 bg-red-50 border border-red-200 p-2 rounded">
+                                        {pipelineNote}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">Conversation Transcription</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {transcribeStatus === 'processing' && (
+                                    <div className="text-sm text-gray-600">Processing audio… your transcript will appear here.</div>
+                                )}
+                                {transcribeStatus === 'error' && (
+                                    <div className="text-sm text-red-600">Transcription failed. Please try recording again.</div>
+                                )}
+                                {transcribeStatus === 'done' && (
+                                    <div className="text-sm whitespace-pre-wrap break-words">{transcriptText || 'No text extracted.'}</div>
+                                )}
+                                {transcribeStatus === 'idle' && (
+                                    <div className="text-sm text-gray-500">Record a conversation to see the transcript.</div>
+                                )}
+                            </CardContent>
+                        </Card>
                     </div>
 
                     {/* Consultation Form - 2/3 width */}

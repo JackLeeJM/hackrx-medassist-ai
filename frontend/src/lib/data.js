@@ -134,12 +134,35 @@ export const filterPatients = (query) => {
   if (!query.trim()) return mockPatients;
   
   const searchTerm = query.toLowerCase();
-  return mockPatients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm) ||
-    patient.room.toLowerCase().includes(searchTerm) ||
-    patient.id.toLowerCase().includes(searchTerm) ||
-    patient.condition.toLowerCase().includes(searchTerm)
-  );
+  // Helper to compute IC used elsewhere in the app header
+  const computeIC = (p) => {
+    try {
+      const birthYear = 2024 - p.age;
+      const yy = String(birthYear).slice(-2);
+      const mm = p.id === 'P020' ? '03' : '03';
+      const dd = p.id === 'P020' ? '12' : '10';
+      const kl = p.id === 'P020' ? '10' : '10';
+      const serial = p.id === 'P020' ? '9876' : '9012';
+      return `${yy}${mm}${dd}-${kl}-${serial}`;
+    } catch {
+      return '';
+    }
+  };
+
+  const normalized = searchTerm.replace(/[^a-z0-9]/gi, '');
+
+  return mockPatients.filter((patient) => {
+    const ic = computeIC(patient);
+    const icNormalized = ic.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    return (
+      patient.name.toLowerCase().includes(searchTerm) ||
+      String(patient.room).toLowerCase().includes(searchTerm) ||
+      patient.id.toLowerCase().includes(searchTerm) ||
+      patient.condition.toLowerCase().includes(searchTerm) ||
+      ic.toLowerCase().includes(searchTerm) ||
+      (ic && icNormalized.includes(normalized))
+    );
+  });
 };
 
 export const getPatientStatusVariant = (status) => {
