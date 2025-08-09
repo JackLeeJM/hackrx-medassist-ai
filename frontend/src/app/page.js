@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHospital, faPills, faChartLine, faBell, faEye, faStethoscope, faClipboard, faCalendar } from '@fortawesome/free-solid-svg-icons'
 import { GridCalendar } from '@/components/ui/grid-calendar'
 import { 
   DropdownMenu,
@@ -50,10 +48,10 @@ const mockDrSitiData = {
     { time: "14:00", patient: "Ahmad Farid", type: "Emergency Eval", room: "367C", status: "Pending" }
   ],
   recentActivity: [
-    { icon: faHospital, action: "Admitted patient", patient: "Ahmad Farid", time: "1h ago" },
-    { icon: faPills, action: "Medication adjusted", patient: "Siti Nuraini", time: "2h ago" },
-    { icon: faChartLine, action: "Lab results reviewed", patient: "Raj Kumar", time: "3h ago" },
-    { icon: faBell, action: "Critical alert resolved", patient: "Lim Hui Fen", time: "4h ago" }
+    { icon: '💊', action: "Insulin dosage adjusted", patient: "Nurul Asyikin", time: "1h ago" },
+    { icon: '📊', action: "HbA1c results reviewed", patient: "Mohd Hafiz", time: "2h ago" },
+    { icon: '🩺', action: "Diabetes screening completed", patient: "Siti Hajar", time: "3h ago" },
+    { icon: '📋', action: "Diet plan updated", patient: "Ahmad Farid", time: "4h ago" }
   ]
 }
 
@@ -73,16 +71,16 @@ const mockDrAhmadData = {
     { name: "Priya Nair", room: "230C", condition: "Acute retinal necrosis", severity: "Critical", type: "inpatient" }
   ],
   schedule: [
-    { time: "08:00", patient: "Ahmad Hafiz", type: "Emergency Surgery", room: "205B", status: "Completed" },
-    { time: "10:00", patient: "Lim Siew Chen", type: "Vitrectomy", room: "208A", status: "In Progress" },
+    { time: "09:00", patient: "Ahmad Rahman", type: "Diabetic Retinopathy - Laser Treatment", room: "205A", status: "Completed" },
+    { time: "10:00", patient: "Ahmad Hafiz", type: "Glaucoma Surgery", room: "205B", status: "In Progress" },
     { time: "13:00", patient: "Sarirah Binti Ahmad", type: "Cataract Surgery", room: "OR-3", status: "Pending" },
-    { time: "15:00", patient: "Ravi Shankar", type: "Corneal Repair", room: "210C", status: "Pending" }
+    { time: "15:00", patient: "Ravi Shankar", type: "Diabetic Retinopathy Screening", room: "210C", status: "Pending" }
   ],
   recentActivity: [
-    { icon: faEye, action: "Emergency surgery completed", patient: "Ahmad Hafiz", time: "1h ago" },
-    { icon: faChartLine, action: "OCT scan reviewed", patient: "Lim Siew Chen", time: "2h ago" },
-    { icon: faPills, action: "IOP lowering drops prescribed", patient: "Fatimah Zahra", time: "3h ago" },
-    { icon: faEye, action: "Fundus photography ordered", patient: "Ravi Shankar", time: "4h ago" }
+    { icon: '👁️', action: "Glaucoma surgery completed", patient: "Ahmad Hafiz", time: "1h ago" },
+    { icon: '💉', action: "Anti-VEGF injection administered", patient: "Nurul Asyikin", time: "2h ago" },
+    { icon: '📊', action: "OCT scan reviewed", patient: "Fatimah Zahra", time: "3h ago" },
+    { icon: '👁️', action: "Retinal assessment completed", patient: "Ravi Shankar", time: "4h ago" }
   ]
 }
 
@@ -95,17 +93,17 @@ const mockOutpatientData = {
     { name: "Siti Hajar", room: "Clinic B", condition: "Hypertension crisis", severity: "Serious", time: "1h ago", type: "outpatient" }
   ],
   schedule: [
-    { time: "09:00", patient: "Loh Xin Yi", type: "Diabetes follow-up", status: "Completed" },
+    { time: "08:00", patient: "Nurul Asyikin", type: "Diabetic Macular Edema - Follow-up", status: "Completed" },
     { time: "10:00", patient: "Muthu Krishnan", type: "New patient consult", status: "In Progress" },
     { time: "11:00", patient: "Lim Su Anne", type: "Annual physical", status: "Pending" },
     { time: "14:00", patient: "Mohd Hafiz", type: "Diabetes management", status: "Pending" },
     { time: "15:30", patient: "Siti Hajar", type: "BP follow-up", status: "Pending" }
   ],
   recentActivity: [
-    { icon: faClipboard, action: "Consultation completed", patient: "Loh Xin Yi", time: "30m ago" },
-    { icon: faStethoscope, action: "Lab ordered", patient: "Muthu Krishnan", time: "1h ago" },
-    { icon: faPills, action: "Prescription sent", patient: "Lim Su Anne", time: "1.5h ago" },
-    { icon: faCalendar, action: "Follow-up scheduled", patient: "Mohd Hafiz", time: "2h ago" }
+    { icon: '📋', action: "Consultation completed", patient: "Loh Xin Yi", time: "30m ago" },
+    { icon: '🩺', action: "Lab ordered", patient: "Muthu Krishnan", time: "1h ago" },
+    { icon: '💊', action: "Prescription sent", patient: "Lim Su Anne", time: "1.5h ago" },
+    { icon: '📅', action: "Follow-up scheduled", patient: "Mohd Hafiz", time: "2h ago" }
   ]
 }
 
@@ -306,7 +304,7 @@ export default function Dashboard() {
                   {[...currentData.recentActivity, ...mockOutpatientData.recentActivity].map((activity, index) => (
                     <div key={index} className="py-1 px-2 hover:bg-gray-50 text-xs border-b border-gray-100 last:border-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <FontAwesomeIcon icon={activity.icon} className="text-primary" />
+                        <span className="text-primary text-sm">{activity.icon}</span>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium truncate">{activity.action}</div>
                           <div className="text-gray-500">{activity.patient}</div>
@@ -368,7 +366,7 @@ export default function Dashboard() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" size="sm" className="flex items-center gap-2">
-                            <FontAwesomeIcon icon={faCalendar} className="w-3 h-3" />
+                            <span className="text-sm">📅</span>
                             <ChevronDown className="h-3 w-3" />
                           </Button>
                         </DropdownMenuTrigger>

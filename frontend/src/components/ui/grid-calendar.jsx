@@ -1,6 +1,4 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHospital, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -135,11 +133,11 @@ const GridCalendar = ({ selected, onSelect, className = '' }) => {
                 <div className="font-medium">{day}</div>
                 <div className="flex gap-1 mt-1">
                   <span className="flex items-center gap-0.5">
-                    <FontAwesomeIcon icon={faHospital} className="text-destructive w-2 h-2" />
+                    <span className="text-destructive text-xs">🏥</span>
                     <span className="text-xs">{counts.inpatient}</span>
                   </span>
                   <span className="flex items-center gap-0.5">
-                    <FontAwesomeIcon icon={faCalendarCheck} className="text-primary w-2 h-2" />
+                    <span className="text-primary text-xs">📅</span>
                     <span className="text-xs">{counts.outpatient}</span>
                   </span>
                 </div>

@@ -7,8 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faPills, faFlask, faChartLine, faHospital, faEye, faBrain, faExclamationTriangle, faEdit, faTrash, faPhone, faFilter, faHeart, faFile, faCalendar, faUsers, faCamera, faExclamationCircle, faCrosshairs, faLightbulb, faCircle, faUser, faDownload, faHome, faRobot } from '@fortawesome/free-solid-svg-icons';
 
 // Import new modular components
 import PatientHeader from '@/components/patient/PatientHeader';
@@ -63,21 +61,34 @@ const mockBloodTestData = {
             }
         }
     ],
-    'P030': [
+    'P003': [
         {
-            date: '2024-01-15',
-            time: '10:00',
-            testType: 'Complete Blood Count with Differential',
-            orderedBy: 'Dr. Ahmad',
+            date: '2024-08-08',
+            time: '14:30',
+            testType: 'Diabetes Management Panel with Eye Health Monitoring',
+            orderedBy: 'Dr. Siti Aminah & Dr. Ahmad Rahman',
             results: {
-                wbc: { value: 9.2, unit: 'K/µL', range: '4.5-11.0', status: 'normal' },
-                rbc: { value: 4.8, unit: 'M/µL', range: '4.5-5.5', status: 'normal' },
-                hgb: { value: 14.5, unit: 'g/dL', range: '14.0-17.4', status: 'normal' },
-                hct: { value: 43.2, unit: '%', range: '42-52', status: 'normal' },
-                plt: { value: 285, unit: 'K/µL', range: '150-400', status: 'normal' },
-                crp: { value: 2.1, unit: 'mg/L', range: '<3.0', status: 'normal' },
-                glucose: { value: 95, unit: 'mg/dL', range: '70-100', status: 'normal' },
-                creatinine: { value: 0.9, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' }
+                hba1c: { value: 7.8, unit: '%', range: '<7.0', status: 'high' },
+                glucose: { value: 165, unit: 'mg/dL', range: '70-100', status: 'high' },
+                creatinine: { value: 0.9, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' },
+                microalbumin: { value: 18, unit: 'mg/g creatinine', range: '<30', status: 'normal' },
+                totalCholesterol: { value: 185, unit: 'mg/dL', range: '<200', status: 'normal' },
+                ldlCholesterol: { value: 110, unit: 'mg/dL', range: '<100', status: 'borderline' }
+            }
+        },
+        {
+            date: '2024-07-10',
+            time: '09:15',
+            testType: 'Initial Diabetes & Macular Edema Assessment Panel',
+            orderedBy: 'Dr. Ahmad Rahman',
+            results: {
+                hba1c: { value: 8.2, unit: '%', range: '<7.0', status: 'high' },
+                glucose: { value: 180, unit: 'mg/dL', range: '70-100', status: 'high' },
+                creatinine: { value: 0.8, unit: 'mg/dL', range: '0.7-1.3', status: 'normal' },
+                wbc: { value: 6.5, unit: 'K/µL', range: '4.5-11.0', status: 'normal' },
+                crp: { value: 1.8, unit: 'mg/L', range: '<3.0', status: 'normal' },
+                crt_od: { value: 450, unit: 'μm', range: '200-300', status: 'high' },
+                crt_os: { value: 450, unit: 'μm', range: '200-300', status: 'high' }
             }
         }
     ]
@@ -120,21 +131,17 @@ const mockPatients = [
     },
     { 
         id: "P003", 
-        name: "Loh Xin Yi", 
-        room: "205", 
-        age: 34, 
-        condition: "Diabetes Type 2 - Follow-up", 
-        status: "stable",
-        vitals: { bp: "125/78", hr: "68", temp: "36.8", o2sat: "99%" },
+        name: "Nurul Asyikin", 
+        room: "205B", 
+        age: 59, 
+        condition: "Diabetes Type 2 with Diabetic Macular Edema", 
+        status: "serious",
+        vitals: { bp: "135/85", hr: "78", temp: "36.9", o2sat: "98%" },
         vitalHistory: [
-            { date: "2024-08-08", bp: "125/78", hr: "68", temp: "36.8", o2sat: "99%", weight: "68.2", bmi: "24.1" },
-            { date: "2024-02-15", bp: "128/82", hr: "72", temp: "36.9", o2sat: "98%", weight: "69.5", bmi: "24.5" },
-            { date: "2023-11-10", bp: "132/85", hr: "74", temp: "37.0", o2sat: "98%", weight: "70.1", bmi: "24.7" },
-            { date: "2023-08-22", bp: "135/88", hr: "76", temp: "37.1", o2sat: "97%", weight: "71.0", bmi: "25.0" },
-            { date: "2023-05-18", bp: "138/90", hr: "78", temp: "37.0", o2sat: "97%", weight: "72.3", bmi: "25.5" },
-            { date: "2022-08-15", bp: "142/92", hr: "80", temp: "37.2", o2sat: "96%", weight: "73.8", bmi: "26.0" }
+            { date: "2024-08-08", bp: "135/85", hr: "78", temp: "36.9", o2sat: "98%", weight: "58.2", bmi: "22.9", glucose: "165", hba1c: "7.8%" },
+            { date: "2024-07-10", bp: "130/82", hr: "76", temp: "36.8", o2sat: "99%", weight: "58.8", bmi: "23.2", glucose: "180", hba1c: "8.2%" }
         ],
-        insights: "34-year-old patient with well-controlled Type 2 diabetes mellitus. Started treatment 2 years ago with excellent compliance. Recent HbA1c shows good improvement from 7.8% to 6.8%. Patient reports hypoglycemic episodes with shakiness - likely due to medication timing. Blood sugar management has significantly improved with lifestyle modifications and metformin therapy. Continue current regimen with minor adjustments to prevent hypoglycemic episodes.",
+        insights: "59-year-old with Type 2 diabetes mellitus (diagnosed 2 years ago) complicated by diabetic macular edema affecting both eyes. HbA1c improving from 8.2% to 7.8% with current regimen but still above target. Central retinal thickness reduced from 450μm to 320μm following anti-VEGF therapy. Shared care between endocrinology (diabetes management) and ophthalmology (macular edema treatment). Patient shows good understanding of both conditions and importance of glycemic control for retinal health.",
         clinicalNotes: [
             {
                 date: "2024-02-15",
@@ -177,29 +184,84 @@ const mockPatients = [
                 doctor: "Dr. Siti Aminah"
             }
         ],
+        treatmentPlans: [
+            {
+                date: "2024-08-08",
+                title: "Diabetes Management - Hypoglycemia Prevention",
+                status: "active",
+                medications: [
+                    { name: "Metformin", dosage: "500mg", frequency: "Once daily with breakfast", indication: "Type 2 diabetes management", notes: "Reduced from BID to prevent hypoglycemic episodes" }
+                ],
+                lifestyle: [
+                    "Regular meal timing - avoid skipping meals",
+                    "Check blood glucose when experiencing symptoms",
+                    "Carry glucose tablets for emergency treatment",
+                    "Continue daily 30-minute walks",
+                    "Weight management - target BMI 23-24"
+                ],
+                monitoring: [
+                    "Self-monitor blood glucose when symptomatic",
+                    "HbA1c every 6 months",
+                    "Annual eye exam",
+                    "Annual foot exam",
+                    "Lipid panel annually"
+                ],
+                nextReview: "2024-11-08"
+            },
+            {
+                date: "2024-02-15",
+                title: "Diabetes Management - Optimization",
+                status: "completed",
+                medications: [
+                    { name: "Metformin", dosage: "500mg", frequency: "Twice daily", indication: "Type 2 diabetes management", notes: "Well tolerated, good glucose control" }
+                ],
+                lifestyle: [
+                    "Low glycemic index diet",
+                    "Regular exercise - walking 30 minutes daily",
+                    "Weight loss goal: 5kg over 6 months",
+                    "Diabetes education reinforcement"
+                ],
+                monitoring: [
+                    "HbA1c monitoring every 3-6 months",
+                    "Home blood glucose monitoring as needed",
+                    "Blood pressure checks"
+                ],
+                nextReview: "2024-08-15"
+            }
+        ],
+        referrals: [
+            {
+                date: "2022-08-01",
+                fromDoctor: "Dr. Ahmad Rahman (Family Medicine)",
+                toDoctor: "Dr. Siti Aminah (Internal Medicine)",
+                reason: "New diagnosis Type 2 diabetes mellitus - specialist management",
+                urgency: "routine",
+                status: "completed",
+                notes: "34-year-old female with recent diagnosis of Type 2 DM. HbA1c 8.1%, fasting glucose 195 mg/dL. Requires diabetes education and initiation of treatment. Patient motivated for lifestyle changes.",
+                followUp: "Patient successfully transitioned to specialist care. Excellent compliance with treatment plan."
+            },
+            {
+                date: "2023-05-20",
+                fromDoctor: "Dr. Siti Aminah",
+                toDoctor: "Ms. Sarah Lee (Clinical Dietitian)",
+                reason: "Diabetes nutrition counseling and meal planning",
+                urgency: "routine",
+                status: "completed",
+                notes: "Patient needs comprehensive nutritional assessment and diabetes meal planning. Currently on metformin 250mg daily.",
+                followUp: "Patient attended 3 sessions, demonstrated good understanding of carbohydrate counting and portion control."
+            }
+        ],
         timeline: [
             { type: "consultation", action: "Diabetes Follow-up Visit #6 - Blood Test Results", time: "Today", date: "August 8, 2024", icon: "fas fa-user-md", status: "completed", details: "Patient reports recent episodes of feeling shaky and dizzy when blood sugar drops. HbA1c improved to 6.8%. Discussed hypoglycemia management and meal timing." },
             { type: "lab", action: "HbA1c and Lipid Panel Results Reviewed", time: "Today", date: "August 8, 2024", icon: "fas fa-vial", status: "completed", details: "HbA1c: 6.8% (improved from 7.2%), glucose: 142 mg/dL. Lipid profile within normal limits. Kidney function normal." },
             { type: "medication", action: "Metformin Dosage Adjustment", time: "Today", date: "August 8, 2024", icon: "fas fa-pills", status: "completed", details: "Reduced metformin to 500mg in morning only to prevent hypoglycemic episodes. Patient advised to take with breakfast." },
             { type: "education", action: "Hypoglycemia Management Education", time: "Today", date: "August 8, 2024", icon: "fas fa-graduation-cap", status: "completed", details: "Taught signs/symptoms of hypoglycemia, when to check blood sugar, and how to treat low blood sugar episodes." },
             { type: "lab", action: "Blood Tests Ordered", time: "6 months ago", date: "February 15, 2024", icon: "fas fa-vial", status: "completed", details: "HbA1c and basic metabolic panel ordered due to patient reporting dizziness episodes after meals." },
-            { type: "consultation", action: "Routine Diabetes Follow-up Visit #5", time: "6 months ago", date: "February 15, 2024", icon: "fas fa-user-md", status: "completed", details: "Patient doing well on metformin 500mg BID. Some post-meal dizziness reported. Weight loss of 1.3kg noted." }
-        ]
-    },
-    { 
-        id: "P030", 
-        name: "Ahmad Hafiz", 
-        room: "205B", 
-        age: 65, 
-        condition: "Acute angle-closure glaucoma", 
-        status: "critical",
-        vitals: { bp: "170/100", hr: "88", temp: "37.3", o2sat: "96%" },
-        insights: "Acute angle-closure glaucoma requiring immediate intervention. IOP severely elevated at 45mmHg. Emergency surgery completed successfully. Patient responding well to treatment.",
-        timeline: [
-            { type: "emergency", action: "Emergency Surgery - Laser Iridotomy", time: "2 hours ago", date: "March 14, 2024", icon: "fas fa-eye", status: "completed", details: "Peripheral laser iridotomy performed successfully. IOP reduced from 45mmHg to 18mmHg." },
-            { type: "assessment", action: "Initial Assessment", time: "4 hours ago", date: "March 14, 2024", icon: "fas fa-stethoscope", status: "completed", details: "Patient presented with severe eye pain, blurred vision, and nausea. IOP measured at 45mmHg." },
-            { type: "medication", action: "IOP Lowering Drops", time: "3 hours ago", date: "March 14, 2024", icon: "fas fa-pills", status: "ongoing", details: "Started on Timolol and Acetazolamide to reduce intraocular pressure." },
-            { type: "monitoring", action: "Post-operative Monitoring", time: "ongoing", date: "March 14, 2024", icon: "fas fa-heartbeat", status: "active", details: "Continuous IOP monitoring. Patient comfort improved significantly." }
+            { type: "consultation", action: "Routine Diabetes Follow-up Visit #5", time: "6 months ago", date: "February 15, 2024", icon: "fas fa-user-md", status: "completed", details: "Patient doing well on metformin 500mg BID. Some post-meal dizziness reported. Weight loss of 1.3kg noted." },
+            { type: "referral", action: "Nutrition Counseling Completed", time: "1 year ago", date: "May 20, 2023", icon: "fas fa-apple-alt", status: "completed", details: "Completed 3 sessions with clinical dietitian. Patient demonstrated excellent understanding of carbohydrate counting and portion control." },
+            { type: "medication", action: "Metformin Optimization", time: "1.5 years ago", date: "November 10, 2023", icon: "fas fa-pills", status: "completed", details: "Increased metformin to 500mg BID due to suboptimal glucose control. Patient tolerating well." },
+            { type: "education", action: "Diabetes Self-Management Education", time: "2 years ago", date: "August 22, 2022", icon: "fas fa-graduation-cap", status: "completed", details: "Completed diabetes education program. Patient learned blood glucose monitoring, medication management, and lifestyle modifications." },
+            { type: "diagnosis", action: "Initial Diabetes Diagnosis", time: "2 years ago", date: "August 15, 2022", icon: "fas fa-diagnoses", status: "completed", details: "New diagnosis Type 2 diabetes mellitus. Referred from family medicine for specialist management and treatment initiation." }
         ]
     },
     { 
@@ -365,15 +427,15 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
     const [selectedTrend, setSelectedTrend] = useState(null);
 
     const tabs = [
-        { id: 'summary', label: 'Summary', icon: faClipboard },
-        { id: 'vitals', label: 'Vital Signs', icon: faHeart },
-        { id: 'treatment', label: 'Treatment Plan', icon: faPills },
-        { id: 'clinical', label: 'Clinical Notes', icon: faFile },
-        { id: 'imaging', label: 'Imaging & Labs', icon: faFlask },
-        { id: 'timeline', label: 'Timeline', icon: faCalendar },
-        { id: 'log', label: 'Log', icon: faChartLine },
-        { id: 'referrals', label: 'Referrals', icon: faUsers },
-        { id: 'discharge', label: 'Discharge', icon: faHospital }
+        { id: 'summary', label: 'Summary', icon: '📋' },
+        { id: 'vitals', label: 'Vital Signs', icon: '❤️' },
+        { id: 'treatment', label: 'Treatment Plan', icon: '💊' },
+        { id: 'clinical', label: 'Clinical Notes', icon: '📄' },
+        { id: 'imaging', label: 'Imaging & Labs', icon: '🧪' },
+        { id: 'timeline', label: 'Timeline', icon: '📅' },
+        { id: 'log', label: 'Log', icon: '📈' },
+        { id: 'referrals', label: 'Referrals', icon: '👥' },
+        { id: 'discharge', label: 'Discharge', icon: '🏥' }
     ];
 
     const handleGenerateSummary = () => {
@@ -425,7 +487,6 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
                         >
-                            <FontAwesomeIcon icon={tab.icon} className="mr-1 text-sm" />
                             {tab.label}
                         </button>
                     ))}
@@ -436,11 +497,181 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
             <div className="flex-1 overflow-y-auto p-2 bg-card text-xs">
                 {activeTab === 'summary' && (
                     <div className="space-y-2">
+                        {/* Doctor-specific content first */}
+                        <div className="bg-card border rounded p-2">
+                            <div className="font-bold text-primary mb-2">
+                                {user?.specialty === 'Ophthalmologist' ? '👁️ Eye Care Assessment' : '🩺 Diabetes Care Assessment'}
+                            </div>
+                            <div className="text-foreground text-xs leading-relaxed">
+                                {user?.specialty === 'Ophthalmologist' 
+                                    ? (patient?.id === 'P003' 
+                                        ? 'Follow-up for diabetic macular edema in 59-year-old with Type 2 diabetes. Central retinal thickness improved to 320μm OU (down from 450μm) following anti-VEGF therapy. Visual acuity improved from 20/40 to 20/30 OU. Hard exudates resolving bilaterally. Patient demonstrates excellent understanding of diabetes-macular edema relationship. Continue monthly ranibizumab injections and coordinate diabetes care with Dr. Siti. Next injection in 4 weeks.'
+                                        : patient.insights)
+                                    : (patient?.id === 'P003' 
+                                        ? 'Diabetes Type 2 well-controlled with current regimen. Patient demonstrates good understanding of dietary modifications and medication compliance. Recent HbA1c shows improvement. Monitor for diabetic complications including regular ophthalmological follow-up with Dr. Ahmad. Continue current diabetes management plan with lifestyle modifications.'
+                                        : patient.insights)
+                                }
+                            </div>
+                        </div>
+
+                        {/* Doctor-specific clinical information */}
+                        {user?.specialty !== 'Ophthalmologist' && patient?.id === 'P003' && (
+                            <div className="bg-card border rounded p-2">
+                                <div className="font-bold text-primary mb-2">Diabetes Management</div>
+                                <div className="space-y-1 text-xs">
+                                    <div className="flex justify-between items-center">
+                                        <span>• HbA1c Target: &lt;7.0%</span>
+                                        <span className="text-green-600 font-medium">Current: 6.8%</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>• Blood Glucose Monitoring</span>
+                                        <span className="text-blue-600 font-medium">BID</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>• Diet adherence</span>
+                                        <span className="text-green-600 font-medium">Excellent</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>• Exercise routine</span>
+                                        <span className="text-blue-600 font-medium">30min/day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Ophthalmology-Specific Sections */}
+                        {user?.specialty === 'Ophthalmologist' && (
+                            <>
+                                {/* Eye Examination */}
+                                <div className="bg-card border rounded p-2">
+                                    <div className="font-bold text-primary mb-2">Eye Examination Findings</div>
+                                    {patient?.id === 'P003' ? (
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div className="p-2 rounded bg-card border">
+                                                <div className="font-medium">Right Eye (OD)</div>
+                                                <div className="text-sm">• VA: 20/30 (improved)</div>
+                                                <div className="text-sm">• CRT: 320μm (reduced)</div>
+                                                <div className="text-sm">• Macula: Mild edema, improving</div>
+                                                <div className="text-sm">• Hard exudates: Resolving</div>
+                                            </div>
+                                            <div className="p-2 rounded bg-card border">
+                                                <div className="font-medium">Left Eye (OS)</div>
+                                                <div className="text-sm">• VA: 20/30 (improved)</div>
+                                                <div className="text-sm">• CRT: 320μm (reduced)</div>
+                                                <div className="text-sm">• Macula: Mild edema, improving</div>
+                                                <div className="text-sm">• Hard exudates: Resolving</div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div className="p-2 rounded bg-card border">
+                                                <div className="font-medium">Right Eye (OD)</div>
+                                                <div className="text-sm">• VA: 20/200</div>
+                                                <div className="text-sm">• IOP: 45mmHg ↑</div>
+                                                <div className="text-sm">• Pupil: Mid-dilated, non-reactive</div>
+                                                <div className="text-sm">• Cornea: Edematous</div>
+                                            </div>
+                                            <div className="p-2 rounded bg-card border">
+                                                <div className="font-medium">Left Eye (OS)</div>
+                                                <div className="text-sm">• VA: 20/400</div>
+                                                <div className="text-sm">• IOP: 42mmHg ↑</div>
+                                                <div className="text-sm">• Pupil: Mid-dilated, sluggish</div>
+                                                <div className="text-sm">• Cornea: Mild edema</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Ophthalmic Medications */}
+                                <div className="bg-card border rounded p-2">
+                                    <div className="font-bold text-primary mb-2">Current Ophthalmic Medications</div>
+                                    {patient?.id === 'P003' ? (
+                                        <div className="space-y-1 text-xs">
+                                            <div className="flex justify-between items-center">
+                                                <span>• Ranibizumab intravitreal injection</span>
+                                                <span className="text-blue-600 font-medium">Monthly</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>• Artificial tears (preservative-free)</span>
+                                                <span className="text-green-600 font-medium">QID/PRN</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-1 text-xs">
+                                            <div className="flex justify-between items-center">
+                                                <span>• Pilocarpine 2% drops</span>
+                                                <span className="text-green-600 font-medium">Q15min x 4</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>• Timolol 0.5%</span>
+                                                <span className="text-blue-600 font-medium">BID</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>• Acetazolamide 500mg</span>
+                                                <span className="text-purple-600 font-medium">IV STAT</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>• Mannitol 20%</span>
+                                                <span className="text-red-600 font-medium">IV 1.5g/kg</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Treatment Plan */}
+                                <div className="bg-card border rounded p-2">
+                                    <div className="font-bold text-primary mb-2">Treatment Plan</div>
+                                    {patient?.id === 'P003' ? (
+                                        <div className="space-y-1 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                <span className="font-medium">Continue:</span>
+                                                <span>Monthly ranibizumab injections for macular edema</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                <span className="font-medium">Diabetes:</span>
+                                                <span>Coordinate with Dr. Siti for optimal glucose control</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                                <span className="font-medium">Monitoring:</span>
+                                                <span>OCT scans monthly; visual acuity at each visit</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                                                <span className="font-medium">Follow-up:</span>
+                                                <span>Next injection in 4 weeks</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-1 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                                <span className="font-medium">URGENT:</span>
+                                                <span>Laser peripheral iridotomy within 2 hours</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                                                <span className="font-medium">Monitor:</span>
+                                                <span>IOP every 30 minutes post-treatment</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                <span className="font-medium">Follow-up:</span>
+                                                <span>Schedule bilateral prophylactic LPI</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {/* General content at bottom */}
                         {/* Critical Status Alert */}
                         {patient.status === 'critical' && (
-                            <div className="bg-red-50 border border-red-200 rounded p-2">
+                            <div className="bg-card border rounded p-2">
                                 <div className="flex items-center gap-2 text-red-800">
-                                    <FontAwesomeIcon icon={faExclamationCircle} className="text-lg text-red-600" />
                                     <span className="font-bold">CRITICAL PATIENT</span>
                                 </div>
                                 <div className="text-red-700 text-xs mt-1">
@@ -452,151 +683,43 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                         )}
 
-                        {/* Patient Overview Card */}
-                        <div className="bg-blue-50 border border-blue-200 rounded p-2">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="font-bold text-blue-900">
-                                    {user?.specialty === 'Ophthalmologist' ? <><FontAwesomeIcon icon={faEye} className="mr-1" />Ophthalmology Overview</> : 'Patient Overview'}
-                                </div>
-                                <Badge variant={patient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
-                                    {patient.status.toUpperCase()}
-                                </Badge>
-                            </div>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                                <div><strong>Room:</strong> {patient.room}</div>
-                                <div><strong>Age:</strong> {patient.age} years old</div>
-                                <div><strong>Primary Condition:</strong> {patient.condition}</div>
-                                <div><strong>Admission:</strong> 3 days ago</div>
-                                {user?.specialty === 'Ophthalmologist' && (
-                                    <>
-                                        <div><strong>Visual Acuity:</strong> OD 20/200, OS 20/400</div>
-                                        <div><strong>IOP:</strong> OD 45mmHg, OS 42mmHg</div>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Clinical Assessment - Ophthalmology Specific */}
-                        <div className="bg-purple-50 border border-purple-200 rounded p-2">
-                            <div className="font-bold text-purple-900 mb-1">
-                                {user?.specialty === 'Ophthalmologist' ? <><FontAwesomeIcon icon={faEye} className="mr-1" />Ophthalmological Assessment</> : <><FontAwesomeIcon icon={faBrain} className="mr-1" />AI Clinical Assessment</>}
-                            </div>
-                            <div className="text-purple-800 text-xs leading-relaxed">
-                                {user?.specialty === 'Ophthalmologist' 
-                                    ? `Acute angle-closure glaucoma with severe IOP elevation. Immediate laser peripheral iridotomy indicated. Patient reports severe eye pain, nausea, and seeing halos around lights. Pupil is mid-dilated and non-reactive. Corneal edema present.`
-                                    : patient.insights
-                                }
-                            </div>
-                        </div>
-
-                        {/* Ophthalmology-Specific Sections */}
-                        {user?.specialty === 'Ophthalmologist' && (
-                            <>
-                                {/* Eye Examination */}
-                                <div className="bg-green-50 border border-green-200 rounded p-2">
-                                    <div className="font-bold text-green-900 mb-2"><FontAwesomeIcon icon={faEye} className="mr-1" />Eye Examination Findings</div>
-                                    <div className="grid grid-cols-2 gap-2 text-xs">
-                                        <div className="p-2 rounded bg-white border">
-                                            <div className="font-medium">Right Eye (OD)</div>
-                                            <div className="text-sm">• VA: 20/200</div>
-                                            <div className="text-sm">• IOP: 45mmHg ↑</div>
-                                            <div className="text-sm">• Pupil: Mid-dilated, non-reactive</div>
-                                            <div className="text-sm">• Cornea: Edematous</div>
-                                        </div>
-                                        <div className="p-2 rounded bg-white border">
-                                            <div className="font-medium">Left Eye (OS)</div>
-                                            <div className="text-sm">• VA: 20/400</div>
-                                            <div className="text-sm">• IOP: 42mmHg ↑</div>
-                                            <div className="text-sm">• Pupil: Mid-dilated, sluggish</div>
-                                            <div className="text-sm">• Cornea: Mild edema</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Ophthalmic Medications */}
-                                <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                                    <div className="font-bold text-yellow-900 mb-2"><FontAwesomeIcon icon={faPills} className="mr-1" />Current Ophthalmic Medications</div>
-                                    <div className="space-y-1 text-xs">
-                                        <div className="flex justify-between items-center">
-                                            <span>• Pilocarpine 2% drops</span>
-                                            <span className="text-green-600 font-medium">Q15min x 4</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span>• Timolol 0.5%</span>
-                                            <span className="text-blue-600 font-medium">BID</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span>• Acetazolamide 500mg</span>
-                                            <span className="text-purple-600 font-medium">IV STAT</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span>• Mannitol 20%</span>
-                                            <span className="text-red-600 font-medium">IV 1.5g/kg</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Treatment Plan */}
-                                <div className="bg-indigo-50 border border-indigo-200 rounded p-2">
-                                    <div className="font-bold text-indigo-900 mb-2"><FontAwesomeIcon icon={faCrosshairs} className="mr-1" />Treatment Plan</div>
-                                    <div className="space-y-1 text-xs">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                                            <span className="font-medium">URGENT:</span>
-                                            <span>Laser peripheral iridotomy within 2 hours</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
-                                            <span className="font-medium">Monitor:</span>
-                                            <span>IOP every 30 minutes post-treatment</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                            <span className="font-medium">Follow-up:</span>
-                                            <span>Schedule bilateral prophylactic LPI</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-
-                        {/* Current Vitals with Status */}
-                        <div className="bg-gray-50 border rounded p-2">
-                            <div className="font-bold text-gray-900 mb-2"><FontAwesomeIcon icon={faChartLine} className="mr-1" />Current Vital Signs</div>
+                        {/* Current Vital Signs */}
+                        <div className="bg-card border rounded p-2">
+                            <div className="font-bold text-primary mb-2">Current Vital Signs</div>
                             <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className={`p-2 rounded ${patient.status === 'critical' ? 'bg-red-100' : 'bg-white'} border`}>
+                                <div className="p-2 rounded bg-card border">
                                     <div className="font-medium">Blood Pressure</div>
-                                    <div className={`text-lg font-bold ${patient.status === 'critical' ? 'text-red-600' : 'text-gray-800'}`}>
+                                    <div className="text-lg font-bold text-foreground">
                                         {patient.vitals.bp}
                                     </div>
-                                    <div className="text-gray-500">
+                                    <div className="text-muted-foreground">
                                         {patient.status === 'critical' ? 'HYPERTENSIVE' : 'mmHg'}
                                     </div>
                                 </div>
-                                <div className="p-2 rounded bg-white border">
+                                <div className="p-2 rounded bg-card border">
                                     <div className="font-medium">Heart Rate</div>
-                                    <div className={`text-lg font-bold ${patient.status === 'critical' ? 'text-orange-600' : 'text-blue-600'}`}>
+                                    <div className="text-lg font-bold text-foreground">
                                         {patient.vitals.hr}
                                     </div>
-                                    <div className="text-gray-500">
+                                    <div className="text-muted-foreground">
                                         {patient.status === 'critical' ? 'TACHYCARDIC' : 'bpm'}
                                     </div>
                                 </div>
-                                <div className="p-2 rounded bg-white border">
+                                <div className="p-2 rounded bg-card border">
                                     <div className="font-medium">Temperature</div>
-                                    <div className={`text-lg font-bold ${patient.status === 'critical' ? 'text-red-600' : 'text-green-600'}`}>
-                                        {patient.vitals.temp}°F
+                                    <div className="text-lg font-bold text-foreground">
+                                        {patient.vitals.temp}°C
                                     </div>
-                                    <div className="text-gray-500">
+                                    <div className="text-muted-foreground">
                                         {patient.status === 'critical' ? 'FEBRILE' : 'Normal'}
                                     </div>
                                 </div>
-                                <div className="p-2 rounded bg-white border">
+                                <div className="p-2 rounded bg-card border">
                                     <div className="font-medium">O2 Saturation</div>
-                                    <div className={`text-lg font-bold ${patient.status === 'critical' ? 'text-yellow-600' : 'text-purple-600'}`}>
+                                    <div className="text-lg font-bold text-foreground">
                                         {patient.vitals.o2sat}%
                                     </div>
-                                    <div className="text-gray-500">
+                                    <div className="text-muted-foreground">
                                         {patient.status === 'critical' ? 'HYPOXIC' : 'Good'}
                                     </div>
                                 </div>
@@ -605,67 +728,151 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                         {/* Critical Lab Values */}
                         {mockBloodTestData[patient?.id] && (
-                            <div className="bg-orange-50 border border-orange-200 rounded p-2">
-                                <div className="font-bold text-orange-900 mb-2"><FontAwesomeIcon icon={faFlask} className="mr-1" />Critical Lab Values (Latest)</div>
+                            <div className="bg-card border rounded p-2">
+                                <div className="font-bold text-primary mb-2">Critical Lab Values (Latest)</div>
                                 <div className="grid grid-cols-3 gap-2 text-xs">
                                     {Object.entries(mockBloodTestData[patient.id][0].results)
                                         .filter(([key, result]) => result.status === 'high' || result.status === 'low')
                                         .slice(0, 6)
                                         .map(([key, result]) => (
-                                        <div key={key} className="p-1 bg-white rounded border">
+                                        <div key={key} className="p-1 bg-card rounded border">
                                             <div className="font-medium">{key.toUpperCase()}</div>
-                                            <div className={`font-bold ${result.status === 'high' ? 'text-red-600' : 'text-blue-600'}`}>
+                                            <div className={`font-bold text-foreground`}>
                                                 {result.value} {result.unit}
                                             </div>
-                                            <div className="text-gray-500">
+                                            <div className="text-muted-foreground">
                                                 {result.status === 'high' ? '↑ HIGH' : '↓ LOW'}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="text-orange-700 text-xs mt-2 font-medium">
-                                    <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />{Object.entries(mockBloodTestData[patient.id][0].results).filter(([key, result]) => result.status !== 'normal').length} abnormal values require attention
+                                <div className="text-muted-foreground text-xs mt-2 font-medium">
+                                    {Object.entries(mockBloodTestData[patient.id][0].results).filter(([key, result]) => result.status !== 'normal').length} abnormal values require attention
                                 </div>
                             </div>
                         )}
 
-                        {/* Active Treatment Plan */}
-                        <div className="bg-green-50 border border-green-200 rounded p-2">
-                            <div className="font-bold text-green-900 mb-2"><FontAwesomeIcon icon={faPills} className="mr-1" />Active Treatment</div>
-                            <div className="space-y-1 text-xs">
-                                {patient.status === 'critical' ? (
-                                    <>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                                            <span><strong>Ceftriaxone 1g IV daily</strong> - Antibiotic therapy (Day 2)</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                            <span><strong>Continuous monitoring</strong> - Hourly vitals</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
-                                            <span><strong>Pain management</strong> - PRN morphine 2-4mg IV</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                            <span><strong>Standard care protocol</strong> - Routine monitoring</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                            <span><strong>Discharge planning</strong> - In progress</span>
-                                        </div>
-                                    </>
-                                )}
+                        {/* Two-column layout for Current Medication and Active Treatment */}
+                        <div className="grid grid-cols-2 gap-3">
+                            {/* Current Medication */}
+                            <div className="bg-card border rounded p-2">
+                                <div className="font-bold text-primary mb-2">Current Medication</div>
+                                <div className="space-y-1 text-xs">
+                                    {patient.id === 'P003' ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                <span><strong>Metformin 500mg</strong> - Once daily with breakfast</span>
+                                            </div>
+                                            <div className="text-muted-foreground text-xs">
+                                                <strong>Recent change:</strong> Reduced from BID to prevent hypoglycemic episodes
+                                            </div>
+                                        </>
+                                    ) : patient.id === 'P003' ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                                                <span><strong>Tobramycin 0.3% eye drops</strong> - 1-2 drops q4h OU (continue 5 days, then taper)</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-secondary rounded-full"></span>
+                                                <span><strong>Artificial tears</strong> - QID and PRN for comfort</span>
+                                            </div>
+                                        </>
+                                    ) : patient.status === 'critical' ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-destructive rounded-full"></span>
+                                                <span><strong>Ceftriaxone 1g IV</strong> - Daily at 08:00</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-muted rounded-full"></span>
+                                                <span><strong>Morphine 2-4mg IV</strong> - PRN for pain</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                <span><strong>Standard medications</strong> - As prescribed</span>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Active Treatment */}
+                            <div className="bg-card border rounded p-2">
+                                <div className="font-bold text-primary mb-2">Active Treatment</div>
+                                <div className="space-y-1 text-xs">
+                                    {patient.id === 'P003' ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                                                <span><strong>Diabetes management</strong> - Routine follow-up</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-secondary rounded-full"></span>
+                                                <span><strong>Hypoglycemia education</strong> - Completed today</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                                                <span><strong>Lifestyle counseling</strong> - Ongoing</span>
+                                            </div>
+                                        </>
+                                    ) : patient.id === 'P003' ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                                                <span><strong>Conjunctivitis follow-up</strong> - Continue antibiotics; taper after 5 days</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-secondary rounded-full"></span>
+                                                <span><strong>Visual acuity monitoring</strong> - Intermittent blurring noted, improving</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                                                <span><strong>Hygiene measures</strong> - Hand hygiene, no contact lenses</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-muted rounded-full"></span>
+                                                <span><strong>Follow-up</strong> - Review in 1 week</span>
+                                            </div>
+                                        </>
+                                    ) : patient.status === 'critical' ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-destructive rounded-full"></span>
+                                                <span><strong>Antibiotic therapy</strong> - Day 2 of treatment</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                                                <span><strong>Continuous monitoring</strong> - Hourly vitals</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-muted rounded-full"></span>
+                                                <span><strong>Pain management</strong> - Active protocol</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                <span><strong>Standard care protocol</strong> - Routine monitoring</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                <span><strong>Discharge planning</strong> - In progress</span>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         {/* Recent Critical Events */}
                         <div className="border rounded p-2">
-                            <div className="font-bold text-gray-900 mb-2">⏰ Recent Critical Events</div>
+                            <div className="font-bold text-primary mb-2">Recent Critical Events</div>
                             <div className="space-y-1">
                                 {patient.timeline
                                     .filter(item => item.status === 'completed' || item.status === 'ongoing')
@@ -679,13 +886,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             item.type === 'monitoring' ? 'bg-purple-500' :
                                             'bg-gray-500'
                                         }`}>
-                                            <FontAwesomeIcon icon={
-                                                item.type === 'surgery' ? faHospital :
-                                                item.type === 'lab' ? faFlask :
-                                                item.type === 'medication' ? faPills :
-                                                item.type === 'monitoring' ? faChartLine :
-                                                faClipboard
-                                            } className="text-blue-600" />
+                                            <span className="text-muted-foreground">•</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
@@ -699,39 +900,136 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                         </div>
 
-                        {/* Quick Action Recommendations */}
-                        <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                            <div className="font-bold text-yellow-900 mb-2"><FontAwesomeIcon icon={faLightbulb} className="mr-1" />Recommended Actions</div>
-                            <div className="space-y-1 text-xs">
-                                {patient.status === 'critical' ? (
-                                    <>
-                                        <div className="flex items-center gap-2 text-yellow-800">
-                                            <FontAwesomeIcon icon={faCircle} className="text-red-600" />
-                                            <span><strong>PRIORITY:</strong> Review latest blood culture results</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-yellow-800">
-                                            <FontAwesomeIcon icon={faCircle} className="text-yellow-500" />
-                                            <span><strong>MONITOR:</strong> Temperature trend - consider cooling measures</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-yellow-800">
-                                            <FontAwesomeIcon icon={faCircle} className="text-yellow-500" />
-                                            <span><strong>CONSIDER:</strong> Infectious disease consult if no improvement</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="flex items-center gap-2 text-yellow-800">
-                                            <FontAwesomeIcon icon={faCircle} className="text-green-600" />
-                                            <span><strong>ROUTINE:</strong> Continue current treatment plan</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-yellow-800">
-                                            <FontAwesomeIcon icon={faCircle} className="text-green-600" />
-                                            <span><strong>DISCHARGE:</strong> Prepare discharge planning materials</span>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                    </div>
+                )}
+
+                {activeTab === 'treatment' && (
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-foreground">Treatment Plans</h3>
+                            <Badge variant="outline" className="text-xs">
+                                {patient.treatmentPlans?.filter(plan => plan.status === 'active').length || 0} Active
+                            </Badge>
                         </div>
+                        
+                        {patient.treatmentPlans?.map((plan, index) => (
+                            <Card key={index} className={`${plan.status === 'active' ? 'border-green-200 bg-green-50' : 'border-gray-200'}`}>
+                                <CardHeader className="py-2">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-sm">{plan.title}</CardTitle>
+                                        <Badge variant={plan.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                                            {plan.status}
+                                        </Badge>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">{plan.date}</div>
+                                </CardHeader>
+                                <CardContent className="py-2">
+                                    <div className="space-y-3">
+                                        {plan.medications && (
+                                            <div>
+                                                <h4 className="font-semibold text-xs mb-1">Medications</h4>
+                                                {plan.medications.map((med, medIndex) => (
+                                                    <div key={medIndex} className="bg-white p-2 rounded border">
+                                                        <div className="font-medium text-xs">{med.name} {med.dosage}</div>
+                                                        <div className="text-xs text-muted-foreground">{med.frequency} - {med.indication}</div>
+                                                        {med.notes && <div className="text-xs text-blue-600 mt-1">Note: {med.notes}</div>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        
+                                        {plan.lifestyle && (
+                                            <div>
+                                                <h4 className="font-semibold text-xs mb-1">Lifestyle Modifications</h4>
+                                                <ul className="list-disc list-inside space-y-1">
+                                                    {plan.lifestyle.map((item, itemIndex) => (
+                                                        <li key={itemIndex} className="text-xs text-muted-foreground">{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        
+                                        {plan.monitoring && (
+                                            <div>
+                                                <h4 className="font-semibold text-xs mb-1">Monitoring Plan</h4>
+                                                <ul className="list-disc list-inside space-y-1">
+                                                    {plan.monitoring.map((item, itemIndex) => (
+                                                        <li key={itemIndex} className="text-xs text-muted-foreground">{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        
+                                        {plan.nextReview && plan.status === 'active' && (
+                            <div className="bg-muted p-2 rounded">
+                                <div className="text-xs font-semibold text-foreground">Next Review: {plan.nextReview}</div>
+                            </div>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )) || (
+                            <div className="text-center text-muted-foreground py-4">No treatment plans available</div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'referrals' && (
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-foreground">Referrals</h3>
+                            <Badge variant="outline" className="text-xs">
+                                {patient.referrals?.length || 0} Total
+                            </Badge>
+                        </div>
+                        
+                        {patient.referrals?.map((referral, index) => (
+                            <Card key={index} className="border-blue-200">
+                                <CardHeader className="py-2">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-sm">{referral.reason}</CardTitle>
+                                        <Badge variant={referral.status === 'completed' ? 'default' : 'secondary'} className="text-xs">
+                                            {referral.status}
+                                        </Badge>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">{referral.date}</div>
+                                </CardHeader>
+                                <CardContent className="py-2">
+                                    <div className="space-y-2">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <div className="text-xs font-semibold">From:</div>
+                                                <div className="text-xs text-muted-foreground">{referral.fromDoctor}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-semibold">To:</div>
+                                                <div className="text-xs text-muted-foreground">{referral.toDoctor}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <div className="text-xs font-semibold">Referral Notes:</div>
+                                            <div className="text-xs text-muted-foreground">{referral.notes}</div>
+                                        </div>
+                                        
+                                        {referral.followUp && (
+                                            <div className="bg-green-50 p-2 rounded border border-green-200">
+                                                <div className="text-xs font-semibold text-green-800">Follow-up:</div>
+                                                <div className="text-xs text-green-700">{referral.followUp}</div>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant={referral.urgency === 'urgent' ? 'destructive' : 'secondary'} className="text-xs">
+                                                {referral.urgency}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )) || (
+                            <div className="text-center text-muted-foreground py-4">No referrals available</div>
+                        )}
                     </div>
                 )}
 
@@ -885,8 +1183,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         </div>
 
                         {/* Debug Info */}
-                        <div className="py-1 border-b bg-yellow-50">
-                            <div className="font-semibold mb-1 text-xs text-yellow-800">
+                            <div className="py-1 border-b bg-muted">
+                                <div className="font-semibold mb-1 text-xs text-foreground">
                                 Debug: Total updates: {patientUpdates.length}, Vital signs updates: {patientUpdates.filter(update => update.vitalSigns?.trim()).length}
                             </div>
                         </div>
@@ -906,7 +1204,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                                 <span className="font-medium text-xs text-blue-800">
                                                     {new Date(update.timestamp).toLocaleString()}
                                                 </span>
-                                                <span className="text-blue-600 text-xs"><FontAwesomeIcon icon={faFile} className="mr-1" />New Entry</span>
+                                                <span className="text-muted-foreground text-xs">New Entry</span>
                                             </div>
                                             <div className="text-xs text-gray-700 bg-white p-2 rounded">
                                                 {update.vitalSigns}
@@ -969,8 +1267,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Vitals:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Reading</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -999,8 +1297,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Timeline:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Event</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -1020,7 +1318,6 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <FontAwesomeIcon icon={faHeart} className="text-red-600" />
                                                     <span className="font-medium text-xs">Vital Signs Updated</span>
                                                 </div>
                                                 <div className="text-gray-600 text-xs">{update.vitalSigns.substring(0, 80)}...</div>
@@ -1035,7 +1332,6 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <FontAwesomeIcon icon={faPills} className="text-green-600" />
                                                     <span className="font-medium text-xs">Treatment Plan Updated</span>
                                                 </div>
                                                 <div className="text-gray-600 text-xs">{update.treatmentPlan.substring(0, 80)}...</div>
@@ -1053,7 +1349,6 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <FontAwesomeIcon icon={faFile} className="text-blue-600" />
                                                     <span className="font-medium text-xs">Clinical Note Added</span>
                                                 </div>
                                                 <div className="text-gray-600 text-xs">
@@ -1066,104 +1361,193 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     )}
                                 </div>
                             )).reverse()}
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-blue-50 rounded px-2">
-                                <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">2:30 PM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faFile} className="text-blue-600" />
-                                        <span className="font-medium text-xs">Clinical Note Added</span>
+                            {/* Conditional Log Entries based on patient */}
+                            {patient?.id === 'P003' ? (
+                                <>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-blue-50 rounded px-2">
+                                        <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">9:15 AM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Clinical Note Added</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Dr. Siti documented diabetes follow-up visit #6 with hypoglycemia education</div>
+                                            <div className="text-blue-600 text-xs">Status: Completed</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">Dr. Smith documented post-operative assessment</div>
-                                    <div className="text-blue-600 text-xs">Status: Active</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-red-50 rounded px-2">
-                                <span className="text-red-600 w-16 flex-shrink-0 text-xs font-medium">1:45 PM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faHeart} className="text-red-600" />
-                                        <span className="font-medium text-xs">Vital Signs Updated</span>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-purple-50 rounded px-2">
+                                        <span className="text-purple-600 w-16 flex-shrink-0 text-xs font-medium">9:00 AM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Lab Results Reviewed</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">HbA1c: 6.8% (improved), glucose: 142 mg/dL - Dr. Siti Aminah</div>
+                                            <div className="text-green-600 text-xs">Good diabetes control achieved</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">BP: 180/110 → 175/108, HR: 125 → 122 (Nurse Martinez)</div>
-                                    <div className="text-red-600 text-xs">Critical: Hypertension persisting</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-green-50 rounded px-2">
-                                <span className="text-green-600 w-16 flex-shrink-0 text-xs font-medium">12:15 PM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faPills} className="text-green-600" />
-                                        <span className="font-medium text-xs">Medication Administered</span>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-green-50 rounded px-2">
+                                        <span className="text-green-600 w-16 flex-shrink-0 text-xs font-medium">8:45 AM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Medication Adjusted</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Metformin reduced to 500mg once daily - Dr. Siti Aminah</div>
+                                            <div className="text-green-600 text-xs">To prevent hypoglycemic episodes</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">Ceftriaxone 1g IV - Antibiotic therapy (Nurse Johnson)</div>
-                                    <div className="text-green-600 text-xs">Completed successfully</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-purple-50 rounded px-2">
-                                <span className="text-purple-600 w-16 flex-shrink-0 text-xs font-medium">11:30 AM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faFlask} className="text-purple-600" />
-                                        <span className="font-medium text-xs">Lab Results Uploaded</span>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-red-50 rounded px-2">
+                                        <span className="text-red-600 w-16 flex-shrink-0 text-xs font-medium">8:30 AM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Vital Signs Updated</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">BP: 125/78, HR: 68, Weight: 68.2kg, BMI: 24.1 - Nurse Lim</div>
+                                            <div className="text-green-600 text-xs">All parameters normal</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">Complete Blood Count - WBC: 15,000 (elevated)</div>
-                                    <div className="text-purple-600 text-xs">Requires attention</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-orange-50 rounded px-2">
-                                <span className="text-orange-600 w-16 flex-shrink-0 text-xs font-medium">10:45 AM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faCamera} className="text-orange-600" />
-                                        <span className="font-medium text-xs">Imaging Ordered</span>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-yellow-50 rounded px-2">
+                                        <span className="text-yellow-600 w-16 flex-shrink-0 text-xs font-medium">8:15 AM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Patient Education</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Hypoglycemia management education provided - Dr. Siti Aminah</div>
+                                            <div className="text-yellow-600 text-xs">Patient demonstrated understanding</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">CT Abdomen/Pelvis with contrast - Dr. Smith</div>
-                                    <div className="text-orange-600 text-xs">Scheduled for 2:00 PM</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-yellow-50 rounded px-2">
-                                <span className="text-yellow-600 w-16 flex-shrink-0 text-xs font-medium">9:20 AM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faUsers} className="text-yellow-600" />
-                                        <span className="font-medium text-xs">Referral Sent</span>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-gray-50 rounded px-2">
+                                        <span className="text-gray-600 w-16 flex-shrink-0 text-xs font-medium">8:00 AM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Patient Check-in</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Outpatient diabetes follow-up appointment - Reception</div>
+                                            <div className="text-gray-600 text-xs">Patient arrived on time</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">Infectious Disease consultation - Dr. Kim</div>
-                                    <div className="text-yellow-600 text-xs">Pending response</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-gray-50 rounded px-2">
-                                <span className="text-gray-600 w-16 flex-shrink-0 text-xs font-medium">8:00 AM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faUser} className="text-gray-600" />
-                                        <span className="font-medium text-xs">Patient Assessment</span>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-indigo-50 rounded px-2">
+                                        <span className="text-indigo-600 w-16 flex-shrink-0 text-xs font-medium">Feb 15</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Follow-up Scheduled</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Next diabetes appointment scheduled for November 8, 2024</div>
+                                            <div className="text-indigo-600 text-xs">6-month follow-up interval</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">Morning rounds completed - Dr. Smith</div>
-                                    <div className="text-gray-600 text-xs">General condition noted</div>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-indigo-50 rounded px-2">
-                                <span className="text-indigo-600 w-16 flex-shrink-0 text-xs font-medium">7:30 AM</span>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <FontAwesomeIcon icon={faHospital} className="text-indigo-600" />
-                                        <span className="font-medium text-xs">Discharge Planning</span>
+                                </>
+                            ) : patient?.id === 'P003' ? (
+                                <>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-blue-50 rounded px-2">
+                                        <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">2:45 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Clinical Note Added</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Dr. Ahmad documented conjunctivitis follow-up with treatment response</div>
+                                            <div className="text-blue-600 text-xs">Status: Completed</div>
+                                        </div>
                                     </div>
-                                    <div className="text-gray-600 text-xs">Discharge criteria reviewed by care team</div>
-                                    <div className="text-indigo-600 text-xs">3 of 5 criteria met</div>
-                                </div>
-                            </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-purple-50 rounded px-2">
+                                        <span className="text-purple-600 w-16 flex-shrink-0 text-xs font-medium">2:30 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Culture Results Reviewed</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">S. epidermidis still sensitive to tobramycin - Dr. Ahmad Rahman</div>
+                                            <div className="text-green-600 text-xs">Bacterial load reduced</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-green-50 rounded px-2">
+                                        <span className="text-green-600 w-16 flex-shrink-0 text-xs font-medium">2:15 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-xs">Medication Continued</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Tobramycin drops continued q4h for 5 more days - Dr. Ahmad Rahman</div>
+                                            <div className="text-green-600 text-xs">Good treatment response noted</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-orange-50 rounded px-2">
+                                        <span className="text-orange-600 w-16 flex-shrink-0 text-xs font-medium">2:00 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-orange-600" />
+                                                <span className="font-medium text-xs">Visual Acuity Tested</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">VA improved to 20/25 both eyes, mild residual inflammation - Nurse Sarah</div>
+                                            <div className="text-green-600 text-xs">Significant improvement noted</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-yellow-50 rounded px-2">
+                                        <span className="text-yellow-600 w-16 flex-shrink-0 text-xs font-medium">1:45 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-yellow-600" />
+                                                <span className="font-medium text-xs">Eye Hygiene Education</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Reinforced hand hygiene and contact lens care - Dr. Ahmad Rahman</div>
+                                            <div className="text-yellow-600 text-xs">Patient demonstrates good understanding</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-gray-50 rounded px-2">
+                                        <span className="text-gray-600 w-16 flex-shrink-0 text-xs font-medium">1:30 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-gray-600" />
+                                                <span className="font-medium text-xs">Patient Check-in</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Follow-up conjunctivitis appointment - Reception</div>
+                                            <div className="text-gray-600 text-xs">Patient reports improved symptoms</div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-blue-50 rounded px-2">
+                                        <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">2:30 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-blue-600" />
+                                                <span className="font-medium text-xs">Clinical Note Added</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Dr. Smith documented post-operative assessment</div>
+                                            <div className="text-blue-600 text-xs">Status: Active</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-red-50 rounded px-2">
+                                        <span className="text-red-600 w-16 flex-shrink-0 text-xs font-medium">1:45 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-red-600" />
+                                                <span className="font-medium text-xs">Vital Signs Updated</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">BP: 180/110 → 175/108, HR: 125 → 122 (Nurse Martinez)</div>
+                                            <div className="text-red-600 text-xs">Critical: Hypertension persisting</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-green-50 rounded px-2">
+                                        <span className="text-green-600 w-16 flex-shrink-0 text-xs font-medium">12:15 PM</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-green-600" />
+                                                <span className="font-medium text-xs">Medication Administered</span>
+                                            </div>
+                                            <div className="text-gray-600 text-xs">Ceftriaxone 1g IV - Antibiotic therapy (Nurse Johnson)</div>
+                                            <div className="text-green-600 text-xs">Completed successfully</div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* Log Management */}
                         <div className="py-1 border-t mt-2">
                             <div className="font-semibold mb-1">View Options:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faFilter} className="mr-1" />Filter</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faCalendar} className="mr-1" />Date Range</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faUser} className="mr-1" />By User</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faDownload} className="mr-1" />Export</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">🔍 Filter</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📅Date Range</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><span className="mr-1" />By User</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📥 Export</Button>
                             </div>
                         </div>
                     </div>
@@ -1226,7 +1610,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                             <div className="mt-2 flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Medication</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faPills} className="mr-1" />Med Review</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">💊Med Review</Button>
                             </div>
                         </div>
 
@@ -1305,7 +1689,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                                 <span className="font-medium text-xs text-green-800">
                                                     {new Date(update.timestamp).toLocaleString()}
                                                 </span>
-                                                <FontAwesomeIcon icon={faPills} className="text-green-600 text-xs mr-1" />Plan Update
+                                                <span className="text-green-600 text-xs mr-1" />Plan Update
                                             </div>
                                             <div className="text-xs text-gray-700 bg-white p-2 rounded">
                                                 {update.treatmentPlan}
@@ -1321,11 +1705,11 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Allergies & Contraindications:</div>
                             <div className="space-y-0.5">
                                 <div className="bg-red-50 border border-red-200 rounded p-2">
-                                    <div className="font-medium text-xs text-red-800"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />Drug Allergies:</div>
+                                    <div className="font-medium text-xs text-red-800">⚠️Drug Allergies:</div>
                                     <div className="text-xs text-red-700">Penicillin - Severe reaction (rash, difficulty breathing)</div>
                                 </div>
                                 <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                                    <div className="font-medium text-xs text-yellow-800"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />Precautions:</div>
+                                    <div className="font-medium text-xs text-yellow-800">⚠️Precautions:</div>
                                     <div className="text-xs text-yellow-700">Renal function monitoring required with current medications</div>
                                 </div>
                             </div>
@@ -1336,8 +1720,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Treatment:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Item</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit Plan</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Remove</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit Plan</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️Remove</Button>
                             </div>
                         </div>
                     </div>
@@ -1410,7 +1794,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             )}
                                             
                                             <div className="mt-2 text-xs text-gray-500 bg-white p-1 rounded">
-                                                <FontAwesomeIcon icon={faChartLine} className="mr-1" />Data also routed to: 
+                                                📈Data also routed to: 
                                                 {update.vitalSigns?.trim() && <span className="text-red-600"> Vital Signs</span>}
                                                 {update.treatmentPlan?.trim() && <span className="text-green-600"> Treatment Plan</span>}
                                                 <span className="text-blue-600"> Activity Log</span>
@@ -1445,8 +1829,8 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="font-semibold mb-1">Manage Notes:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -1487,7 +1871,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                             className="text-xs px-2 py-0.5 h-5"
                                             onClick={() => setSelectedTrend(key)}
                                         >
-                                            <FontAwesomeIcon icon={faChartLine} className="mr-1" />Compare
+                                            📈Compare
                                         </Button>
                                     </div>
                                 ))}
@@ -1514,59 +1898,141 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                         </div>
 
-                        {/* Imaging Studies */}
-                        <div className="py-1 border-b">
-                            <div className="font-semibold mb-1">Imaging Studies:</div>
-                            <div className="space-y-0.5">
-                                <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
-                                    <div>
-                                        <div className="font-medium text-xs">CT Abdomen/Pelvis with Contrast</div>
-                                        <div className="text-xs text-gray-600">Today 06:30 - Dr. Radiologist</div>
+                        {/* Patient-Specific Imaging Studies */}
+                        {patient?.id === 'P003' ? (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Imaging Studies:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                        <div>
+                                            <div className="font-medium text-xs">Diabetic Retinopathy Screening</div>
+                                            <div className="text-xs text-gray-600">2024-02-10 - Dr. Lim (Ophthalmology)</div>
+                                            <div className="text-xs text-green-600">Result: No diabetic retinopathy detected</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1">
-                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
-                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
-                                    <div>
-                                        <div className="font-medium text-xs">Chest X-Ray PA/Lateral</div>
-                                        <div className="text-xs text-gray-600">Yesterday 14:15 - Dr. Chen</div>
-                                    </div>
-                                    <div className="flex gap-1">
-                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
-                                        <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                    <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                        <div>
+                                            <div className="font-medium text-xs">Electrocardiogram (ECG)</div>
+                                            <div className="text-xs text-gray-600">2023-08-25 - Dr. Siti Aminah</div>
+                                            <div className="text-xs text-green-600">Result: Normal sinus rhythm, no abnormalities</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : patient?.id === 'P003' ? (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Imaging Studies:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                        <div>
+                                            <div className="font-medium text-xs">Anterior Segment Photography</div>
+                                            <div className="text-xs text-gray-600">2024-08-08 - Dr. Ahmad Rahman</div>
+                                            <div className="text-xs text-green-600">Result: Reduced conjunctival injection, minimal discharge</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                        <div>
+                                            <div className="font-medium text-xs">Initial Conjunctival Photography</div>
+                                            <div className="text-xs text-gray-600">2024-07-10 - Dr. Ahmad Rahman</div>
+                                            <div className="text-xs text-orange-600">Result: Bilateral purulent discharge, severe injection</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Imaging Studies:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between py-0.5 border-b border-gray-100">
+                                        <div>
+                                            <div className="font-medium text-xs">CT Abdomen/Pelvis with Contrast</div>
+                                            <div className="text-xs text-gray-600">Today 06:30 - Dr. Radiologist</div>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">View</Button>
+                                            <Button variant="outline" size="sm" className="text-xs px-1 py-0.5 h-5">Report</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Pending Orders */}
-                        <div className="py-1 border-b">
-                            <div className="font-semibold mb-1">Pending Orders:</div>
-                            <div className="space-y-0.5">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs"><FontAwesomeIcon icon={faChartLine} className="mr-1" />Complete Blood Count</span>
-                                    <span className="text-orange-600 text-xs">Pending</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs"><FontAwesomeIcon icon={faFlask} className="mr-1" />Blood Culture x2</span>
-                                    <span className="text-blue-600 text-xs">In Progress</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs"><FontAwesomeIcon icon={faCamera} className="mr-1" />Follow-up CT Scan</span>
-                                    <span className="text-gray-600 text-xs">Scheduled</span>
+                        {patient?.id === 'P003' ? (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Pending Orders:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">👁️Annual Retinopathy Screening</span>
+                                        <span className="text-orange-600 text-xs">Due Feb 2025</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">❤️HbA1c Follow-up</span>
+                                        <span className="text-green-600 text-xs">Due Nov 2024</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs"><span className="mr-1" />Diabetic Foot Exam</span>
+                                        <span className="text-green-600 text-xs">Due Nov 2024</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : patient?.id === 'P003' ? (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Pending Orders:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">👁️Follow-up Culture if No Improvement</span>
+                                        <span className="text-orange-600 text-xs">If needed in 3 days</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">📷Visual Acuity Recheck</span>
+                                        <span className="text-green-600 text-xs">Next visit Aug 15</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">🧪Contact Lens Fitting Post-Treatment</span>
+                                        <span className="text-green-600 text-xs">After treatment completion</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Pending Orders:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">📈Complete Blood Count</span>
+                                        <span className="text-orange-600 text-xs">Pending</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs">🧪Blood Culture x2</span>
+                                        <span className="text-blue-600 text-xs">In Progress</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Imaging & Labs Actions */}
                         <div className="py-1">
                             <div className="font-semibold mb-1">Manage Records:</div>
                             <div className="flex gap-1">
                                 <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add Result</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Delete</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️Delete</Button>
                             </div>
                         </div>
                     </div>
@@ -1585,7 +2051,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     </div>
                                     <div className="text-xs text-gray-600 mb-1">Dr. Martinez - Requested today for cardiac evaluation</div>
                                     <div className="text-xs text-gray-500">Status: Appointment scheduled for tomorrow 10:00 AM</div>
-                                    <div className="text-xs text-blue-600 mt-1"><FontAwesomeIcon icon={faPhone} className="mr-1" />Contact: (555) 123-4567</div>
+                                    <div className="text-xs text-blue-600 mt-1">📞Contact: (555) 123-4567</div>
                                 </div>
                                 <div className="border border-green-200 rounded p-2 bg-green-50">
                                     <div className="flex items-center justify-between mb-1">
@@ -1594,7 +2060,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     </div>
                                     <div className="text-xs text-gray-600 mb-1">Post-surgical mobility assessment and treatment plan</div>
                                     <div className="text-xs text-gray-500">Status: Initial eval completed - ongoing sessions</div>
-                                    <div className="text-xs text-green-600 mt-1"><FontAwesomeIcon icon={faCalendar} className="mr-1" />Next: March 16, 2024 at 2:00 PM</div>
+                                    <div className="text-xs text-green-600 mt-1">📅Next: March 16, 2024 at 2:00 PM</div>
                                 </div>
                                 <div className="border border-purple-200 rounded p-2 bg-purple-50">
                                     <div className="flex items-center justify-between mb-1">
@@ -1643,43 +2109,64 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="py-1">
                             <div className="font-semibold mb-1">Manage Referrals:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faPhone} className="mr-1" />New Referral</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faTrash} className="mr-1" />Cancel</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faClipboard} className="mr-1" />Track Status</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">📞New Referral</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️Cancel</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📋Track Status</Button>
                             </div>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'discharge' && (
-                    <div className="space-y-1">
-                        {/* Discharge Planning */}
-                        <div className="py-1 border-b">
-                            <div className="font-semibold mb-1">Discharge Planning:</div>
-                            <div className="bg-blue-50 border border-blue-200 rounded p-2">
-                                <div className="grid grid-cols-3 gap-2 text-xs mb-2">
-                                    <div>
-                                        <span className="font-medium">Est. Discharge:</span>
-                                        <div className="text-blue-800 font-medium">March 18, 2024</div>
-                                        <div className="text-gray-500">(3 days)</div>
+                    <div className="space-y-3">
+                        {/* Outpatient message for P003 */}
+                        {patient?.id === 'P003' ? (
+                            <div className="text-center py-8">
+                                <span className="text-4xl text-muted-foreground mb-4">🏥</span>
+                                <h3 className="font-semibold text-lg text-muted-foreground mb-2">Outpatient Visit</h3>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    This patient is receiving outpatient care and does not require discharge planning.
+                                </p>
+                                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-left">
+                                    <div className="text-sm font-semibold text-blue-800 mb-2">Visit Summary</div>
+                                    <div className="text-sm text-blue-700">
+                                        • Routine diabetes follow-up completed<br/>
+                                        • Next appointment: November 8, 2024<br/>
+                                        • Patient discharged to home after consultation
                                     </div>
-                                    <div>
-                                        <span className="font-medium">Discharge To:</span>
-                                        <div className="text-blue-800">Home</div>
-                                        <div className="text-gray-500">Family support</div>
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Follow-up:</span>
-                                        <div className="text-blue-800">Clinic</div>
-                                        <div className="text-gray-500">1 week</div>
-                                    </div>
-                                </div>
-                                <div className="text-xs text-gray-600">
-                                    <strong>Discharge Planner:</strong> Sarah Williams, RN • <strong>Contact:</strong> (555) 987-6543
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <>
+                                {/* Discharge Planning for inpatients */}
+                                <div className="py-1 border-b">
+                                    <div className="font-semibold mb-1">Discharge Planning:</div>
+                                    <div className="bg-blue-50 border border-blue-200 rounded p-2">
+                                        <div className="grid grid-cols-3 gap-2 text-xs mb-2">
+                                            <div>
+                                                <span className="font-medium">Est. Discharge:</span>
+                                                <div className="text-blue-800 font-medium">March 18, 2024</div>
+                                                <div className="text-gray-500">(3 days)</div>
+                                            </div>
+                                            <div>
+                                                <span className="font-medium">Discharge To:</span>
+                                                <div className="text-blue-800">Home</div>
+                                                <div className="text-gray-500">Family support</div>
+                                            </div>
+                                            <div>
+                                                <span className="font-medium">Follow-up:</span>
+                                                <div className="text-blue-800">Clinic</div>
+                                                <div className="text-gray-500">1 week</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-gray-600">
+                                            <strong>Discharge Planner:</strong> Sarah Williams, RN • <strong>Contact:</strong> (555) 987-6543
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         {/* Discharge Criteria */}
                         <div className="py-1 border-b">
@@ -1749,7 +2236,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     <span className="text-orange-600 text-xs font-medium">In Progress</span>
                                 </div>
                                 <div className="text-xs text-gray-600 mb-1">Last updated: Today 2:30 PM by Dr. Smith</div>
-                                <div className="text-xs text-orange-600"><FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />Pending final review and signatures</div>
+                                <div className="text-xs text-orange-600">⚠️Pending final review and signatures</div>
                             </div>
                         </div>
 
@@ -1757,10 +2244,10 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="py-1">
                             <div className="font-semibold mb-1">Manage Discharge:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faClipboard} className="mr-1" />Complete Summary</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faEdit} className="mr-1" />Edit Plan</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faCalendar} className="mr-1" />Reschedule</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6"><FontAwesomeIcon icon={faHome} className="mr-1" />Home Care</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">📋Complete Summary</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit Plan</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📅Reschedule</Button>
+                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🏠Home Care</Button>
                             </div>
                         </div>
                     </div>
@@ -2073,20 +2560,29 @@ function PatientDetailsPageContent() {
                 notificationCount={3}
             />
 
-            {/* Patient Header - Ultra Compact */}
+            {/* Patient Overview Row - Updated */}
             <div className="flex-shrink-0 px-3 py-1 bg-card border-b">
                 <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold ${
-                            currentPatient.status === 'critical' ? 'bg-red-600' : 'bg-gray-600'
-                        }`}>
-                            {currentPatient.name.split(' ').map(n => n[0]).join('')}
-                        </div>
+                    <div className="flex items-center gap-3">
                         <div className="flex items-center gap-3">
                             <span className="font-bold text-sm">{currentPatient.name}</span>
                             <span>Age {currentPatient.age}</span>
-                            <span>Room {currentPatient.room}</span>
-                            <span>ID: {currentPatient.id}</span>
+                            {/* Only show room for inpatients */}
+                            {currentPatient.id !== 'P003' && <span>Room {currentPatient.room}</span>}
+                            <span>IC: {(() => {
+                                // Generate IC number based on patient data
+                                const birthYear = 2024 - currentPatient.age;
+                                const yy = birthYear.toString().slice(-2);
+                                const mm = currentPatient.id === 'P003' ? '03' : // March for Nurul Asyikin
+                                          '03'; // March for others
+                                const dd = currentPatient.id === 'P003' ? '12' :
+                                          '10';
+                                const kl = currentPatient.id === 'P003' ? '10' : // Selangor
+                                          '10'; // Selangor
+                                const serial = currentPatient.id === 'P003' ? '9876' :
+                                              '9012';
+                                return `${yy}${mm}${dd}-${kl}-${serial}`;
+                            })()}</span>
                             <Badge variant={currentPatient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs px-1 py-0">
                                 {currentPatient.status}
                             </Badge>
@@ -2099,7 +2595,7 @@ function PatientDetailsPageContent() {
                             size="sm" 
                             className="text-xs px-3 py-1 h-7"
                         >
-                            <FontAwesomeIcon icon={faFile} className="mr-1" />New Input
+                            📄New Input
                         </Button>
                     </div>
                 </div>
@@ -2123,7 +2619,7 @@ function PatientDetailsPageContent() {
                             <div key={msg.id} className={`flex items-start gap-1 mb-2 ${msg.type === 'user' ? 'justify-end' : ''}`}>
                                 {msg.type === 'ai' && (
                                     <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center text-primary-foreground flex-shrink-0">
-                                        <FontAwesomeIcon icon={faRobot} className="text-xs" />
+                                        <span className="text-xs" />
                                     </div>
                                 )}
                                 <div className={`${msg.type === 'user' ? 'text-right' : ''}`}>
@@ -2138,7 +2634,7 @@ function PatientDetailsPageContent() {
                                 </div>
                                 {msg.type === 'user' && (
                                     <div className="w-4 h-4 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground flex-shrink-0">
-                                        <FontAwesomeIcon icon={faUser} className="text-xs" />
+                                        <span className="text-xs" />
                                     </div>
                                 )}
                             </div>

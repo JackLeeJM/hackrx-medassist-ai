@@ -16,8 +16,8 @@ export const mockPatients = [
   { id: "P012", name: "Kavitha Devi", room: "392A", age: 67, condition: "Kidney failure", status: "critical", vitals: { bp: "180/105", hr: "85", temp: "37.6", o2sat: "94%" } },
   { id: "P013", name: "Lim Hui Fen", room: "289D", age: 42, condition: "Wound Check", status: "stable", vitals: { bp: "125/80", hr: "75", temp: "37.0", o2sat: "98%" } },
   
-  // Outpatient appointments
-  { id: "P003", name: "Loh Xin Yi", room: "205", age: 34, condition: "Diabetes Type 2 - Follow-up", status: "stable", vitals: { bp: "125/78", hr: "68", temp: "36.8", o2sat: "99%" } },
+  // Shared patient - Nurul Asyikin (both Dr Siti and Dr Ahmad)
+  { id: "P003", name: "Nurul Asyikin", room: "205B", age: 59, condition: "Diabetes Type 2 with Diabetic Macular Edema", status: "serious", vitals: { bp: "135/85", hr: "78", temp: "36.9", o2sat: "98%" } },
   { id: "P021", name: "Muthu Krishnan", room: "301", age: 52, condition: "New patient consult", status: "stable", vitals: { bp: "130/85", hr: "78", temp: "36.9", o2sat: "99%" } },
   { id: "P022", name: "Lim Su Anne", room: "156", age: 28, condition: "Annual physical", status: "stable", vitals: { bp: "115/75", hr: "68", temp: "36.8", o2sat: "99%" } },
   { id: "P023", name: "Mohd Hafiz", room: "223", age: 61, condition: "Diabetes management", status: "stable", vitals: { bp: "140/90", hr: "82", temp: "37.0", o2sat: "97%" } },
@@ -25,7 +25,6 @@ export const mockPatients = [
   { id: "P025", name: "Jamal Ibrahim", room: "Clinic A", age: 45, condition: "Chest pain eval", status: "urgent", vitals: { bp: "150/95", hr: "95", temp: "37.2", o2sat: "96%" } },
   
   // Ophthalmology patients - Dr. Ahmad
-  { id: "P030", name: "Ahmad Hafiz", room: "205B", age: 65, condition: "Acute angle-closure glaucoma", status: "critical", vitals: { bp: "170/100", hr: "88", temp: "37.3", o2sat: "96%" } },
   { id: "P031", name: "Lim Siew Chen", room: "208A", age: 58, condition: "Retinal detachment", status: "critical", vitals: { bp: "145/90", hr: "82", temp: "37.0", o2sat: "97%" } },
   { id: "P032", name: "Ravi Shankar", room: "210C", age: 72, condition: "Corneal perforation", status: "serious", vitals: { bp: "155/95", hr: "75", temp: "37.1", o2sat: "95%" } },
   { id: "P033", name: "Fatimah Zahra", room: "212A", age: 49, condition: "Endophthalmitis", status: "critical", vitals: { bp: "160/95", hr: "90", temp: "38.1", o2sat: "94%" } },
