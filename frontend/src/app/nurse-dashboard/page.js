@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Search, ChevronLeft, ChevronRight, Clock, User, Phone, FileText } from 'lucide-react'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faHospital, faClock } from '@fortawesome/free-solid-svg-icons'
 
 // Static mock data for 30 doctors to avoid hydration mismatch
 const mockDoctorsSchedule = {
@@ -348,42 +350,37 @@ export default function NurseDashboard() {
   return (
     <ErrorBoundary>
       <div className="bg-background text-foreground font-sans h-screen flex flex-col overflow-hidden">
-        {/* Compact Header - Consistent with Doctor Dashboard */}
-        <div className="flex-shrink-0 bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between text-xs shadow-md">
-          <div className="flex items-center gap-4">
-            <span className="font-bold">MedAssist AI</span>
-            <span>{user.name} ({user.role})</span>
-            <span className="text-green-400">1h 30m saved today</span>
-            <div className="flex items-center gap-1 ml-4">
-              <button 
-                onClick={() => setPatientView('outpatient')}
-                className={`px-2 py-1 rounded text-xs ${
-                  patientView === 'outpatient' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white/10 text-white/70 hover:bg-white/20'
-                }`}
-              >
-                Outpatient Schedule
-              </button>
-              <button 
-                onClick={() => setPatientView('inpatient')}
-                className={`px-2 py-1 rounded text-xs ${
-                  patientView === 'inpatient' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white/10 text-white/70 hover:bg-white/20'
-                }`}
-              >
-                Inpatient Rounds
-              </button>
-            </div>
-          </div>
+        <Header
+          showBackButton={false}
+          onLogout={handleLogout}
+          onProfile={() => alert('Profile page - feature coming soon!')}
+          userName={user.name}
+          userEmail={user.email}
+          notificationCount={2}
+        />
+        {/* Patient View Toggle */}
+        <div className="flex-shrink-0 bg-gray-100 border-b px-4 py-2">
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" onClick={() => alert('Notifications: New patient admission, Lab results ready')} className="text-xs">
-              🔔 {2}
-            </Button>
-            <Button variant="destructive" size="sm" onClick={handleLogout} className="text-xs">
-              Logout
-            </Button>
+            <button 
+              onClick={() => setPatientView('outpatient')}
+              className={`px-3 py-1 rounded text-sm ${
+                patientView === 'outpatient' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Outpatient Schedule
+            </button>
+            <button 
+              onClick={() => setPatientView('inpatient')}
+              className={`px-3 py-1 rounded text-sm ${
+                patientView === 'inpatient' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Inpatient Rounds
+            </button>
           </div>
         </div>
 
@@ -607,10 +604,10 @@ export default function NurseDashboard() {
                     <div className="border-b pb-2">
                       <div className="font-semibold text-sm">{patientView === 'outpatient' ? selectedPatient.appointment?.patient : selectedPatient.name}</div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span>👨‍⚕️ {selectedDoctor}</span>
+                        <span><FontAwesomeIcon icon={faUser} className="mr-1" />{selectedDoctor}</span>
                         {patientView === 'outpatient' ? (
                           <>
-                            <span>🕒 {selectedPatient.appointment?.time}</span>
+                            <span><FontAwesomeIcon icon={faClock} className="mr-1" />{selectedPatient.appointment?.time}</span>
                             <span className={`px-1 py-0 rounded text-xs ${
                               selectedPatient.appointment?.status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
                             }`}>
@@ -619,7 +616,7 @@ export default function NurseDashboard() {
                           </>
                         ) : (
                           <>
-                            <span>🏥 Room {selectedPatient.room}</span>
+                            <span><FontAwesomeIcon icon={faHospital} className="mr-1" />Room {selectedPatient.room}</span>
                             <span className={`px-1 py-0 rounded text-xs ${
                               selectedPatient.status === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                             }`}>

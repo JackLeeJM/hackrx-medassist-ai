@@ -8,8 +8,11 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "MedAssist AI - Clinical Dashboard",
+  title: "MyMia - Clinical Dashboard",
   description: "Healthcare-focused AI application designed to assist with medical queries and support",
+  icons: {
+    icon: '/mymia_icon.svg',
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -20,6 +23,7 @@ export default function RootLayout({ children }) {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
           rel="stylesheet" 
         />
+        <link rel="icon" href="/mymia_icon.svg" type="image/svg+xml" />
       </head>
       <body
         className={`${poppins.variable} antialiased`}
