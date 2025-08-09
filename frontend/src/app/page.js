@@ -107,47 +107,6 @@ const mockOutpatientData = {
   ]
 }
 
-// Mock data for inpatient and outpatient views
-const mockInpatientData = {
-  criticalPatients: [
-    { name: "Maria Rodriguez", room: "302A", condition: "Post-op complications", severity: "Critical", time: "2h ago", type: "inpatient" },
-    { name: "Robert Davis", room: "412B", condition: "Cardiac monitoring", severity: "Serious", time: "4h ago", type: "inpatient" },
-    { name: "William Garcia", room: "367C", condition: "Emergency admission", severity: "Critical", time: "1h ago", type: "inpatient" }
-  ],
-  schedule: [
-    { time: "08:00", patient: "Maria Rodriguez", type: "Post-op Round", room: "302A" },
-    { time: "09:30", patient: "Robert Davis", type: "Cardiac Consult", room: "412B" },
-    { time: "11:00", patient: "Jennifer Miller", type: "Wound Check", room: "289D" },
-    { time: "14:00", patient: "William Garcia", type: "Emergency Eval", room: "367C" }
-  ],
-  recentActivity: [
-    { icon: "🏥", action: "Admitted patient", patient: "William Garcia", time: "1h ago" },
-    { icon: "💊", action: "Medication adjusted", patient: "Maria Rodriguez", time: "2h ago" },
-    { icon: "📊", action: "Lab results reviewed", patient: "Robert Davis", time: "3h ago" },
-    { icon: "🔔", action: "Critical alert resolved", patient: "Jennifer Miller", time: "4h ago" }
-  ]
-}
-
-const mockOutpatientData = {
-  criticalPatients: [
-    { name: "James Wilson", room: "Clinic A", condition: "Chest pain eval", severity: "Urgent", time: "30m ago", type: "outpatient" },
-    { name: "Sarah Johnson", room: "Clinic B", condition: "Hypertension crisis", severity: "Serious", time: "1h ago", type: "outpatient" }
-  ],
-  schedule: [
-    { time: "09:00", patient: "Emma Thompson", type: "Follow-up visit", location: "Clinic A" },
-    { time: "10:00", patient: "Michael Chen", type: "New patient consult", location: "Clinic B" },
-    { time: "11:00", patient: "Lisa Parker", type: "Annual physical", location: "Clinic A" },
-    { time: "14:00", patient: "David Brown", type: "Diabetes management", location: "Clinic C" },
-    { time: "15:30", patient: "Sarah Johnson", type: "BP follow-up", location: "Clinic B" }
-  ],
-  recentActivity: [
-    { icon: "📋", action: "Consultation completed", patient: "Emma Thompson", time: "30m ago" },
-    { icon: "🧪", action: "Lab ordered", patient: "Michael Chen", time: "1h ago" },
-    { icon: "💊", action: "Prescription sent", patient: "Lisa Parker", time: "1.5h ago" },
-    { icon: "📞", action: "Follow-up scheduled", patient: "David Brown", time: "2h ago" }
-  ]
-}
-
 export default function Dashboard() {
   const router = useRouter()
   const [user, setUser] = useState(null)
