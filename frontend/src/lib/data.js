@@ -17,7 +17,7 @@ export const mockPatients = [
   { id: "P013", name: "Lim Hui Fen", room: "289D", age: 42, condition: "Wound Check", status: "stable", vitals: { bp: "125/80", hr: "75", temp: "37.0", o2sat: "98%" } },
   
   // Shared patient - Nurul Asyikin (both Dr Siti and Dr Ahmad)
-  { id: "P003", name: "Nurul Asyikin", room: "205B", age: 59, condition: "Diabetes Type 2 with Diabetic Macular Edema", status: "serious", vitals: { bp: "135/85", hr: "78", temp: "36.9", o2sat: "98%" } },
+  { id: "P020", name: "Nurul Asyikin", room: "205B", age: 59, condition: "Diabetes Type 2 with Diabetic Macular Edema", status: "serious", vitals: { bp: "135/85", hr: "78", temp: "36.9", o2sat: "98%" } },
   { id: "P021", name: "Muthu Krishnan", room: "301", age: 52, condition: "New patient consult", status: "stable", vitals: { bp: "130/85", hr: "78", temp: "36.9", o2sat: "99%" } },
   { id: "P022", name: "Lim Su Anne", room: "156", age: 28, condition: "Annual physical", status: "stable", vitals: { bp: "115/75", hr: "68", temp: "36.8", o2sat: "99%" } },
   { id: "P023", name: "Mohd Hafiz", room: "223", age: 61, condition: "Diabetes management", status: "stable", vitals: { bp: "140/90", hr: "82", temp: "37.0", o2sat: "97%" } },

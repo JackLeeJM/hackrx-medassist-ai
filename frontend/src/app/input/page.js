@@ -267,23 +267,51 @@ Plan: ${aiSummary.plan}
                 notificationCount={3}
             />
 
-            {/* Patient Header - Ultra Compact */}
-            <div className="flex-shrink-0 px-3 py-1 bg-white border-b">
+            {/* Patient Overview Row - Same as patient-details page */}
+            <div className="flex-shrink-0 px-3 py-1 bg-card border-b">
                 <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold ${currentPatient.status === 'critical' ? 'bg-red-600' : 'bg-gray-600'}`}>
-                            {currentPatient.name.split(' ').map(n => n[0]).join('')}
-                        </div>
+                    <div className="flex items-center gap-3">
                         <div className="flex items-center gap-3">
                             <span className="font-bold text-sm">{currentPatient.name}</span>
                             <span>Age {currentPatient.age}</span>
-                            <span>Room {currentPatient.room}</span>
-                            <span>ID: {currentPatient.id}</span>
+                            {/* Only show room for inpatients */}
+                            {currentPatient.id !== 'P020' && <span>Room {currentPatient.room}</span>}
+                            <span>IC: {(() => {
+                                // Generate IC number based on patient data
+                                const birthYear = 2024 - currentPatient.age;
+                                const yy = birthYear.toString().slice(-2);
+                                const mm = currentPatient.id === 'P020' ? '03' : // March for Nurul Asyikin
+                                          '03'; // March for others
+                                const dd = currentPatient.id === 'P020' ? '12' :
+                                          '10';
+                                const kl = currentPatient.id === 'P020' ? '10' : // Selangor
+                                          '10'; // Selangor
+                                const serial = currentPatient.id === 'P020' ? '9876' :
+                                              '9012';
+                                return `${yy}${mm}${dd}-${kl}-${serial}`;
+                            })()}</span>
                             <Badge variant={currentPatient.status === 'critical' ? 'destructive' : 'secondary'} className="text-xs px-1 py-0">
                                 {currentPatient.status}
                             </Badge>
-                            <span className="text-gray-500">Jan 15, 2024</span>
+                            <span className="font-medium">{currentPatient.condition}</span>
                         </div>
+                    </div>
+                    <div className="flex gap-1">
+                        <Button 
+                            onClick={() => alert('Clinical note saved as draft')}
+                            variant="outline"
+                            size="sm"
+                            className="text-xs px-2 py-1 h-6"
+                        >
+                            <FontAwesomeIcon icon={faSave} className="mr-1" />Draft
+                        </Button>
+                        <Button 
+                            onClick={completeConsultation}
+                            size="sm"
+                            className="text-xs px-2 py-1 h-6"
+                        >
+                            <FontAwesomeIcon icon={faCheckCircle} className="mr-1" />Save Note
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -330,35 +358,6 @@ Plan: ${aiSummary.plan}
                     </div>
                 )}
 
-                {/* Save Clinical Note - Compact */}
-                <div className="mt-2 mb-4">
-                    <div className="bg-white rounded border p-2">
-                        <div className="flex items-center justify-between text-xs">
-                            <div>
-                                <span className="font-semibold">Save Clinical Note</span>
-{/* eslint-disable-next-line react/no-unescaped-entities */}
-                                <span className="text-gray-500 ml-2">Will be added to patient's clinical records</span>
-                            </div>
-                            <div className="flex gap-1">
-                                <Button 
-                                    onClick={() => alert('Clinical note saved as draft')}
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-xs px-2 py-1 h-6"
-                                >
-                                    <FontAwesomeIcon icon={faSave} className="mr-1" />Draft
-                                </Button>
-                                <Button 
-                                    onClick={completeConsultation}
-                                    size="sm"
-                                    className="text-xs px-2 py-1 h-6"
-                                >
-                                    <FontAwesomeIcon icon={faCheckCircle} className="mr-1" />Save Note
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </main>
         </div>
     );

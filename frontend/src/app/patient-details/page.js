@@ -19,7 +19,7 @@ import PatientStatus from '@/components/patient/PatientStatus';
 
 // Mock blood test data for selected patients
 const mockBloodTestData = {
-    'P003': [
+    'P020': [
         {
             date: '2024-08-08',
             time: '09:00',
@@ -61,7 +61,7 @@ const mockBloodTestData = {
             }
         }
     ],
-    'P003': [
+    'P020': [
         {
             date: '2024-08-08',
             time: '14:30',
@@ -130,7 +130,7 @@ const mockPatients = [
         ]
     },
     { 
-        id: "P003", 
+        id: "P020", 
         name: "Nurul Asyikin", 
         room: "205B", 
         age: 59, 
@@ -504,10 +504,10 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                             <div className="text-foreground text-xs leading-relaxed">
                                 {user?.specialty === 'Ophthalmologist' 
-                                    ? (patient?.id === 'P003' 
+                                    ? (patient?.id === 'P020' 
                                         ? 'Follow-up for diabetic macular edema in 59-year-old with Type 2 diabetes. Central retinal thickness improved to 320μm OU (down from 450μm) following anti-VEGF therapy. Visual acuity improved from 20/40 to 20/30 OU. Hard exudates resolving bilaterally. Patient demonstrates excellent understanding of diabetes-macular edema relationship. Continue monthly ranibizumab injections and coordinate diabetes care with Dr. Siti. Next injection in 4 weeks.'
                                         : patient.insights)
-                                    : (patient?.id === 'P003' 
+                                    : (patient?.id === 'P020' 
                                         ? 'Diabetes Type 2 well-controlled with current regimen. Patient demonstrates good understanding of dietary modifications and medication compliance. Recent HbA1c shows improvement. Monitor for diabetic complications including regular ophthalmological follow-up with Dr. Ahmad. Continue current diabetes management plan with lifestyle modifications.'
                                         : patient.insights)
                                 }
@@ -515,7 +515,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         </div>
 
                         {/* Doctor-specific clinical information */}
-                        {user?.specialty !== 'Ophthalmologist' && patient?.id === 'P003' && (
+                        {user?.specialty !== 'Ophthalmologist' && patient?.id === 'P020' && (
                             <div className="bg-card border rounded p-2">
                                 <div className="font-bold text-primary mb-2">Diabetes Management</div>
                                 <div className="space-y-1 text-xs">
@@ -545,7 +545,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 {/* Eye Examination */}
                                 <div className="bg-card border rounded p-2">
                                     <div className="font-bold text-primary mb-2">Eye Examination Findings</div>
-                                    {patient?.id === 'P003' ? (
+                                    {patient?.id === 'P020' ? (
                                         <div className="grid grid-cols-2 gap-2 text-xs">
                                             <div className="p-2 rounded bg-card border">
                                                 <div className="font-medium">Right Eye (OD)</div>
@@ -585,7 +585,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 {/* Ophthalmic Medications */}
                                 <div className="bg-card border rounded p-2">
                                     <div className="font-bold text-primary mb-2">Current Ophthalmic Medications</div>
-                                    {patient?.id === 'P003' ? (
+                                    {patient?.id === 'P020' ? (
                                         <div className="space-y-1 text-xs">
                                             <div className="flex justify-between items-center">
                                                 <span>• Ranibizumab intravitreal injection</span>
@@ -621,7 +621,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 {/* Treatment Plan */}
                                 <div className="bg-card border rounded p-2">
                                     <div className="font-bold text-primary mb-2">Treatment Plan</div>
-                                    {patient?.id === 'P003' ? (
+                                    {patient?.id === 'P020' ? (
                                         <div className="space-y-1 text-xs">
                                             <div className="flex items-center gap-2">
                                                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
@@ -758,7 +758,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="bg-card border rounded p-2">
                                 <div className="font-bold text-primary mb-2">Current Medication</div>
                                 <div className="space-y-1 text-xs">
-                                    {patient.id === 'P003' ? (
+                                    {patient.id === 'P020' ? (
                                         <>
                                             <div className="flex items-center gap-2">
                                                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
@@ -768,7 +768,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                                 <strong>Recent change:</strong> Reduced from BID to prevent hypoglycemic episodes
                                             </div>
                                         </>
-                                    ) : patient.id === 'P003' ? (
+                                    ) : patient.id === 'P020' ? (
                                         <>
                                             <div className="flex items-center gap-2">
                                                 <span className="w-2 h-2 bg-primary rounded-full"></span>
@@ -805,7 +805,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             <div className="bg-card border rounded p-2">
                                 <div className="font-bold text-primary mb-2">Active Treatment</div>
                                 <div className="space-y-1 text-xs">
-                                    {patient.id === 'P003' ? (
+                                    {patient.id === 'P020' ? (
                                         <>
                                             <div className="flex items-center gap-2">
                                                 <span className="w-2 h-2 bg-primary rounded-full"></span>
@@ -820,7 +820,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                                 <span><strong>Lifestyle counseling</strong> - Ongoing</span>
                                             </div>
                                         </>
-                                    ) : patient.id === 'P003' ? (
+                                    ) : patient.id === 'P020' ? (
                                         <>
                                             <div className="flex items-center gap-2">
                                                 <span className="w-2 h-2 bg-primary rounded-full"></span>
@@ -1362,7 +1362,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                 </div>
                             )).reverse()}
                             {/* Conditional Log Entries based on patient */}
-                            {patient?.id === 'P003' ? (
+                            {patient?.id === 'P020' ? (
                                 <>
                                     <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-blue-50 rounded px-2">
                                         <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">9:15 AM</span>
@@ -1435,7 +1435,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                         </div>
                                     </div>
                                 </>
-                            ) : patient?.id === 'P003' ? (
+                            ) : patient?.id === 'P020' ? (
                                 <>
                                     <div className="flex items-start gap-2 py-1 border-b border-gray-100 bg-blue-50 rounded px-2">
                                         <span className="text-blue-600 w-16 flex-shrink-0 text-xs font-medium">2:45 PM</span>
@@ -1729,24 +1729,26 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
 
                 {activeTab === 'clinical' && (
                     <div className="space-y-1">
-                        {/* Current Medications - Table */}
-                        <div className="py-1 border-b">
-                            <div className="font-semibold mb-1">Current Medications:</div>
-                            <div className="space-y-0.5">
-                                <div className="flex justify-between items-center">
-                                    <span><strong>Ceftriaxone 1g IV</strong> - Daily</span>
-                                    <span className="text-green-600 text-xs">Active</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span><strong>Morphine 2mg IV</strong> - PRN pain</span>
-                                    <span className="text-blue-600 text-xs">As needed</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span><strong>Lisinopril 10mg PO</strong> - BID</span>
-                                    <span className="text-green-600 text-xs">Active</span>
+                        {/* Current Medications - Table (hidden for P020/Nurul Asyikin) */}
+                        {patient?.id !== 'P020' && (
+                            <div className="py-1 border-b">
+                                <div className="font-semibold mb-1">Current Medications:</div>
+                                <div className="space-y-0.5">
+                                    <div className="flex justify-between items-center">
+                                        <span><strong>Ceftriaxone 1g IV</strong> - Daily</span>
+                                        <span className="text-green-600 text-xs">Active</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span><strong>Morphine 2mg IV</strong> - PRN pain</span>
+                                        <span className="text-blue-600 text-xs">As needed</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span><strong>Lisinopril 10mg PO</strong> - BID</span>
+                                        <span className="text-green-600 text-xs">Active</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Complete Clinical Notes from Input - Show ALL fields */}
                         {patientUpdates.length > 0 && (
@@ -1758,8 +1760,32 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                         .reverse()
                                         .map((update, index) => (
                                         <div key={index} className="border-l-2 border-purple-500 pl-2 bg-purple-50 rounded-r p-2">
-                                            <div className="font-medium text-purple-800">
-                                                Complete Note - {new Date(update.timestamp).toLocaleString()}
+                                            <div className="flex items-center justify-between">
+                                                <div className="font-medium text-purple-800">
+                                                    Complete Note - {new Date(update.timestamp).toLocaleString()}
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        className="text-xs px-1 py-0.5 h-5"
+                                                        onClick={() => alert('Edit note functionality - coming soon!')}
+                                                    >
+                                                        ✏️Edit
+                                                    </Button>
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        className="text-xs px-1 py-0.5 h-5 text-red-600 border-red-200 hover:bg-red-50"
+                                                        onClick={() => {
+                                                            if (confirm('Are you sure you want to delete this note?')) {
+                                                                alert('Delete note functionality - coming soon!')
+                                                            }
+                                                        }}
+                                                    >
+                                                        🗑️Delete
+                                                    </Button>
+                                                </div>
                                             </div>
                                             
                                             {update.clinicalNote?.subjective?.trim() && (
@@ -1805,32 +1831,119 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                             </div>
                         )}
 
-                        {/* Clinical Notes */}
+                        {/* Previous Clinical Notes - Dr Ahmad and Dr Siti only for P020 */}
                         <div className="py-1 border-b">
                             <div className="font-semibold mb-1">Previous Clinical Notes:</div>
                             <div className="space-y-0.5 text-xs">
-                                <div className="border-l-2 border-blue-500 pl-2">
-                                    <div className="font-medium">Dr. Johnson - Today 08:30</div>
-                                    <div>Patient continues to show signs of improvement. Pain levels decreased from 8/10 to 5/10. Wound site appears clean and healing properly.</div>
-                                </div>
-                                <div className="border-l-2 border-green-500 pl-2">
-                                    <div className="font-medium">Nurse Martinez - Yesterday 14:00</div>
-                                    <div>Vitals stable. Patient ambulating independently. Diet tolerance good. No complaints of nausea or vomiting.</div>
-                                </div>
-                                <div className="border-l-2 border-orange-500 pl-2">
-                                    <div className="font-medium">Dr. Smith - Yesterday 09:15</div>
-                                    <div>Post-operative check. Surgical site healing well. Recommend continuing current antibiotic regimen. Consider PT consultation.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Clinical Notes Actions */}
-                        <div className="py-1">
-                            <div className="font-semibold mb-1">Manage Notes:</div>
-                            <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6">➕ Add</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit</Button>
-                                <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️Delete</Button>
+                                {patient?.id === 'P020' ? (
+                                    <>
+                                        <div className="border-l-2 border-blue-500 pl-2">
+                                            <div className="flex items-center justify-between">
+                                                <div className="font-medium">Dr. Ahmad Rahman (Ophthalmologist) - Aug 8, 2024 14:30</div>
+                                                {user?.email === 'drahmad@hospital.com' && (
+                                                    <div className="flex gap-1">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-xs px-1 py-0.5 h-5"
+                                                            onClick={() => alert('Edit note functionality - coming soon!')}
+                                                        >
+                                                            ✏️Edit
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-xs px-1 py-0.5 h-5 text-red-600 border-red-200 hover:bg-red-50"
+                                                            onClick={() => {
+                                                                if (confirm('Are you sure you want to delete this note?')) {
+                                                                    alert('Delete note functionality - coming soon!')
+                                                                }
+                                                            }}
+                                                        >
+                                                            🗑️Delete
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>Follow-up for diabetic macular edema. Patient reports improved vision in both eyes since last anti-VEGF injection. OCT shows reduced central macular thickness (450μm to 380μm bilaterally). Plan: Continue monthly anti-VEGF injections, monitor blood glucose control closely with primary care.</div>
+                                        </div>
+                                        <div className="border-l-2 border-green-500 pl-2">
+                                            <div className="flex items-center justify-between">
+                                                <div className="font-medium">Dr. Siti Aminah (Internal Medicine) - Aug 7, 2024 09:15</div>
+                                                {user?.email === 'drsiti@hospital.com' && (
+                                                    <div className="flex gap-1">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-xs px-1 py-0.5 h-5"
+                                                            onClick={() => alert('Edit note functionality - coming soon!')}
+                                                        >
+                                                            ✏️Edit
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-xs px-1 py-0.5 h-5 text-red-600 border-red-200 hover:bg-red-50"
+                                                            onClick={() => {
+                                                                if (confirm('Are you sure you want to delete this note?')) {
+                                                                    alert('Delete note functionality - coming soon!')
+                                                                }
+                                                            }}
+                                                        >
+                                                            🗑️Delete
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>Diabetes Type 2 management review. HbA1c improved to 7.8% from 8.2% (July). Patient reports better adherence to medication and diet modifications. BP well controlled. Reduced Metformin to 500mg daily due to GI upset. Continue current regimen, follow-up in 3 months for HbA1c recheck.</div>
+                                        </div>
+                                        <div className="border-l-2 border-orange-500 pl-2">
+                                            <div className="flex items-center justify-between">
+                                                <div className="font-medium">Dr. Ahmad Rahman (Ophthalmologist) - July 10, 2024 09:15</div>
+                                                {user?.email === 'drahmad@hospital.com' && (
+                                                    <div className="flex gap-1">
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-xs px-1 py-0.5 h-5"
+                                                            onClick={() => alert('Edit note functionality - coming soon!')}
+                                                        >
+                                                            ✏️Edit
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className="text-xs px-1 py-0.5 h-5 text-red-600 border-red-200 hover:bg-red-50"
+                                                            onClick={() => {
+                                                                if (confirm('Are you sure you want to delete this note?')) {
+                                                                    alert('Delete note functionality - coming soon!')
+                                                                }
+                                                            }}
+                                                        >
+                                                            🗑️Delete
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>Initial assessment for diabetic macular edema. Bilateral central macular thickening noted on OCT (450μm OU). Visual acuity 20/40 OD, 20/50 OS. Initiated anti-VEGF therapy with bevacizumab. Plan: Monthly injections × 3, then reassess. Coordinate with internal medicine for optimal diabetes control.</div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="border-l-2 border-blue-500 pl-2">
+                                            <div className="font-medium">Dr. Johnson - Today 08:30</div>
+                                            <div>Patient continues to show signs of improvement. Pain levels decreased from 8/10 to 5/10. Wound site appears clean and healing properly.</div>
+                                        </div>
+                                        <div className="border-l-2 border-green-500 pl-2">
+                                            <div className="font-medium">Nurse Martinez - Yesterday 14:00</div>
+                                            <div>Vitals stable. Patient ambulating independently. Diet tolerance good. No complaints of nausea or vomiting.</div>
+                                        </div>
+                                        <div className="border-l-2 border-orange-500 pl-2">
+                                            <div className="font-medium">Dr. Smith - Yesterday 09:15</div>
+                                            <div>Post-operative check. Surgical site healing well. Recommend continuing current antibiotic regimen. Consider PT consultation.</div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1899,7 +2012,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         </div>
 
                         {/* Patient-Specific Imaging Studies */}
-                        {patient?.id === 'P003' ? (
+                        {patient?.id === 'P020' ? (
                             <div className="py-1 border-b">
                                 <div className="font-semibold mb-1">Imaging Studies:</div>
                                 <div className="space-y-0.5">
@@ -1927,7 +2040,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     </div>
                                 </div>
                             </div>
-                        ) : patient?.id === 'P003' ? (
+                        ) : patient?.id === 'P020' ? (
                             <div className="py-1 border-b">
                                 <div className="font-semibold mb-1">Imaging Studies:</div>
                                 <div className="space-y-0.5">
@@ -1974,7 +2087,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         )}
 
                         {/* Pending Orders */}
-                        {patient?.id === 'P003' ? (
+                        {patient?.id === 'P020' ? (
                             <div className="py-1 border-b">
                                 <div className="font-semibold mb-1">Pending Orders:</div>
                                 <div className="space-y-0.5">
@@ -1992,7 +2105,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                                     </div>
                                 </div>
                             </div>
-                        ) : patient?.id === 'P003' ? (
+                        ) : patient?.id === 'P020' ? (
                             <div className="py-1 border-b">
                                 <div className="font-semibold mb-1">Pending Orders:</div>
                                 <div className="space-y-0.5">
@@ -2121,7 +2234,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                 {activeTab === 'discharge' && (
                     <div className="space-y-3">
                         {/* Outpatient message for P003 */}
-                        {patient?.id === 'P003' ? (
+                        {patient?.id === 'P020' ? (
                             <div className="text-center py-8">
                                 <span className="text-4xl text-muted-foreground mb-4">🏥</span>
                                 <h3 className="font-semibold text-lg text-muted-foreground mb-2">Outpatient Visit</h3>
@@ -2568,18 +2681,18 @@ function PatientDetailsPageContent() {
                             <span className="font-bold text-sm">{currentPatient.name}</span>
                             <span>Age {currentPatient.age}</span>
                             {/* Only show room for inpatients */}
-                            {currentPatient.id !== 'P003' && <span>Room {currentPatient.room}</span>}
+                            {currentPatient.id !== 'P020' && <span>Room {currentPatient.room}</span>}
                             <span>IC: {(() => {
                                 // Generate IC number based on patient data
                                 const birthYear = 2024 - currentPatient.age;
                                 const yy = birthYear.toString().slice(-2);
-                                const mm = currentPatient.id === 'P003' ? '03' : // March for Nurul Asyikin
+                                const mm = currentPatient.id === 'P020' ? '03' : // March for Nurul Asyikin
                                           '03'; // March for others
-                                const dd = currentPatient.id === 'P003' ? '12' :
+                                const dd = currentPatient.id === 'P020' ? '12' :
                                           '10';
-                                const kl = currentPatient.id === 'P003' ? '10' : // Selangor
+                                const kl = currentPatient.id === 'P020' ? '10' : // Selangor
                                           '10'; // Selangor
-                                const serial = currentPatient.id === 'P003' ? '9876' :
+                                const serial = currentPatient.id === 'P020' ? '9876' :
                                               '9012';
                                 return `${yy}${mm}${dd}-${kl}-${serial}`;
                             })()}</span>
