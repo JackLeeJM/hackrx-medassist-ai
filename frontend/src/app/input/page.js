@@ -378,7 +378,11 @@ Plan: ${aiSummary.plan || ''}
     };
 
     const handleBack = () => {
-        router.back();
+        if (currentPatient?.id) {
+            router.push(`/patient-details?id=${currentPatient.id}`);
+        } else {
+            router.push('/');
+        }
     };
 
     const handleNotifications = () => {
