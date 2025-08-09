@@ -70,7 +70,7 @@ const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
                 onChange={handleSearchChange}
                 onFocus={handleSearchFocus}
                 onKeyDown={handleKeyDown}
-                placeholder="Search patients by name, room number, or patient ID..."
+                placeholder="Search patients by name, room number, patient ID, or IC..."
                 className="pl-12 text-lg h-12"
               />
             </div>
@@ -111,7 +111,7 @@ const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
                             </div>
                             <div className="flex items-center justify-between mt-1">
                               <p className="text-sm text-gray-600">{patient.condition}</p>
-                              <span className="text-xs text-gray-500">Age {patient.age} • ID: {patient.id}</span>
+                               <span className="text-xs text-gray-500">Age {patient.age} • ID: {patient.id}</span>
                             </div>
                           </div>
                           <div className="text-gray-400">
