@@ -121,17 +121,222 @@ export const mockDashboardData = {
   ]
 };
 
+// Import API functions
+import { patientAPI } from './api.js';
+import { useQuery } from '@tanstack/react-query';
+
+// Query keys for React Query
+export const queryKeys = {
+  patients: ['patients'],
+  combinedPatients: ['combinedPatients'],
+  patientDetails: (id) => ['patientDetails', id],
+};
+
+// Function to fetch and combine all patients from API and mock data
+export const fetchCombinedPatients = async () => {
+  try {
+    // Fetch patients from API
+    const apiPatients = await patientAPI.getPatients(100);
+    
+    // Mark API patients with source
+    const markedApiPatients = apiPatients.map(patient => ({
+      ...patient,
+      source: 'api'
+    }));
+    
+    // Mark mock patients with source
+    const markedMockPatients = mockPatients.map(patient => ({
+      ...patient,
+      source: 'mock'
+    }));
+    
+    // Combine API and mock patients, removing duplicates by ID
+    const patientMap = new Map();
+    
+    // Add API patients first (they have priority)
+    markedApiPatients.forEach(patient => {
+      patientMap.set(patient.id, patient);
+    });
+    
+    // Add mock patients (only if not already present)
+    markedMockPatients.forEach(patient => {
+      if (!patientMap.has(patient.id)) {
+        patientMap.set(patient.id, patient);
+      }
+    });
+    
+    return Array.from(patientMap.values());
+  } catch (error) {
+    console.error('Failed to fetch patients from API, falling back to mock data:', error);
+    
+    // On API error, fall back to mock data only
+    const markedMockPatients = mockPatients.map(patient => ({
+      ...patient,
+      source: 'mock'
+    }));
+    
+    return markedMockPatients;
+  }
+};
+
+// React Query hook to use combined patients data
+export const useCombinedPatients = () => {
+  return useQuery({
+    queryKey: queryKeys.combinedPatients,
+    queryFn: fetchCombinedPatients,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+};
+
+// Prefetch combined patients data (for initialization)
+export const prefetchCombinedPatients = async (queryClient) => {
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.combinedPatients,
+    queryFn: fetchCombinedPatients,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+// Get all combined patients (for non-hook usage)
+export const getAllCombinedPatients = async () => {
+  return fetchCombinedPatients();
+};
+
+// Function to search in combined patient data with React Query integration
+export const searchCombinedPatients = async (query, queryClient = null) => {
+  // Try to get from cache first if queryClient is provided
+  let allPatients;
+  
+  if (queryClient) {
+    const cachedData = queryClient.getQueryData(queryKeys.combinedPatients);
+    if (cachedData) {
+      allPatients = cachedData;
+    } else {
+      // Fetch and cache if not available
+      allPatients = await queryClient.fetchQuery({
+        queryKey: queryKeys.combinedPatients,
+        queryFn: fetchCombinedPatients,
+      });
+    }
+  } else {
+    // Fallback to direct fetch if no queryClient
+    allPatients = await fetchCombinedPatients();
+  }
+  
+  if (!query || query.trim() === '') {
+    return allPatients.slice(0, 20); // Return first 20 if no query
+  }
+  
+  const searchTerm = query.toLowerCase().trim();
+  const normalized = searchTerm.replace(/[^a-z0-9]/gi, '');
+  
+  // Helper to compute IC
+  const computeIC = (p) => {
+    try {
+      const birthYear = 2024 - p.age;
+      const yy = String(birthYear).slice(-2);
+      const mm = p.id === 'P020' ? '03' : '03';
+      const dd = p.id === 'P020' ? '12' : '10';
+      const kl = p.id === 'P020' ? '10' : '10';
+      const serial = p.id === 'P020' ? '9876' : '9012';
+      return `${yy}${mm}${dd}-${kl}-${serial}`;
+    } catch {
+      return '';
+    }
+  };
+  
+  return allPatients.filter(patient => {
+    // Ensure patient object exists
+    if (!patient) return false;
+    
+    // Safe property checks with null coalescing
+    const nameMatch = patient.name ? patient.name.toLowerCase().includes(searchTerm) : false;
+    const idMatch = patient.id ? patient.id.toLowerCase().includes(searchTerm) : false;
+    const roomMatch = patient.room ? String(patient.room).toLowerCase().includes(searchTerm) : false;
+    const ageMatch = patient.age ? String(patient.age) === searchTerm : false;
+    const conditionMatch = patient.condition ? patient.condition.toLowerCase().includes(searchTerm) : false;
+    
+    // IC matching for mock patients
+    if (patient.source === 'mock') {
+      const ic = computeIC(patient);
+      const icNormalized = ic ? ic.replace(/[^a-z0-9]/gi, '').toLowerCase() : '';
+      const icMatch = ic ? (ic.toLowerCase().includes(searchTerm) || icNormalized.includes(normalized)) : false;
+      return nameMatch || idMatch || roomMatch || ageMatch || conditionMatch || icMatch;
+    }
+    
+    return nameMatch || idMatch || roomMatch || ageMatch || conditionMatch;
+  });
+};
+
 // Patient utility functions
-export const findPatientById = (id) => {
-  return mockPatients.find(patient => patient.id === id);
+export const findPatientById = async (id, queryClient = null) => {
+  try {
+    let allPatients;
+    
+    // Try to get from cache first if queryClient is provided
+    if (queryClient) {
+      const cachedData = queryClient.getQueryData(queryKeys.combinedPatients);
+      if (cachedData) {
+        allPatients = cachedData;
+      } else {
+        // Fetch and cache if not available
+        allPatients = await queryClient.fetchQuery({
+          queryKey: queryKeys.combinedPatients,
+          queryFn: fetchCombinedPatients,
+        });
+      }
+    } else {
+      // Fallback to direct fetch if no queryClient
+      allPatients = await fetchCombinedPatients();
+    }
+    
+    const patient = allPatients.find(p => p.id === id);
+    
+    if (patient) {
+      return patient;
+    }
+    
+    // If not found, try fetching fresh from API
+    const apiPatients = await patientAPI.getPatients(100);
+    return apiPatients.find(p => p.id === id) || mockPatients.find(p => p.id === id);
+  } catch (error) {
+    console.error('Failed to find patient by ID:', error);
+    // Fall back to mock data
+    return mockPatients.find(patient => patient.id === id);
+  }
 };
 
 export const findPatientByName = (name) => {
+  if (!name) return null;
   return mockPatients.find(patient => patient.name.toLowerCase() === name.toLowerCase());
 };
 
-export const filterPatients = (query) => {
-  if (!query.trim()) return mockPatients;
+export const filterPatients = async (query, queryClient = null) => {
+  let allPatients;
+  
+  // Try to get from cache first if queryClient is provided
+  if (queryClient) {
+    const cachedData = queryClient.getQueryData(queryKeys.combinedPatients);
+    if (cachedData) {
+      allPatients = cachedData;
+    } else {
+      // Fetch and cache if not available
+      allPatients = await queryClient.fetchQuery({
+        queryKey: queryKeys.combinedPatients,
+        queryFn: fetchCombinedPatients,
+      });
+    }
+  } else {
+    // Fallback to direct fetch if no queryClient
+    allPatients = await fetchCombinedPatients();
+  }
+  
+  if (!query.trim()) {
+    return allPatients;
+  }
   
   const searchTerm = query.toLowerCase();
   // Helper to compute IC used elsewhere in the app header
@@ -150,16 +355,20 @@ export const filterPatients = (query) => {
   };
 
   const normalized = searchTerm.replace(/[^a-z0-9]/gi, '');
-
-  return mockPatients.filter((patient) => {
+  
+  return allPatients.filter((patient) => {
+    // Ensure patient object exists
+    if (!patient) return false;
+    
     const ic = computeIC(patient);
-    const icNormalized = ic.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const icNormalized = ic ? ic.replace(/[^a-z0-9]/gi, '').toLowerCase() : '';
+    
     return (
-      patient.name.toLowerCase().includes(searchTerm) ||
-      String(patient.room).toLowerCase().includes(searchTerm) ||
-      patient.id.toLowerCase().includes(searchTerm) ||
-      patient.condition.toLowerCase().includes(searchTerm) ||
-      ic.toLowerCase().includes(searchTerm) ||
+      (patient.name && patient.name.toLowerCase().includes(searchTerm)) ||
+      (patient.room && String(patient.room).toLowerCase().includes(searchTerm)) ||
+      (patient.id && patient.id.toLowerCase().includes(searchTerm)) ||
+      (patient.condition && patient.condition.toLowerCase().includes(searchTerm)) ||
+      (ic && ic.toLowerCase().includes(searchTerm)) ||
       (ic && icNormalized.includes(normalized))
     );
   });
