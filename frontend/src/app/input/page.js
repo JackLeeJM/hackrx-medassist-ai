@@ -60,7 +60,7 @@ function ConsultationPageContent() {
         // Check authentication
         const userData = localStorage.getItem('user');
         if (!userData) {
-            router.push('/login');
+            router.push('/');
             return;
         }
         setUser(JSON.parse(userData));
@@ -396,7 +396,7 @@ Plan: ${aiSummary.plan || ''}
 
     const handleLogout = () => {
         localStorage.removeItem('user');
-        router.push('/login');
+        router.push('/');
     };
 
     if (!currentPatient || !user) {

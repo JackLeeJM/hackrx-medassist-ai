@@ -52,7 +52,7 @@ export default function LoginPage() {
     }))
 
     // Redirect to dashboard
-    router.push('/')
+    router.push('/dashboard')
   }
 
   return (
