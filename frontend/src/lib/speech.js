@@ -19,6 +19,11 @@ export async function startMedicalTranscription({
   if (!gcsUri) throw new Error('gcsUri is required');
   const client = getSpeechClient();
 
+  // Pick encoding based on the file extension; default to WEBM_OPUS
+  const lower = gcsUri.toLowerCase();
+  const encoding =
+    lower.endsWith('.ogg') || lower.includes('.ogg?') ? 'OGG_OPUS' : 'WEBM_OPUS';
+
   const request = {
     config: {
       languageCode,
@@ -28,7 +33,9 @@ export async function startMedicalTranscription({
       enableSpeakerDiarization: enableDiarization,
       diarizationSpeakerCount: enableDiarization ? 2 : undefined,
       speechContexts: speechContexts.length ? [{ phrases: speechContexts }] : undefined,
-      encoding: 'WEBM_OPUS',
+      // CRITICAL: tell STT this is Opus at 48 kHz
+      encoding,
+      sampleRateHertz: 48000,
     },
     audio: { uri: gcsUri },
   };
@@ -74,5 +81,3 @@ export async function getTranscriptionStatus({ operationName }) {
     raw: response,
   };
 }
-
-
