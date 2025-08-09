@@ -9,6 +9,7 @@ export async function GET() {
       projectId: env.GCP_PROJECT_ID,
       bucket: env.GCS_BUCKET,
       vertexLocation: env.VERTEX_LOCATION || env.GCP_LOCATION,
+      serviceAccountEmail: sa?.client_email || null,
       hasServiceAccountKey: Boolean(sa?.client_email && sa?.private_key),
     };
     return Response.json(result, { status: 200 });
