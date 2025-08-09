@@ -2222,7 +2222,7 @@ function PatientInfoTabs({ patient, onNewClinicalNote, user }) {
                         <div className="py-1">
                             <div className="font-semibold mb-1">Manage Referrals:</div>
                             <div className="flex gap-1">
-                                <Button size="sm" className="text-xs px-2 py-1 h-6">📞New Referral</Button>
+                                <Button size="sm" className="text-xs px-2 py-1 h-6">New Referral</Button>
                                 <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">✏️Edit</Button>
                                 <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">🗑️Cancel</Button>
                                 <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-6">📋Track Status</Button>
