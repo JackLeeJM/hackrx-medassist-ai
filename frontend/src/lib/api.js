@@ -1,7 +1,7 @@
 // API Service for HackRx Medical AI Assistant
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.jackleejm.com/api/v1';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || process.env.JACKLEE_API_KEY;
 
 // Helper function to make API calls with proper headers
 const apiCall = async (endpoint, options = {}) => {
