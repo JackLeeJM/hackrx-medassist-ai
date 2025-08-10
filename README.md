@@ -1,7 +1,7 @@
 # HackRx Medical AI Assistant
 
 ## Overview
-**MEDical Intelligent Assistant** is an AI-powered tool designed to assist healthcare professionals with their administrative tasks, such as documentation, patient summaries, and follow-ups so they can focus more on patient care.
+**Medical Intelligent Assistant** is an AI-powered tool designed to assist healthcare professionals with their administrative tasks, such as documentation, patient summaries, and follow-ups so they can focus more on patient care.
 
 ## Features
 - AI summary
