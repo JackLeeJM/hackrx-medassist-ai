@@ -92,10 +92,10 @@ export default function TestSearchPage() {
           <div className="text-sm text-gray-600 mb-4">
             <p>Try searching for:</p>
             <ul className="list-disc list-inside">
-              <li>"Nurul Asyikin" (shared patient)</li>
-              <li>"Lim" (partial name)</li>
-              <li>"302" (room number)</li>
-              <li>"P001" (patient ID)</li>
+              <li>&quot;Nurul Asyikin&quot; (shared patient)</li>
+              <li>&quot;Lim&quot; (partial name)</li>
+              <li>&quot;302&quot; (room number)</li>
+              <li>&quot;P001&quot; (patient ID)</li>
               <li>Leave empty to see first 20</li>
             </ul>
           </div>

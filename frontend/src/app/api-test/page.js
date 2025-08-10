@@ -136,7 +136,7 @@ export default function APITestPage() {
 
           {/* Search Test */}
           <div className="border rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-2">3. searchCombinedPatients('siti')</h2>
+            <h2 className="text-lg font-semibold mb-2">3. searchCombinedPatients(&apos;siti&apos;)</h2>
             {testResults.search?.success ? (
               <div className="text-green-600">
                 ✅ Success - Found {testResults.search.count} results
@@ -157,7 +157,7 @@ export default function APITestPage() {
 
           {/* Find by ID Test */}
           <div className="border rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-2">4. findPatientById('P001')</h2>
+            <h2 className="text-lg font-semibold mb-2">4. findPatientById(&apos;P001&apos;)</h2>
             {testResults.findById?.success ? (
               <div className="text-green-600">
                 ✅ Success
