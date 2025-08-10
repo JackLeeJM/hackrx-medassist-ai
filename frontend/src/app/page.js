@@ -181,21 +181,29 @@ export default function Dashboard() {
   }, [router, queryClient])
 
   const handlePatientSelect = (patient) => {
-    router.push(`/patient-details?id=${patient.id}`)
+    if (patient && patient.id) {
+      router.push(`/patient-details?id=${patient.id}`)
+    } else {
+      console.error('Invalid patient selected:', patient)
+      alert('Unable to view patient details. Patient ID is missing.')
+    }
   }
 
   const handleSearch = async (query) => {
     try {
       // Search in combined patient data (API + mock) with React Query cache
       const searchResults = await searchCombinedPatients(query, queryClient)
+      console.log(searchResults)
       
       if (searchResults && searchResults.length > 0) {
-        // If we found exactly one match, go directly to that patient
-        if (searchResults.length === 1) {
-          router.push(`/patient-details?id=${searchResults[0].id}`)
+        // Find the first result with a valid ID
+        const validPatient = searchResults.find(p => p && p.id)
+        
+        if (validPatient) {
+          router.push(`/patient-details?id=${validPatient.id}`)
         } else {
-          // Multiple matches - go to the first one
-          router.push(`/patient-details?id=${searchResults[0].id}`)
+          console.error('No valid patient found in search results:', searchResults)
+          alert(`Found patients but no valid IDs for "${query}"`)
         }
       } else {
         alert(`No patient found matching "${query}"`)

@@ -138,11 +138,13 @@ export const fetchCombinedPatients = async () => {
     // Fetch patients from API
     const apiPatients = await patientAPI.getPatients(100);
     
-    // Mark API patients with source
-    const markedApiPatients = apiPatients.map(patient => ({
-      ...patient,
-      source: 'api'
-    }));
+    // Mark API patients with source and filter out invalid ones
+    const markedApiPatients = apiPatients
+      .filter(patient => patient && patient.id) // Only include patients with valid IDs
+      .map(patient => ({
+        ...patient,
+        source: 'api'
+      }));
     
     // Mark mock patients with source
     const markedMockPatients = mockPatients.map(patient => ({
@@ -249,8 +251,8 @@ export const searchCombinedPatients = async (query, queryClient = null) => {
   };
   
   return allPatients.filter(patient => {
-    // Ensure patient object exists
-    if (!patient) return false;
+    // Ensure patient object exists and has a valid ID
+    if (!patient || !patient.id) return false;
     
     // Safe property checks with null coalescing
     const nameMatch = patient.name ? patient.name.toLowerCase().includes(searchTerm) : false;
@@ -357,8 +359,8 @@ export const filterPatients = async (query, queryClient = null) => {
   const normalized = searchTerm.replace(/[^a-z0-9]/gi, '');
   
   return allPatients.filter((patient) => {
-    // Ensure patient object exists
-    if (!patient) return false;
+    // Ensure patient object exists and has a valid ID
+    if (!patient || !patient.id) return false;
     
     const ic = computeIC(patient);
     const icNormalized = ic ? ic.replace(/[^a-z0-9]/gi, '').toLowerCase() : '';

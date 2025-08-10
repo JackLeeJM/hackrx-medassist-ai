@@ -48,8 +48,10 @@ const Header = ({
   const handlePatientSelect = (patient) => {
     setSearchQuery('');
     setShowDropdown(false);
-    if (onSearch) {
+    if (onSearch && patient && patient.id) {
       onSearch(patient.id);
+    } else {
+      console.warn('Patient selected but no valid ID found:', patient);
     }
   };
 
