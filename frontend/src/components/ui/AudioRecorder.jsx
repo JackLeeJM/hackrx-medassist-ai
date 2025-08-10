@@ -57,21 +57,34 @@ const AudioRecorder = ({ onRecordingComplete, onRecordingStart, onRecordingStop,
     }
 
     try {
+      // 1) Ask for 48 kHz audio (browsers may downsample, but we request 48000 explicitly)
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 44100,
+          sampleRate: 48000,
         }
       });
 
       streamRef.current = stream;
       chunksRef.current = [];
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4'
-      });
+      // 2) Prefer Opus containers (webm first, then ogg). Avoid mp4/AAC because Google Medical STT rejects it.
+      const mimeType =
+        MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
+              ? 'audio/ogg;codecs=opus'
+              : null);
 
+      if (!mimeType) {
+        setError('Opus recording is not supported by this browser. Please use Chrome/Edge/Firefox desktop.');
+        // Stop the tracks since we won’t record
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
 
       mediaRecorder.ondataavailable = (event) => {
@@ -81,9 +94,7 @@ const AudioRecorder = ({ onRecordingComplete, onRecordingStart, onRecordingStop,
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, {
-          type: mediaRecorder.mimeType
-        });
+        const blob = new Blob(chunksRef.current, { type: mediaRecorder.mimeType });
         setAudioBlob(blob);
         if (onRecordingComplete) {
           onRecordingComplete(blob);
