@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { patientAPI } from '@/lib/api';
 
 // Import new modular components
 import PatientHeader from '@/components/patient/PatientHeader';
@@ -2361,6 +2362,7 @@ function PatientDetailsPageContent() {
     const [user, setUser] = useState(null);
     const [currentPatient, setCurrentPatient] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Check authentication
@@ -2378,22 +2380,91 @@ function PatientDetailsPageContent() {
             return;
         }
 
-        const patient = mockPatients.find(p => p.id === patientId);
-        if (!patient) {
-            alert(`Patient with ID ${patientId} not found`);
-            router.push('/');
-            return;
-        }
+        // Fetch patient data from API with fallback to mock data
+        const fetchPatientData = async () => {
+            setIsLoading(true);
+            try {
+                // Try to fetch from API
+                const apiData = await patientAPI.getPatientDetails(patientId);
+                
+                if (apiData && apiData.patient_info) {
+                    // Transform API data to match our component format
+                    const transformedPatient = {
+                        id: apiData.patient_info.id,
+                        name: apiData.patient_info.name,
+                        age: apiData.patient_info.age,
+                        gender: apiData.patient_info.gender,
+                        room: Math.floor(Math.random() * 500) + 100, // Generate random room
+                        condition: apiData.conditions && apiData.conditions.length > 0 
+                            ? apiData.conditions[0].description 
+                            : "General Care",
+                        status: "stable", // Default status
+                        vitals: {
+                            bp: apiData.observations?.find(o => o.description.includes('Blood Pressure'))?.value || "120/80",
+                            hr: apiData.observations?.find(o => o.description.includes('Heart rate'))?.value || "75",
+                            temp: apiData.observations?.find(o => o.description.includes('Body Temperature'))?.value || "98.6",
+                            o2sat: apiData.observations?.find(o => o.description.includes('Oxygen'))?.value || "98"
+                        },
+                        insights: `Patient has ${apiData.conditions?.length || 0} active conditions. Recent medications include ${apiData.medications?.map(m => m.description).slice(0, 2).join(', ') || 'none'}. Last encounter: ${apiData.encounters?.[0]?.date || 'N/A'}.`,
+                        timeline: [
+                            ...(apiData.encounters || []).slice(0, 3).map(enc => ({
+                                type: enc.class === 'emergency' ? 'emergency' : 'consultation',
+                                action: enc.description || 'Healthcare encounter',
+                                time: new Date(enc.date).toLocaleDateString(),
+                                date: enc.date,
+                                icon: enc.class === 'emergency' ? 'fas fa-ambulance' : 'fas fa-user-md',
+                                status: 'completed',
+                                details: enc.reason || 'Routine visit'
+                            })),
+                            ...(apiData.procedures || []).slice(0, 2).map(proc => ({
+                                type: 'procedure',
+                                action: proc.description,
+                                time: new Date(proc.date).toLocaleDateString(),
+                                date: proc.date,
+                                icon: 'fas fa-procedures',
+                                status: 'completed',
+                                details: proc.reason || 'Medical procedure'
+                            }))
+                        ],
+                        // Store the full API data for detailed views
+                        apiData: apiData
+                    };
+                    
+                    setCurrentPatient(transformedPatient);
+                } else {
+                    // Fallback to mock data if API returns empty or invalid data
+                    const patient = mockPatients.find(p => p.id === patientId);
+                    if (!patient) {
+                        alert(`Patient with ID ${patientId} not found`);
+                        router.push('/');
+                        return;
+                    }
+                    setCurrentPatient(patient);
+                }
+            } catch (error) {
+                console.error('Failed to fetch patient from API, using mock data:', error);
+                // Fallback to mock data on error
+                const patient = mockPatients.find(p => p.id === patientId);
+                if (!patient) {
+                    alert(`Patient with ID ${patientId} not found`);
+                    router.push('/');
+                    return;
+                }
+                setCurrentPatient(patient);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-        setCurrentPatient(patient);
-
-        // Initialize chat with AI greeting
-        setChatMessages([{
-            id: 1,
-            type: 'ai',
-            message: `Hello! I'm your AI assistant. I have access to ${patient.name}'s complete medical data. How can I help you today?`,
-            timestamp: '2024-01-15T09:00:00Z'
-        }]);
+        fetchPatientData().then(() => {
+            // Initialize chat with AI greeting after patient data is loaded
+            setChatMessages([{
+                id: 1,
+                type: 'ai',
+                message: `Hello! I'm your AI assistant. I have access to the patient's complete medical data. How can I help you today?`,
+                timestamp: '2024-01-15T09:00:00Z'
+            }]);
+        });
     }, [searchParams, router]);
 
     const startNewClinicalNote = () => {
@@ -2503,8 +2574,23 @@ function PatientDetailsPageContent() {
         alert(`Notifications:\n${notifications.join('\n')}`);
     };
 
-    if (!currentPatient || !user) {
-        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    if (!user) {
+        return <div className="min-h-screen flex items-center justify-center">Authenticating...</div>;
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin w-12 h-12 mx-auto mb-4 border-4 border-gray-300 border-t-blue-500 rounded-full"></div>
+                    <p className="text-lg">Loading patient data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!currentPatient) {
+        return <div className="min-h-screen flex items-center justify-center">Patient not found</div>;
     }
 
     return (

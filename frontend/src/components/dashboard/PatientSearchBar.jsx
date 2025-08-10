@@ -1,22 +1,69 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, User, AlertTriangle } from 'lucide-react';
-import { filterPatients, getPatientStatusColor } from '@/lib/data';
+import { getPatientStatusColor, useCombinedPatients } from '@/lib/data';
 
 const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [debounceTimer, setDebounceTimer] = useState(null);
+  const [hasFocused, setHasFocused] = useState(false);
 
   const searchRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    setFilteredPatients(filterPatients(searchQuery));
-  }, [searchQuery]);
+  // Use React Query hook to fetch and cache all combined patients
+  const { data: allPatients = [], isLoading, error } = useCombinedPatients();
+
+  // Filter patients based on search query using useMemo for performance
+  const filteredPatients = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return allPatients.slice(0, 20); // Show first 20 when no search
+    }
+
+    const searchTerm = searchQuery.toLowerCase().trim();
+    const normalized = searchTerm.replace(/[^a-z0-9]/gi, '');
+
+    // Helper to compute IC for mock patients
+    const computeIC = (p) => {
+      try {
+        const birthYear = 2024 - p.age;
+        const yy = String(birthYear).slice(-2);
+        const mm = p.id === 'P020' ? '03' : '03';
+        const dd = p.id === 'P020' ? '12' : '10';
+        const kl = p.id === 'P020' ? '10' : '10';
+        const serial = p.id === 'P020' ? '9876' : '9012';
+        return `${yy}${mm}${dd}-${kl}-${serial}`;
+      } catch {
+        return '';
+      }
+    };
+
+    return allPatients.filter(patient => {
+      // Ensure patient object exists
+      if (!patient) return false;
+      
+      const nameMatch = patient.name ? patient.name.toLowerCase().includes(searchTerm) : false;
+      const idMatch = patient.id ? patient.id.toLowerCase().includes(searchTerm) : false;
+      const roomMatch = patient.room ? String(patient.room).toLowerCase().includes(searchTerm) : false;
+      const ageMatch = patient.age ? String(patient.age) === searchTerm : false;
+      const conditionMatch = patient.condition ? patient.condition.toLowerCase().includes(searchTerm) : false;
+      
+      // IC matching for mock patients
+      if (patient.source === 'mock') {
+        const ic = computeIC(patient);
+        const icNormalized = ic ? ic.replace(/[^a-z0-9]/gi, '').toLowerCase() : '';
+        const icMatch = ic ? (ic.toLowerCase().includes(searchTerm) || icNormalized.includes(normalized)) : false;
+        return nameMatch || idMatch || roomMatch || ageMatch || conditionMatch || icMatch;
+      }
+      
+      return nameMatch || idMatch || roomMatch || ageMatch || conditionMatch;
+    });
+  }, [searchQuery, allPatients]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,6 +79,7 @@ const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
 
   const handleSearchFocus = () => {
     setShowDropdown(true);
+    setHasFocused(true);
   };
 
   const handleSearchChange = (e) => {
@@ -40,7 +88,9 @@ const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
   };
 
   const handlePatientSelect = (patient) => {
-    setSearchQuery(patient.name);
+    // Include more information in search box to differentiate patients
+    const displayText = `${patient.name} - Room ${patient.room} (ID: ${patient.id})`;
+    setSearchQuery(displayText);
     setShowDropdown(false);
     onPatientSelect(patient);
   };
@@ -76,21 +126,32 @@ const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
             </div>
 
             {/* Search Dropdown */}
-            {showDropdown && (
+            {showDropdown && hasFocused && (
               <div
                 ref={dropdownRef}
                 className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-xl mt-1 max-h-96 overflow-y-auto z-50"
               >
                 <div className="p-2">
-                  <div className="text-xs text-gray-500 px-3 py-2 font-medium">
-                    {searchQuery ? `FOUND ${filteredPatients.length} PATIENT${filteredPatients.length !== 1 ? 'S' : ''}` : `ALL PATIENTS (${filteredPatients.length})`}
-                  </div>
-                  {filteredPatients.length === 0 ? (
+                  {isLoading ? (
                     <div className="text-center py-8 text-gray-500">
-                      <Search className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p>No patients found matching "{searchQuery}"</p>
+                      <div className="animate-spin w-8 h-8 mx-auto mb-2 border-2 border-gray-300 border-t-blue-500 rounded-full"></div>
+                      <p>Loading patients...</p>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>Error loading patients. Using local data.</p>
                     </div>
                   ) : (
+                    <>
+                      <div className="text-xs text-gray-500 px-3 py-2 font-medium">
+                        {searchQuery ? `FOUND ${filteredPatients.length} PATIENT${filteredPatients.length !== 1 ? 'S' : ''}` : `ALL PATIENTS (${filteredPatients.length})`}
+                      </div>
+                      {filteredPatients.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                          <Search className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                          <p>No patients found matching "{searchQuery}"</p>
+                        </div>
+                      ) : (
                     filteredPatients.map((patient) => {
                       const statusColor = getPatientStatusColor(patient.status);
                       const StatusIcon = patient.status === 'critical' ? AlertTriangle : User;
@@ -120,6 +181,8 @@ const PatientSearchBar = ({ onPatientSelect, onSearch }) => {
                         </div>
                       );
                     })
+                      )}
+                    </>
                   )}
                 </div>
               </div>

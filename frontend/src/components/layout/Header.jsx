@@ -27,17 +27,18 @@ const Header = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [filteredPatients, setFilteredPatients] = useState([]);
 
-  const handleSearchChange = (value) => {
+  const handleSearchChange = async (value) => {
     setSearchQuery(value);
     if (value.trim()) {
       // Filter only by name and room
       const searchTerm = value.toLowerCase();
-      const patients = filterPatients(value).filter(patient =>
-        patient.name.toLowerCase().includes(searchTerm) ||
-        patient.room.toLowerCase().includes(searchTerm)
+      const patients = await filterPatients(value);
+      const filtered = patients.filter(patient =>
+        patient.name?.toLowerCase().includes(searchTerm) ||
+        String(patient.room || '').toLowerCase().includes(searchTerm)
       );
-      setFilteredPatients(patients.slice(0, 8)); // Show max 8 results
-      setShowDropdown(patients.length > 0);
+      setFilteredPatients(filtered.slice(0, 8)); // Show max 8 results
+      setShowDropdown(filtered.length > 0);
     } else {
       setFilteredPatients([]);
       setShowDropdown(false);
