@@ -136,9 +136,7 @@ export const queryKeys = {
 export const fetchCombinedPatients = async () => {
   try {
     // Fetch patients from API
-    console.log('Fetching patients from API...');
     const apiPatients = await patientAPI.getPatients(100);
-    console.log('API patients received:', apiPatients);
     
     // Mark API patients with source and filter out invalid ones
     const markedApiPatients = apiPatients
@@ -147,7 +145,6 @@ export const fetchCombinedPatients = async () => {
         ...patient,
         source: 'api'
       }));
-    console.log('Marked API patients:', markedApiPatients);
     
     // Mark mock patients with source
     const markedMockPatients = mockPatients.map(patient => ({

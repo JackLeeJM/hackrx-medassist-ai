@@ -11,27 +11,17 @@ const apiCall = async (endpoint, options = {}) => {
     ...options.headers,
   };
 
-  const fullUrl = `${API_BASE_URL}${endpoint}`;
-  console.log('Making API call to:', fullUrl);
-  console.log('With headers:', headers);
-
   try {
-    const response = await fetch(fullUrl, {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
     });
 
-    console.log('Response status:', response.status);
-    
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API error response:', errorText);
       throw new Error(`API call failed: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    console.log('API response data:', data);
-    return data;
+    return await response.json();
   } catch (error) {
     console.error(`API call to ${endpoint} failed:`, error);
     throw error;

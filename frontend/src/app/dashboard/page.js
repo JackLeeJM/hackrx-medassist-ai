@@ -27,46 +27,11 @@ import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { mockDashboardData, findPatientById, findPatientByName, searchCombinedPatients, prefetchCombinedPatients, useCombinedPatients } from '@/lib/data'
 import { patientAPI } from '@/lib/api'
 
-// Function to generate critical patients from combined data
-const generateCriticalPatients = (combinedPatients) => {
-  if (!combinedPatients || combinedPatients.length === 0) {
-    // Fallback to mock data if no combined patients available
-    return [
-      { name: "Siti Nuraini", room: "302A", condition: "Post-op complications", severity: "Critical", type: "inpatient" },
-      { name: "Raj Kumar", room: "412B", condition: "Cardiac monitoring", severity: "Serious", type: "inpatient" },
-      { name: "Ahmad Farid", room: "367C", condition: "Emergency admission", severity: "Critical", type: "inpatient" },
-      { name: "Lim Mei Ling", room: "204B", condition: "Respiratory distress", severity: "Critical", type: "inpatient" },
-      { name: "Tan Wei Ming", room: "315A", condition: "Sepsis protocol", severity: "Critical", type: "inpatient" },
-      { name: "Priya Devi", room: "428C", condition: "Stroke monitoring", severity: "Serious", type: "inpatient" },
-      { name: "Mohd Azman", room: "196D", condition: "Cardiac arrest recovery", severity: "Critical", type: "inpatient" },
-      { name: "Wong Ai Ling", room: "351B", condition: "Multiple trauma", severity: "Critical", type: "inpatient" },
-      { name: "Suresh Kumar", room: "289A", condition: "Pneumonia complications", severity: "Serious", type: "inpatient" },
-      { name: "Nurul Huda", room: "403C", condition: "Diabetic ketoacidosis", severity: "Critical", type: "inpatient" },
-      { name: "Lee Jun Wei", room: "267B", condition: "Post-surgical bleeding", severity: "Serious", type: "inpatient" },
-      { name: "Kavitha Devi", room: "392A", condition: "Kidney failure", severity: "Critical", type: "inpatient" }
-    ];
-  }
-
-  // Filter out Nurul Asyikin and select critical/serious patients
-  const filteredPatients = combinedPatients
-    .filter(p => p.name && !p.name.toLowerCase().includes('nurul asyikin'))
-    .filter(p => p.status === 'critical' || p.status === 'serious' || 
-                 p.condition?.toLowerCase().includes('critical') ||
-                 p.condition?.toLowerCase().includes('serious') ||
-                 p.condition?.toLowerCase().includes('emergency'))
-    .slice(0, 12)
-    .map(p => ({
-      name: p.name,
-      room: p.room || `${Math.floor(Math.random() * 400) + 100}${['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)]}`,
-      condition: p.condition || 'Monitoring required',
-      severity: p.status === 'critical' ? 'Critical' : 
-                p.status === 'serious' ? 'Serious' : 
-                'Critical',
-      type: 'inpatient'
-    }));
-
-  // If we don't have enough critical patients, add some mock ones
-  const mockCritical = [
+// Mock data for different specialties
+const mockDrSitiData = {
+  criticalPatients: [
+    { name: "Siti Nuraini", room: "302A", condition: "Post-op complications", severity: "Critical", type: "inpatient" },
+    { name: "Raj Kumar", room: "412B", condition: "Cardiac monitoring", severity: "Serious", type: "inpatient" },
     { name: "Ahmad Farid", room: "367C", condition: "Emergency admission", severity: "Critical", type: "inpatient" },
     { name: "Lim Mei Ling", room: "204B", condition: "Respiratory distress", severity: "Critical", type: "inpatient" },
     { name: "Tan Wei Ming", room: "315A", condition: "Sepsis protocol", severity: "Critical", type: "inpatient" },
@@ -77,23 +42,7 @@ const generateCriticalPatients = (combinedPatients) => {
     { name: "Nurul Huda", room: "403C", condition: "Diabetic ketoacidosis", severity: "Critical", type: "inpatient" },
     { name: "Lee Jun Wei", room: "267B", condition: "Post-surgical bleeding", severity: "Serious", type: "inpatient" },
     { name: "Kavitha Devi", room: "392A", condition: "Kidney failure", severity: "Critical", type: "inpatient" }
-  ];
-
-  // Combine and ensure we have 12 patients
-  const combined = [...filteredPatients];
-  for (const mockPatient of mockCritical) {
-    if (combined.length >= 12) break;
-    if (!combined.some(p => p.name === mockPatient.name)) {
-      combined.push(mockPatient);
-    }
-  }
-
-  return combined.slice(0, 12);
-};
-
-// Mock data for different specialties
-const mockDrSitiData = {
-  criticalPatients: [],
+  ],
   schedule: [
     { time: "08:00", patient: "Siti Nuraini", type: "Post-op Round", room: "302A", status: "Completed" },
     { time: "09:30", patient: "Raj Kumar", type: "Cardiac Consult", room: "412B", status: "In Progress" },
@@ -101,7 +50,7 @@ const mockDrSitiData = {
     { time: "14:00", patient: "Ahmad Farid", type: "Emergency Eval", room: "367C", status: "Pending" }
   ],
   recentActivity: [
-    { icon: '💊', action: "Insulin dosage adjusted", patient: "Ahmad Rahman", time: "1h ago" },
+    { icon: '💊', action: "Insulin dosage adjusted", patient: "Nurul Asyikin", time: "1h ago" },
     { icon: '📊', action: "HbA1c results reviewed", patient: "Mohd Hafiz", time: "2h ago" },
     { icon: '🩺', action: "Diabetes screening completed", patient: "Siti Hajar", time: "3h ago" },
     { icon: '📋', action: "Diet plan updated", patient: "Ahmad Farid", time: "4h ago" }
@@ -109,7 +58,20 @@ const mockDrSitiData = {
 }
 
 const mockDrAhmadData = {
-  criticalPatients: [],
+  criticalPatients: [
+    { name: "Ahmad Hafiz", room: "205B", condition: "Acute angle-closure glaucoma", severity: "Critical", type: "inpatient" },
+    { name: "Lim Siew Chen", room: "208A", condition: "Retinal detachment", severity: "Critical", type: "inpatient" },
+    { name: "Ravi Shankar", room: "210C", condition: "Corneal perforation", severity: "Serious", type: "inpatient" },
+    { name: "Fatimah Zahra", room: "212A", condition: "Endophthalmitis", severity: "Critical", type: "inpatient" },
+    { name: "Chua Jin Ming", room: "215B", condition: "Orbital cellulitis", severity: "Critical", type: "inpatient" },
+    { name: "Chong Mei Yee", room: "218C", condition: "Traumatic globe rupture", severity: "Critical", type: "inpatient" },
+    { name: "Mohd Rizal", room: "220A", condition: "Chemical burn injury", severity: "Serious", type: "inpatient" },
+    { name: "Deepa Kumari", room: "222B", condition: "Severe uveitis", severity: "Serious", type: "inpatient" },
+    { name: "Hassan Rahman", room: "224C", condition: "Optic neuritis", severity: "Serious", type: "inpatient" },
+    { name: "Siti Khadijah", room: "226A", condition: "Retinal artery occlusion", severity: "Critical", type: "inpatient" },
+    { name: "Tan Boon Hock", room: "228B", condition: "Vitreous hemorrhage", severity: "Serious", type: "inpatient" },
+    { name: "Priya Nair", room: "230C", condition: "Acute retinal necrosis", severity: "Critical", type: "inpatient" }
+  ],
   schedule: [
     { time: "09:00", patient: "Ahmad Rahman", type: "Diabetic Retinopathy - Laser Treatment", room: "205A", status: "Completed" },
     { time: "10:00", patient: "Ahmad Hafiz", type: "Glaucoma Surgery", room: "205B", status: "In Progress" },
@@ -118,7 +80,7 @@ const mockDrAhmadData = {
   ],
   recentActivity: [
     { icon: '👁️', action: "Glaucoma surgery completed", patient: "Ahmad Hafiz", time: "1h ago" },
-    { icon: '💉', action: "Anti-VEGF injection administered", patient: "Lim Siew Chen", time: "2h ago" },
+    { icon: '💉', action: "Anti-VEGF injection administered", patient: "Nurul Asyikin", time: "2h ago" },
     { icon: '📊', action: "OCT scan reviewed", patient: "Fatimah Zahra", time: "3h ago" },
     { icon: '👁️', action: "Retinal assessment completed", patient: "Ravi Shankar", time: "4h ago" }
   ]
@@ -133,7 +95,7 @@ const mockOutpatientData = {
     { name: "Siti Hajar", room: "Clinic B", condition: "Hypertension crisis", severity: "Serious", time: "1h ago", type: "outpatient" }
   ],
   schedule: [
-    { time: "08:00", patient: "Ahmad Rahman", type: "Diabetic Retinopathy - Follow-up", status: "Completed" },
+    { time: "08:00", patient: "Nurul Asyikin", type: "Diabetic Macular Edema - Follow-up", status: "Completed" },
     { time: "10:00", patient: "Muthu Krishnan", type: "New patient consult", status: "In Progress" },
     { time: "11:00", patient: "Lim Su Anne", type: "Annual physical", status: "Pending" },
     { time: "14:00", patient: "Mohd Hafiz", type: "Diabetes management", status: "Pending" },
@@ -156,32 +118,6 @@ export default function Dashboard() {
   
   // Use React Query to fetch combined patients
   const { data: combinedPatients, isLoading: isPatientsLoading } = useCombinedPatients()
-  
-  // Generate appointments from combined patients
-  const generateAppointments = () => {
-    if (!combinedPatients || combinedPatients.length === 0) {
-      return mockOutpatientData.schedule
-    }
-    
-    const times = ["08:00", "09:30", "10:00", "11:00", "14:00", "15:30", "16:00"]
-    const appointmentTypes = [
-      "Follow-up", "New Consult", "Annual Physical", "Lab Review", 
-      "Diabetes Management", "BP Check", "Vaccination"
-    ]
-    const statuses = ["Completed", "In Progress", "Pending", "Pending", "Pending"]
-    
-    // Take up to 7 patients from combined data for appointments
-    const appointmentPatients = combinedPatients.slice(0, 7)
-    
-    return appointmentPatients.map((patient, index) => ({
-      time: times[index] || `${9 + index}:00`,
-      patient: patient.name,
-      type: appointmentTypes[index % appointmentTypes.length],
-      status: statuses[Math.min(index, statuses.length - 1)],
-      patientId: patient.id,
-      source: patient.source
-    }))
-  }
   
   // Generate dates for the week with consistent patient counts
   const generateWeekDates = () => {
@@ -233,34 +169,16 @@ export default function Dashboard() {
       return
     }
 
-    // Initial data setup will be updated when combined patients load
+    // Set appropriate data based on doctor's email
+    if (parsedUser.email === 'drahmad@hospital.com') {
+      setCurrentData(mockDrAhmadData)
+    } else {
+      setCurrentData(mockDrSitiData)
+    }
 
     // Prefetch combined patients data on initialization
     prefetchCombinedPatients(queryClient)
   }, [router, queryClient])
-
-  // Update critical patients when combined data loads
-  useEffect(() => {
-    console.log('Combined patients in dashboard:', combinedPatients);
-    console.log('User:', user);
-    
-    if (combinedPatients && combinedPatients.length > 0 && user) {
-      const criticalPatients = generateCriticalPatients(combinedPatients);
-      console.log('Generated critical patients:', criticalPatients);
-      
-      if (user.email === 'drahmad@hospital.com') {
-        setCurrentData({
-          ...mockDrAhmadData,
-          criticalPatients: criticalPatients
-        });
-      } else {
-        setCurrentData({
-          ...mockDrSitiData,
-          criticalPatients: criticalPatients
-        });
-      }
-    }
-  }, [combinedPatients, user])
 
   const handlePatientSelect = (patient) => {
     if (patient && patient.id) {
@@ -528,29 +446,23 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-2">
-                      {generateAppointments().slice(0, appointmentCount).map((appointment, index) => {
-                        // Replace Nurul Asyikin if present in appointments
-                        const displayAppointment = appointment.patient === "Nurul Asyikin" 
-                          ? { ...appointment, patient: "Ahmad Rahman" }
-                          : appointment;
-                        return (
+                      {mockOutpatientData.schedule.slice(0, appointmentCount).map((appointment, index) => (
                         <div key={index} className="py-1 px-2 hover:bg-gray-50 cursor-pointer text-xs border-b border-gray-100 last:border-0"
-                             onClick={() => handleViewPatient(displayAppointment.patient)}>
+                             onClick={() => handleViewPatient(appointment.patient)}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-medium">{displayAppointment.time}</span>
+                            <span className="font-medium">{appointment.time}</span>
                             <span className={`px-1 py-0 rounded text-xs ${
-                              displayAppointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                              displayAppointment.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                              appointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                              appointment.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              {displayAppointment.status}
+                              {appointment.status}
                             </span>
                           </div>
-                          <div className="text-foreground">{displayAppointment.patient}</div>
-                          <div className="text-muted-foreground">{displayAppointment.type}</div>
+                          <div className="text-foreground">{appointment.patient}</div>
+                          <div className="text-muted-foreground">{appointment.type}</div>
                         </div>
-                        );
-                      })}
+                      ))}
                     </div>
                   </div>
                   
