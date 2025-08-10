@@ -1,0 +1,57 @@
+services:
+
+  # Local Ollama server with GPU acceleration
+  ollama:
+    image: ollama/ollama:latest
+    restart: always
+    environment:
+      - OLLAMA_ORIGINS=*
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD-SHELL", "bash", "-c", "{ printf >&3 'GET / HTTP/1.0\\r\\n\\r\\n'; cat <&3; } 3<>/dev/tcp/localhost/11434 | grep 'Ollama is' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    tty: true
+    pull_policy: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Downloads LLM models automatically
+  ollama-setup:
+    image: curlimages/curl:latest
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - dokploy-network
+    command: >
+      sh -c '
+        echo "Ollama is healthy, checking for models..." &&
+        MODELS=("llama3.2:3b" "qwen3:8b") &&
+        for MODEL in "${MODELS[@]}"; do
+          echo "Checking model: $MODEL" &&
+          MODELS_RESPONSE=$(curl -s http://ollama:11434/api/tags) &&
+          if echo "$MODELS_RESPONSE" | grep -q "$MODEL"; then
+            echo "Model $MODEL exists, skipping pull.";
+          else
+            echo "Pulling $MODEL model..." &&
+            curl -X POST http://ollama:11434/api/pull \
+              -H "Content-Type: application/json" \
+              -d "{\"name\": \"$MODEL\"}" \
+              --max-time 1200 &&
+            echo "Model $MODEL pull completed!";
+          fi
+        done &&
+        echo "Ollama setup complete."
+      '

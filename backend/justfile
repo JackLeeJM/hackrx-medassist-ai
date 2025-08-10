@@ -1,0 +1,15 @@
+# Show available recipes
+default:
+    @just --list
+
+# Spins up Ollama service
+up:
+    docker-compose up -d
+
+# Spins down Ollama service
+down:
+    docker-compose down
+
+# Initialize backend service
+backend:
+    uv run fastapi dev backend/main.py
