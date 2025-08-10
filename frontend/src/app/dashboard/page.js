@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
 import { GridCalendar } from '@/components/ui/grid-calendar'
 import { 
   DropdownMenu,
@@ -24,8 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 
 // Import data and utilities
-import { mockDashboardData, findPatientById, findPatientByName, searchCombinedPatients, prefetchCombinedPatients, useCombinedPatients } from '@/lib/data'
-import { patientAPI } from '@/lib/api'
+import { mockDashboardData, findPatientById, findPatientByName } from '@/lib/data'
 
 // Mock data for different specialties
 const mockDrSitiData = {
@@ -111,13 +109,9 @@ const mockOutpatientData = {
 
 export default function Dashboard() {
   const router = useRouter()
-  const queryClient = useQueryClient()
   const [user, setUser] = useState(null)
   const [currentData, setCurrentData] = useState(mockInpatientData)
   const [selectedDate, setSelectedDate] = useState(new Date())
-  
-  // Use React Query to fetch combined patients
-  const { data: combinedPatients, isLoading: isPatientsLoading } = useCombinedPatients()
   
   // Generate dates for the week with consistent patient counts
   const generateWeekDates = () => {
@@ -156,7 +150,7 @@ export default function Dashboard() {
     // Check if user is authenticated
     const userData = localStorage.getItem('user')
     if (!userData) {
-      router.push('/login')
+      router.push('/')
       return
     }
     
@@ -176,56 +170,28 @@ export default function Dashboard() {
       setCurrentData(mockDrSitiData)
     }
 
-    // Prefetch combined patients data on initialization
-    prefetchCombinedPatients(queryClient)
-  }, [router, queryClient])
+    // No stats animation needed
+  }, [router])
 
   const handlePatientSelect = (patient) => {
     router.push(`/patient-details?id=${patient.id}`)
   }
 
-  const handleSearch = async (query) => {
-    try {
-      // Search in combined patient data (API + mock) with React Query cache
-      const searchResults = await searchCombinedPatients(query, queryClient)
-      
-      if (searchResults && searchResults.length > 0) {
-        // If we found exactly one match, go directly to that patient
-        if (searchResults.length === 1) {
-          router.push(`/patient-details?id=${searchResults[0].id}`)
-        } else {
-          // Multiple matches - go to the first one
-          router.push(`/patient-details?id=${searchResults[0].id}`)
-        }
-      } else {
-        alert(`No patient found matching "${query}"`)
-      }
-    } catch (error) {
-      console.error('Search failed:', error)
-      alert('Search failed. Please try again.')
+  const handleSearch = (query) => {
+    const patient = findPatientById(query)
+    if (patient) {
+      router.push(`/patient-details?id=${patient.id}`)
+    } else {
+      alert(`No patient found matching "${query}"`)
     }
   }
 
-  const handleViewPatient = async (patientName) => {
-    try {
-      // Search for patient by name using combined data with React Query cache
-      const searchResults = await searchCombinedPatients(patientName, queryClient)
-      
-      // Find exact match first
-      const exactMatch = searchResults.find(p => p.name.toLowerCase() === patientName.toLowerCase())
-      if (exactMatch) {
-        router.push(`/patient-details?id=${exactMatch.id}`)
-        return
-      }
-      
-      // If no exact match, use first partial match
-      if (searchResults && searchResults.length > 0) {
-        router.push(`/patient-details?id=${searchResults[0].id}`)
-      } else {
-        alert(`Patient ${patientName} not found in the system`)
-      }
-    } catch (error) {
-      console.error('Failed to find patient:', error)
+  const handleViewPatient = (patientName) => {
+    // Find the patient by name from the main patient list
+    const fullPatient = findPatientByName(patientName)
+    if (fullPatient) {
+      router.push(`/patient-details?id=${fullPatient.id}`)
+    } else {
       alert(`Patient ${patientName} not found in the system`)
     }
   }
@@ -270,7 +236,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('user')
-    router.push('/login')
+    router.push('/')
   }
 
   if (!user) {
@@ -495,3 +461,4 @@ export default function Dashboard() {
     </ErrorBoundary>
   )
 }
+

@@ -271,7 +271,7 @@ export default function NurseDashboard() {
     // Check authentication
     const userData = localStorage.getItem('user')
     if (!userData) {
-      router.push('/login')
+      router.push('/')
       return
     }
     
@@ -322,7 +322,7 @@ export default function NurseDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('user')
-    router.push('/login')
+    router.push('/')
   }
 
   const handleDoctorSelect = (doctorName) => {
